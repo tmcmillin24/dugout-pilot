@@ -1,98 +1,39 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { useAuth } from '@/providers/auth-provider';
+import { supabase } from '@/lib/supabase';
 
 export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
+  const { session } = useAuth();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  async function signOut() {
+    if (busy) return;
+    setBusy(true); setError('');
+    try {
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      if (error) throw error;
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Could not sign out. Try again.');
+    } finally { setBusy(false); }
+  }
+  return <SafeAreaView style={styles.page}><ScrollView contentContainerStyle={styles.content}>
+    <Text style={styles.brand}>DUGOUT PILOT</Text>
+    <Text style={styles.title}>Welcome to your dugout.</Text>
+    <Text style={styles.body}>Signed in as {session?.user.email}</Text>
+    <Text style={styles.card}>Your account is ready. Team creation, coach invitations, and the Thundercats game-management features are the next development phase.</Text>
+    {!!error && <Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text>}
+    <Pressable accessibilityRole="button" disabled={busy} onPress={signOut} style={styles.button}><Text style={styles.buttonText}>{busy ? 'Signing out…' : 'Sign out'}</Text></Pressable>
+  </ScrollView></SafeAreaView>;
 }
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  page: { flex: 1, backgroundColor: '#0d1726' },
+  content: { padding: 28, gap: 24, maxWidth: 640, width: '100%', alignSelf: 'center' },
+  brand: { color: '#a7db91', letterSpacing: 3, fontWeight: '800' },
+  title: { color: '#fff', fontSize: 34, fontWeight: '800' },
+  body: { color: '#b2bfd0', fontSize: 16 },
+  card: { color: '#dce5ef', backgroundColor: '#172438', padding: 24, borderRadius: 20, fontSize: 17, lineHeight: 26 },
+  error: { color: '#ffb4ab' }, button: { padding: 16, borderColor: '#a7db91', borderWidth: 1, borderRadius: 12, alignItems: 'center' },
+  buttonText: { color: '#a7db91', fontWeight: '700' },
 });
