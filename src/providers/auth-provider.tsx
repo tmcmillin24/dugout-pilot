@@ -8,15 +8,13 @@ const AuthContext = createContext<AuthState | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(supabaseConfigured);
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    if (!supabaseConfigured) { setLoading(false); return; }
+    if (!supabaseConfigured) return;
     let active = true;
     let receivedEvent = false;
-    setLoading(true);
-    setError('');
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, next) => {
       if (!active) return;
       receivedEvent = true;
@@ -49,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (Platform.OS !== 'web') supabase.auth.stopAutoRefresh();
     };
   }, [attempt]);
-  return <AuthContext.Provider value={{ session, loading, error, retry: () => setAttempt(n => n + 1) }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ session, loading, error, retry: () => { setLoading(true); setError(''); setAttempt(n => n + 1); } }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
