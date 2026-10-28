@@ -25,7 +25,7 @@ export default function TeamLogoEditor({ team, onChanged }: { team: Team; onChan
   }
   function confirmRemove() {
     if (Platform.OS === 'web') { if (window.confirm('Remove this team logo?')) void remove(); }
-    else Alert.alert('Remove team logo?', 'Your team will use its initials again.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Remove', onPress: () => { void remove(); } }]);
+    else Alert.alert('Remove team logo?', 'Your uploaded logo will be removed.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Remove', onPress: () => { void remove(); } }]);
   }
   return <View style={s.section}><DisplayText style={s.title}>TEAM IDENTITY</DisplayText><View style={s.preview}><TeamLogo team={team} size={88} /><View style={s.copy}><Text style={s.name}>{team.name}</Text><Text style={s.caption}>Photo or team logo</Text></View></View><Button disabled={busy} onPress={() => { void choose(); }}>{busy ? 'UPDATING…' : team.logo_path ? 'CHANGE TEAM LOGO' : 'ADD TEAM LOGO'}</Button>{team.logo_path && <Button secondary disabled={busy} onPress={confirmRemove}>Remove logo</Button>}<StatusMessage text={error} error /><StatusMessage text={notice} /></View>;
 }

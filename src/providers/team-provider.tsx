@@ -4,7 +4,7 @@ import { AppState } from 'react-native';
 import { listTeams, teamError, type Team } from '@/lib/teams';
 import { useAuth } from './auth-provider';
 
-export type TeamState = { teams: Team[]; active: Team | null; loading: boolean; error: string; notice: string; refresh: (preferred?: string) => Promise<void>; select: (id: string) => Promise<void> };
+export type TeamState = { teams: Team[]; active: Team | null; loading: boolean; error: string; notice: string; refresh: (preferred?: string) => Promise<void>; select: (id: string) => Promise<void>; forget: (id: string, name: string) => Promise<void> };
 export const TeamContext = createContext<TeamState | undefined>(undefined);
 
 export function TeamProvider({ children }: { children: ReactNode }) {
@@ -31,8 +31,8 @@ function AccountTeams({ children, userId }: { children: ReactNode; userId: strin
       if (!alive.current || request !== generation.current) return;
       const next = available.find(team => team.id === saved)?.id ?? available[0]?.id ?? null;
       currentId.current = next; setSelected(next); setTeams(available); setError(''); setNotice('');
-      if (next) {
-        try { await AsyncStorage.setItem(key, next); }
+      {
+        try { if (next) await AsyncStorage.setItem(key, next); else await AsyncStorage.removeItem(key); }
         catch { if (alive.current) setNotice('Your team is selected, but this device could not save the selection.'); }
       }
     } catch (reason) {
@@ -47,6 +47,14 @@ function AccountTeams({ children, userId }: { children: ReactNode; userId: strin
     try { await AsyncStorage.setItem(key, id); }
     catch { if (alive.current) setNotice('Your team is selected, but this device could not save the selection.'); }
   }, [key, teams]);
-  return <TeamContext.Provider value={{ teams, active: teams.find(team => team.id === selected) ?? null, loading, error, notice, refresh, select }}>{children}</TeamContext.Provider>;
+  const forget = useCallback(async (id: string, name: string) => {
+    ++generation.current;
+    const remaining = teams.filter(team => team.id !== id);
+    const next = remaining.find(team => team.id === currentId.current)?.id ?? remaining[0]?.id ?? null;
+    currentId.current = next; setSelected(next); setTeams(remaining); setError(''); setNotice(`${name} deleted.`);
+    try { if (next) await AsyncStorage.setItem(key, next); else await AsyncStorage.removeItem(key); }
+    catch { /* Deletion succeeded; invalid device selection is revalidated at next load. */ }
+  }, [key, teams]);
+  return <TeamContext.Provider value={{ teams, active: teams.find(team => team.id === selected) ?? null, loading, error, notice, refresh, select, forget }}>{children}</TeamContext.Provider>;
 }
 export function useTeams() { const value = useContext(TeamContext); if (!value) throw new Error('useTeams must be used inside TeamProvider'); return value; }

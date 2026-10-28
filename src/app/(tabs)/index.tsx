@@ -23,7 +23,7 @@ export default function HomeScreen() {
       <View style={s.hero}>
         <Image source={require('@/assets/images/clubhouse-field.svg')} contentFit="contain" style={s.field} pointerEvents="none" />
         <View style={s.heroTop}><Text style={s.heroKicker}>THE CLUBHOUSE</Text><AccessBadge team={active} /></View>
-        <View style={s.heroIdentity}><TeamLogo team={active} size={64} /><DisplayText italic style={s.teamTitle}>{active.name.toUpperCase()}</DisplayText></View>
+        <View style={s.heroIdentity}><TeamLogo team={active} size={64} fallback="none" /><DisplayText italic style={s.teamTitle}>{active.name.toUpperCase()}</DisplayText></View>
         <Pressable accessibilityRole="button" onPress={openTeam} style={({ pressed }) => [s.heroCta, pressed && ui.dim]}><Text style={s.heroCtaLabel}>OPEN TEAM</Text><Icon name="arrow" color={palette.white} size={16} /></Pressable>
       </View>
       <View style={s.readouts}>

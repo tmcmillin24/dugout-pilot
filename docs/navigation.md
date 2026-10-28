@@ -21,3 +21,5 @@ Team creation/joining, details, coaches, invitation creation, and administration
 - Sign out/in with another account to check that cached teams are not carried over.
 
 TypeScript, ESLint, bundle export, and database policy tests are run during development. The cloud browser cannot reach the local preview server; visual/native picker verification must be completed in the configured simulator.
+
+Owners can delete a team from Manage using a branded, typed-name confirmation dialog; see team-deletion.md and migration 004. Generated team abbreviations are removed. Main team-name rows show an uploaded logo only; selectors use a neutral baseball symbol when no image is available.

@@ -62,3 +62,5 @@ export function teamError(reason: unknown): string {
   if (['42P01', 'PGRST205', 'PGRST202'].includes(error?.code ?? '')) return 'The latest team database setup is not installed yet. Apply the latest team migration in Supabase, then refresh.';
   return error?.message || 'Could not connect. Please try again.';
 }
+
+export const deleteTeam = (teamId: string, confirmation: string) => rpc<void>('delete_team', { p_team_id: teamId, p_confirmation: confirmation.trim() });

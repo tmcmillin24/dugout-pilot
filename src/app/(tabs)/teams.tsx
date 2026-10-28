@@ -15,7 +15,7 @@ export default function TeamsScreen() {
     </View>
     {loading ? <Loading /> : teams.length ? <View style={s.list}>{teams.map(team => <View key={team.id} style={[s.team, team.id === active?.id && s.selected]}>
       <Pressable accessibilityRole="button" accessibilityLabel={`Select ${team.name}`} accessibilityState={{ selected: team.id === active?.id }} onPress={() => { void select(team.id); }} style={({ pressed }) => [s.teamRow, pressed && ui.dim]}>
-        <TeamLogo team={team} size={56} />
+        <TeamLogo team={team} size={56} fallback="none" />
         <View style={s.copy}><Text style={s.role}>{team.role === 'owner' ? 'TEAM OWNER' : 'COACHING STAFF'}</Text><DisplayText style={s.name}>{team.name.toUpperCase()}</DisplayText><AccessBadge team={team} /></View>
         {team.id === active?.id && <Icon name="check" color="#B9400E" size={20} />}
       </Pressable>
