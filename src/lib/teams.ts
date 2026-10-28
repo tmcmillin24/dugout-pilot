@@ -3,22 +3,47 @@ import { supabase } from './supabase';
 export type Team = {
   id: string;
   name: string;
+  test_access: boolean;
+  trial_ends_at: string | null;
+  access_status: 'pending' | 'trial' | 'active' | 'suspended' | 'expired';
   activation_status: 'pending' | 'trial' | 'active' | 'suspended';
   role: 'owner' | 'coach';
 };
 
 export async function listTeams(): Promise<Team[]> {
-  const { data, error } = await supabase.from('team_memberships')
-    .select('role, team:teams(id,name,activation_status)');
+  const { data, error } = await supabase.rpc('list_my_teams');
   if (error) throw error;
-  return (data ?? []).flatMap(row => {
-    const team = row.team as unknown as Omit<Team, 'role'> | null;
-    return team ? [{ ...team, role: row.role as Team['role'] }] : [];
-  }).sort((a, b) => a.name.localeCompare(b.name));
+  return ((data ?? []) as Team[]).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function createTeam(name: string, requestId: string): Promise<string> {
   const { data, error } = await supabase.rpc('create_team', { team_name: name.trim(), request_id: requestId });
   if (error) throw error;
   return data as string;
+}
+
+export type TeamMember = { user_id: string; email: string; role: 'owner' | 'coach' };
+export type TeamInvitation = { id: string; email: string; expires_at: string; status: 'pending' | 'accepted' | 'revoked' | 'expired' };
+export type ActivationTeam = { id: string; name: string; activation_status: Team['activation_status']; test_access: boolean };
+
+async function rpc<T>(name: string, args?: Record<string, unknown>): Promise<T> {
+  const { data, error } = await supabase.rpc(name, args);
+  if (error) throw error;
+  return data as T;
+}
+export const renameTeam = (teamId: string, name: string) => rpc<void>('rename_team', { p_team_id: teamId, p_name: name.trim() });
+export const listTeamCoaches = (teamId: string) => rpc<TeamMember[]>('list_team_coaches', { p_team_id: teamId });
+export const listTeamInvitations = (teamId: string) => rpc<TeamInvitation[]>('list_team_invitations', { p_team_id: teamId });
+export const inviteCoach = (teamId: string, email: string, inviteId: string, code: string) => rpc<string>('invite_coach', { p_team_id: teamId, p_email: email.trim().toLowerCase(), p_invite_id: inviteId, p_code: code });
+export const revokeCoachInvite = (teamId: string, inviteId: string) => rpc<void>('revoke_coach_invite', { p_team_id: teamId, p_invite_id: inviteId });
+export const acceptCoachInvite = (code: string) => rpc<string>('accept_coach_invite', { p_code: code.trim().toLowerCase() });
+export const removeTeamCoach = (teamId: string, userId: string) => rpc<void>('remove_team_coach', { p_team_id: teamId, p_user_id: userId });
+export const isSuperAdmin = () => rpc<boolean>('is_super_admin');
+export const listActivationTeams = (page: number) => rpc<ActivationTeam[]>('list_test_activation_teams', { p_page: page });
+export const setTeamTestAccess = (teamId: string, enabled: boolean) => rpc<void>('set_team_test_access', { p_team_id: teamId, p_enabled: enabled });
+
+export function teamError(reason: unknown): string {
+  const error = reason as { message?: string; code?: string };
+  if (['42P01', 'PGRST205', 'PGRST202'].includes(error?.code ?? '')) return 'The latest team database setup is not installed yet. Apply the coaches and trials migration in Supabase, then refresh.';
+  return error?.message || 'Could not connect. Please try again.';
 }

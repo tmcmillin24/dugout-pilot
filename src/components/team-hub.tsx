@@ -1,14 +1,9 @@
+import { JoinTeam, OwnerControls, TestActivationControls } from '@/components/team-controls';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { randomUUID } from 'expo-crypto';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { createTeam, listTeams, type Team } from '@/lib/teams';
-
-function explain(error: unknown) {
-  const value = error as { message?: string; code?: string };
-  if (['42P01', 'PGRST205', 'PGRST202'].includes(value?.code ?? '')) return 'Team setup is not installed in Supabase yet. Run the teams migration, then tap Refresh teams.';
-  return value?.message || 'Could not connect. Please try again.';
-}
+import { createTeam, listTeams, teamError, type Team } from '@/lib/teams';
 
 export default function TeamHub({ userId }: { userId: string }) {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -34,7 +29,7 @@ export default function TeamHub({ userId }: { userId: string }) {
       setSelectedId(available.find(t => t.id === stored)?.id ?? available[0]?.id ?? null);
     } catch (reason) {
       if (alive.current && current === generation.current) {
-        setError(explain(reason)); setTeams([]); setSelectedId(null);
+        setError(teamError(reason)); setTeams([]); setSelectedId(null);
       }
     } finally { if (alive.current && current === generation.current) setLoading(false); }
   }, [key]);
@@ -56,11 +51,11 @@ export default function TeamHub({ userId }: { userId: string }) {
       const id = await createTeam(clean, request.current.id);
       if (!alive.current) return;
       request.current = null; setName('');
-      setNotice('Team created. You are its owner. Activation and subscriptions will be configured separately.');
+      setNotice('Team created. You are its owner, and your 14-day Elite trial has started automatically. No approval is needed.');
       setLoading(true);
       await reload(id);
       try { await AsyncStorage.setItem(key, id); } catch { /* Selection works in memory. */ }
-    } catch (reason) { if (alive.current) setError(explain(reason)); }
+    } catch (reason) { if (alive.current) setError(teamError(reason)); }
     finally { busy.current = false; if (alive.current) setCreating(false); }
   }
   const active = teams.find(t => t.id === selectedId);
@@ -75,18 +70,21 @@ export default function TeamHub({ userId }: { userId: string }) {
         {loading ? <ActivityIndicator color="#a7db91" accessibilityLabel="Loading teams" /> : teams.length ? teams.map(team =>
           <Pressable key={team.id} accessibilityRole="button" accessibilityState={{ selected: team.id === selectedId }} onPress={() => { void select(team); }} style={[styles.team, team.id === selectedId && styles.selected]}>
             <Text style={styles.teamName}>{team.name}{team.id === selectedId ? ' · Selected' : ''}</Text>
-            <Text style={styles.body}>{team.role === 'owner' ? 'Owner' : 'Coach'} · {team.activation_status === 'pending' ? 'Activation pending' : team.activation_status}</Text>
+            <Text style={styles.body}>{team.role === 'owner' ? 'Owner' : 'Coach'} · {team.test_access ? 'Active · Test access' : team.access_status === 'trial' ? 'Elite trial' : team.access_status === 'expired' ? 'Trial ended' : team.access_status === 'pending' ? 'Activation pending' : team.access_status}</Text>
           </Pressable>) : <Text style={styles.body}>{error ? 'Teams could not be loaded.' : 'No teams yet. Create your first team below.'}</Text>}
         <Pressable accessibilityRole="button" disabled={loading || creating} onPress={() => { setLoading(true); setError(''); void reload(selectedId ?? undefined); }} style={styles.link}><Text style={styles.linkText}>Refresh teams</Text></Pressable>
       </View>
       {active && <View style={styles.card}>
         <Text style={styles.heading}>{active.name}</Text>
         <Text style={styles.body}>Your role: {active.role}. This team is selected for your workspace.</Text>
-        <Text style={styles.body}>Roster, games, practices, and coach invitations will appear here as they are added. Creating a team does not start a trial or subscription.</Text>
+        <Text style={styles.body}>{active.test_access ? 'Test access is enabled for this team. Game and roster tools are the next development phase.' : active.access_status === 'trial' ? `Your Elite trial ends ${new Date(active.trial_ends_at!).toLocaleDateString()}. No team approval is required. Subscriptions will continue access after the trial; billing is a later development phase.` : active.access_status === 'expired' ? 'Your trial has ended. A subscription will be needed for game features once billing is available. Team management remains accessible.' : 'Your team workspace is ready. Game and roster tools are the next development phase.'}</Text>
       </View>}
+      {active?.role === 'owner' && <OwnerControls key={active.id} team={active} onChanged={() => reload(active.id)} />}
+      <JoinTeam onJoined={async id => { setError(''); setNotice('Invitation accepted. You joined the team as a coach.'); setLoading(true); await reload(id); try { await AsyncStorage.setItem(key, id); } catch { /* Selection works in memory. */ } }} />
+      <TestActivationControls onChanged={() => reload(selectedId ?? undefined)} />
       <View style={styles.card}>
         <Text style={styles.heading}>Create a team</Text>
-        <Text style={styles.body}>You can own or coach more than one team.</Text>
+        <Text style={styles.body}>You can own or coach more than one team. Each new team starts a 14-day Elite trial automatically. No payment is collected here.</Text>
         <Text style={styles.label}>Team name</Text>
         <TextInput accessibilityLabel="Team name" style={styles.input} value={name} onChangeText={setName} maxLength={80} editable={!creating} placeholder="Enter your team name" placeholderTextColor="#778397" returnKeyType="done" onSubmitEditing={submit} />
         <Pressable accessibilityRole="button" disabled={creating} onPress={submit} style={[styles.button, creating && styles.disabled]}>
