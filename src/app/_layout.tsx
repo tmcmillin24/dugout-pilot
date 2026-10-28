@@ -1,7 +1,9 @@
-import { Stack } from 'expo-router';
+import { Stack, ThemeProvider, DarkTheme } from 'expo-router';
 import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { TeamProvider } from '@/providers/team-provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { supabaseConfigured } from '@/lib/supabase';
 import AuthScreen from '@/components/auth-screen';
@@ -25,9 +27,18 @@ function AuthGate() {
     </View>
   );
   if (!session) return <AuthScreen />;
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return <TeamProvider><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0B1421' } }}>
+    <Stack.Screen name="(tabs)" />
+    <Stack.Screen name="team-create" options={{ presentation: 'modal' }} />
+    <Stack.Screen name="team-join" options={{ presentation: 'modal' }} />
+    <Stack.Screen name="team-manage" />
+    <Stack.Screen name="admin" />
+    <Stack.Screen name="team-settings" />
+    <Stack.Screen name="team-coaches" />
+    <Stack.Screen name="team-invite" options={{ presentation: 'modal' }} />
+  </Stack></TeamProvider>;
 }
 
 export default function RootLayout() {
-  return <SafeAreaProvider><AuthProvider><AuthGate /></AuthProvider></SafeAreaProvider>;
+  return <SafeAreaProvider><ThemeProvider value={DarkTheme}><StatusBar style="light" /><AuthProvider><AuthGate /></AuthProvider></ThemeProvider></SafeAreaProvider>;
 }

@@ -1,10 +1,11 @@
+import { palette } from './app-ui';
 import { randomUUID } from 'expo-crypto';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Alert, Platform, Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
-import { acceptCoachInvite, inviteCoach, isSuperAdmin, listActivationTeams, listTeamCoaches, listTeamInvitations, removeTeamCoach, renameTeam, revokeCoachInvite, setTeamTestAccess, teamError, type ActivationTeam, type Team, type TeamInvitation, type TeamMember } from '@/lib/teams';
+import { acceptCoachInvite, inviteCoach, listActivationTeams, listTeamCoaches, listTeamInvitations, removeTeamCoach, renameTeam, revokeCoachInvite, setTeamTestAccess, teamError, type ActivationTeam, type Team, type TeamInvitation, type TeamMember } from '@/lib/teams';
 
-function Action({ children, onPress, disabled = false, danger = false }: { children: ReactNode; onPress: () => void; disabled?: boolean; danger?: boolean }) {
-  return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={[s.action, disabled && s.disabled]}><Text style={[s.actionText, danger && s.error]}>{children}</Text></Pressable>;
+function Action({ children, onPress, disabled = false, danger = false, primary = false }: { children: ReactNode; onPress: () => void; disabled?: boolean; danger?: boolean; primary?: boolean }) {
+  return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={[s.action, primary && s.primaryAction, disabled && s.disabled]}><Text style={[s.actionText, primary && s.primaryActionText, danger && s.error]}>{children}</Text></Pressable>;
 }
 function Message({ text, error = false }: { text: string; error?: boolean }) {
   return text ? <Text accessibilityLiveRegion="polite" style={error ? s.error : s.notice}>{text}</Text> : null;
@@ -30,31 +31,20 @@ export function JoinTeam({ onJoined }: { onJoined: (teamId: string) => Promise<v
     } catch (reason) { setError(teamError(reason)); }
     finally { inFlight.current = false; setBusy(false); }
   }
-  return <View style={s.card}>
-    <Text style={s.heading}>Join a team</Text>
+  return <View style={s.section}>
     <Text style={s.body}>Paste your invitation code. Sign in with the confirmed email address the owner invited.</Text>
     <TextInput accessibilityLabel="Invitation code" style={s.input} value={code} onChangeText={setCode} editable={!busy} autoCorrect={false} autoCapitalize="none" placeholder="Invitation code" placeholderTextColor="#778397" />
     <Message text={error} error />
-    <Action disabled={busy} onPress={() => { void accept(); }}>{busy ? 'Joining…' : 'Accept invitation'}</Action>
+    <Action primary disabled={busy} onPress={() => { void accept(); }}>{busy ? 'Joining…' : 'Accept invitation'}</Action>
   </View>;
 }
 
-export function OwnerControls({ team, onChanged }: { team: Team; onChanged: () => Promise<void> }) {
-  const [open, setOpen] = useState(false);
-  return <View style={s.card}>
-    <Text style={s.heading}>Owner controls</Text>
-    <Text style={s.body}>Manage the name and coach access for {team.name}.</Text>
-    <Action onPress={() => setOpen(!open)}>{open ? 'Close team management' : 'Manage team'}</Action>
-    {open && <OwnerPanel team={team} onChanged={onChanged} />}
-  </View>;
-}
-
-function OwnerPanel({ team, onChanged }: { team: Team; onChanged: () => Promise<void> }) {
+export function OwnerPanel({ team, onChanged, view = 'coaches' }: { team: Team; onChanged: () => Promise<void>; view?: 'settings' | 'coaches' | 'invite' }) {
   const [name, setName] = useState(team.name);
   const [email, setEmail] = useState('');
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [invitations, setInvitations] = useState<TeamInvitation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(view === 'coaches');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -65,13 +55,14 @@ function OwnerPanel({ team, onChanged }: { team: Team; onChanged: () => Promise<
   const revision = useRef(0);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const load = useCallback(async () => {
+    if (view !== 'coaches') return;
     const current = ++revision.current;
     try {
       const [people, pending] = await Promise.all([listTeamCoaches(team.id), listTeamInvitations(team.id)]);
       if (alive.current && revision.current === current) { setMembers(people); setInvitations(pending); }
     } catch (reason) { if (alive.current && revision.current === current) { setError(teamError(reason)); setMembers([]); setInvitations([]); } }
     finally { if (alive.current && revision.current === current) setLoading(false); }
-  }, [team.id]);
+  }, [team.id, view]);
   // This fetch updates state only after the database requests resolve.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [load]);
@@ -97,13 +88,16 @@ function OwnerPanel({ team, onChanged }: { team: Team; onChanged: () => Promise<
     });
   }
   return <View style={s.section}>
+    {view === 'settings' && <>
     <Text style={s.label}>Team name</Text>
     <TextInput accessibilityLabel="Edit team name" style={s.input} value={name} onChangeText={setName} editable={!busy} maxLength={80} />
-    <Action disabled={busy || name.trim().length < 2} onPress={() => { void run(async () => { await renameTeam(team.id, name); await onChanged(); if (alive.current) setNotice('Team name saved.'); }); }}>Save team name</Action>
-    <Text style={s.heading}>Invite a coach</Text>
+    <Action primary disabled={busy || name.trim().length < 2} onPress={() => { void run(async () => { await renameTeam(team.id, name); await onChanged(); if (alive.current) setNotice('Team name saved.'); }); }}>Save team name</Action>
+    </>}
+    {view === 'invite' && <>
+    <Text style={s.label}>Coach email</Text>
     <Text style={s.body}>The invitation only works for this email address. Coaches cannot manage memberships or activate teams.</Text>
     <TextInput accessibilityLabel="Coach email" style={s.input} value={email} onChangeText={setEmail} editable={!busy} keyboardType="email-address" autoCorrect={false} autoCapitalize="none" autoComplete="email" placeholder="coach@example.com" placeholderTextColor="#778397" />
-    <Action disabled={busy} onPress={createInvite}>{busy ? 'Working…' : 'Create coach invitation'}</Action>
+    <Action primary disabled={busy} onPress={createInvite}>{busy ? 'Working…' : 'Create coach invitation'}</Action>
     {issued && <View style={s.box}>
       <Text style={s.label}>Invitation for {issued.email}</Text>
       <Text selectable style={s.code}>{issued.code}</Text>
@@ -111,7 +105,9 @@ function OwnerPanel({ team, onChanged }: { team: Team; onChanged: () => Promise<
       <Action disabled={busy} onPress={() => { void run(async () => { await Share.share({ message: `You are invited to coach ${team.name} in Dugout Pilot. Sign in or create an account with ${issued.email}, confirm that email, then enter this code under Join a team:\n\n${issued.code}\n\nThis invitation expires in 7 days.` }); }); }}>Share invitation</Action>
       <Action onPress={() => setIssued(null)}>Hide code</Action>
     </View>}
+    </>}
     <Message text={error} error /><Message text={notice} />
+    {view === 'coaches' && <>
     <Text style={s.heading}>Team access</Text>
     {loading ? <ActivityIndicator color="#a7db91" /> : members.map(member => <View style={s.box} key={member.user_id}>
       <Text style={s.label}>{member.email}</Text><Text style={s.body}>{member.role === 'owner' ? 'Owner' : 'Coach'}</Text>
@@ -125,29 +121,11 @@ function OwnerPanel({ team, onChanged }: { team: Team; onChanged: () => Promise<
       {invitation.status === 'pending' && <Action disabled={busy} onPress={() => confirmAction('Revoke invitation?', `The invitation for ${invitation.email} will stop working.`, () => { void run(async () => { await revokeCoachInvite(team.id, invitation.id); if (alive.current) setIssued(value => value?.id === invitation.id ? null : value); await load(); if (alive.current) setNotice('Invitation revoked.'); }); })}>Revoke invitation</Action>}
     </View>)}
     <Action disabled={busy || loading} onPress={() => { setLoading(true); setError(''); void load(); }}>Refresh team access</Action>
+    </>}
   </View>;
 }
 
-export function TestActivationControls({ onChanged }: { onChanged: () => Promise<void> }) {
-  const [admin, setAdmin] = useState(false);
-  const [error, setError] = useState('');
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    let active = true;
-    isSuperAdmin().then(value => { if (active) { setAdmin(value); setError(''); } }).catch(reason => { if (active) setError(teamError(reason)); });
-    return () => { active = false; };
-  }, []);
-  if (error) return <Message text={error} error />;
-  if (!admin) return null;
-  return <View style={s.card}>
-    <Text style={s.heading}>Super Admin</Text>
-    <Text style={s.body}>Grant or remove test access without starting a paid subscription. Every change is recorded.</Text>
-    <Action onPress={() => setOpen(!open)}>{open ? 'Close test activation' : 'Manage test activation'}</Action>
-    {open && <ActivationPanel onChanged={onChanged} />}
-  </View>;
-}
-
-function ActivationPanel({ onChanged }: { onChanged: () => Promise<void> }) {
+export function ActivationPanel({ onChanged }: { onChanged: () => Promise<void> }) {
   const [teams, setTeams] = useState<ActivationTeam[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -191,10 +169,11 @@ function ActivationPanel({ onChanged }: { onChanged: () => Promise<void> }) {
   </View>;
 }
 const s = StyleSheet.create({
-  card: { backgroundColor: '#172438', borderRadius: 20, padding: 20, gap: 16 },
-  section: { gap: 16 }, box: { padding: 16, gap: 10, borderColor: '#40506a', borderWidth: 1, borderRadius: 12 },
-  heading: { color: '#fff', fontSize: 22, fontWeight: '700' }, label: { color: '#dce5ef', fontSize: 16, fontWeight: '600' }, body: { color: '#b2bfd0', fontSize: 16, lineHeight: 24 },
-  action: { borderColor: '#7baf6b', borderWidth: 1, borderRadius: 10, padding: 14, minHeight: 48, justifyContent: 'center' }, actionText: { color: '#a7db91', fontWeight: '700', textAlign: 'center' }, disabled: { opacity: 0.5 },
-  input: { backgroundColor: '#0d1726', borderColor: '#40506a', borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16, color: '#fff' },
-  error: { color: '#ffb4ab', lineHeight: 22 }, notice: { color: '#b9e9a8', lineHeight: 22 }, code: { color: '#fff', fontFamily: 'monospace', lineHeight: 22 }, meta: { color: '#8d9bb0', fontSize: 12 },
+  card: { backgroundColor: palette.panel, borderRadius: 20, padding: 20, gap: 16 },
+  section: { gap: 16 }, box: { padding: 16, gap: 10, borderColor: palette.line, borderWidth: 1, borderRadius: 12 },
+  heading: { color: palette.ink, fontSize: 22, fontWeight: '700' }, label: { color: palette.ink, fontSize: 16, fontWeight: '600' }, body: { color: palette.muted, fontSize: 16, lineHeight: 24 },
+  primaryAction: { backgroundColor: palette.accent, borderColor: palette.accent }, primaryActionText: { color: palette.canvas },
+  action: { borderColor: palette.line, borderWidth: 1, borderRadius: 10, padding: 14, minHeight: 48, justifyContent: 'center' }, actionText: { color: palette.accent, fontWeight: '700', textAlign: 'center' }, disabled: { opacity: 0.5 },
+  input: { backgroundColor: palette.canvas, borderColor: palette.line, borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16, color: palette.ink },
+  error: { color: palette.error, lineHeight: 22 }, notice: { color: palette.accent, lineHeight: 22 }, code: { color: palette.ink, fontFamily: 'monospace', lineHeight: 22 }, meta: { color: '#8d9bb0', fontSize: 12 },
 });
