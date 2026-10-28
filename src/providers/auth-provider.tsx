@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
       }
     });
-    const refresh = (state: string | null) => {
+    const refresh = (state: string | null | undefined) => {
       if (state === 'active') supabase.auth.startAutoRefresh();
       else supabase.auth.stopAutoRefresh();
     };
