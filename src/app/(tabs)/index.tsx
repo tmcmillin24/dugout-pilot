@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { AccessBadge, Button, Icon, Loading, Panel, Screen, Section, StatusMessage, palette, ui } from '@/components/app-ui';
+import { AccessBadge, Button, Icon, Loading, MenuRow, Panel, Screen, Section, StatusMessage, palette, ui } from '@/components/app-ui';
 import { DisplayText } from '@/components/sports-type';
 import { useTeams } from '@/providers/team-provider';
 
@@ -12,7 +12,6 @@ export default function HomeScreen() {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60000); return () => clearInterval(timer); }, []);
   const daysLeft = active?.trial_ends_at ? Math.max(0, Math.ceil((Date.parse(active.trial_ends_at) - now) / 86400000)) : 0;
-  const openTeam = () => { if (active?.role === 'owner') router.push({ pathname: '/team-manage', params: { id: active.id } }); else router.navigate('/teams'); };
   return <Screen title="Clubhouse" hideTitle onRefresh={refresh}>
     <StatusMessage text={error} error /><StatusMessage text={notice} />
     {!!teams.length && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.teamRail}>
@@ -24,7 +23,7 @@ export default function HomeScreen() {
         <Image source={require('@/assets/images/clubhouse-field.svg')} contentFit="contain" style={s.field} pointerEvents="none" />
         <View style={s.heroTop}><Text style={s.heroKicker}>THE CLUBHOUSE</Text><AccessBadge team={active} /></View>
         <View style={s.heroIdentity}><TeamLogo team={active} size={64} fallback="none" /><DisplayText italic style={s.teamTitle}>{active.name.toUpperCase()}</DisplayText></View>
-        <Pressable accessibilityRole="button" onPress={openTeam} style={({ pressed }) => [s.heroCta, pressed && ui.dim]}><Text style={s.heroCtaLabel}>OPEN TEAM</Text><Icon name="arrow" color={palette.white} size={16} /></Pressable>
+        <Pressable accessibilityRole="button" onPress={() => router.navigate('/lineups')} style={({ pressed }) => [s.heroCta, pressed && ui.dim]}><Text style={s.heroCtaLabel}>OPEN LINEUPS</Text><Icon name="arrow" color={palette.white} size={16} /></Pressable>
       </View>
       <View style={s.readouts}>
         <View style={s.readout}><Text style={s.readoutLabel}>YOUR ROLE</Text><DisplayText style={s.readoutValue}>{active.role === 'owner' ? 'OWNER' : 'COACH'}</DisplayText></View>
@@ -37,10 +36,11 @@ export default function HomeScreen() {
         <Pressable accessibilityRole="button" onPress={() => { if (active.role === 'owner') router.push({ pathname: '/team-coaches', params: { id: active.id } }); else router.navigate('/teams'); }} style={({ pressed }) => [s.action, pressed && s.pressed]}>
           <View style={s.actionTop}><Icon name="teams" color={palette.ink} size={26} /><Icon name="arrow" size={16} /></View><DisplayText style={s.actionTitle}>COACHING STAFF</DisplayText><Text style={s.actionMeta}>{active.role === 'owner' ? 'Manage team access' : 'Your coaching access'}</Text>
         </Pressable>
-        <Pressable accessibilityRole="button" onPress={() => router.navigate('/integrations')} style={({ pressed }) => [s.action, pressed && s.pressed]}>
-          <View style={s.actionTop}><Icon name="link" color={palette.ink} size={25} /><Icon name="arrow" size={16} /></View><DisplayText style={s.actionTitle}>INTEGRATIONS</DisplayText><Text style={s.actionMeta}>Game data & imports</Text>
+        <Pressable accessibilityRole="button" onPress={() => router.navigate('/practice')} style={({ pressed }) => [s.action, pressed && s.pressed]}>
+          <View style={s.actionTop}><Icon name="link" color={palette.ink} size={25} /><Icon name="arrow" size={16} /></View><DisplayText style={s.actionTitle}>PRACTICE</DisplayText><Text style={s.actionMeta}>Build your next session</Text>
         </Pressable>
       </View></Section>
+      <Section title="Team tools"><Panel><MenuRow icon="teams" title="Roster" description="Players & jersey numbers" onPress={() => router.push('/roster')} /><MenuRow icon="shield" title="Rules desk" description="League rules & quick answers" onPress={() => router.push('/rules')} /><MenuRow icon="link" title="Integrations" description="GameChanger imports" onPress={() => router.navigate('/integrations')} last /></Panel></Section>
       {active.access_status === 'trial' && active.trial_ends_at && <Panel><View style={s.trial}>
         <View style={s.trialTop}><DisplayText style={s.trialTitle}>ELITE TRIAL</DisplayText><Text style={s.trialDate}>Ends {new Date(active.trial_ends_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</Text></View>
         <View style={s.trialTrack}><View style={[s.trialFill, { width: `${Math.min(100, daysLeft / 14 * 100)}%` }]} /></View>

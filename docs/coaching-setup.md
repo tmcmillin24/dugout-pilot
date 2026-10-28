@@ -1,0 +1,30 @@
+# Coaching workspace
+
+Apply migration 202610280005_coaching.sql once after 001–004. Existing teams start with an empty roster and ten defensive slots; the original website is not modified and no Thundercats data is seeded.
+
+## Workflow
+
+- Home → Roster: names, jersey numbers, bats/throws, multiple playable positions, and player notes. Existing players need their playable positions filled in to appear in filtered assignment menus.
+- Lineups → Defense: tap the diamond and choose from players listed for that position. Assigning a player moves them out of any other field spot. Browse ten saved defenses; edit the preview/name, sort by pitcher, and apply to the game. Reusable defenses are independent of current-game assignments.
+- Lineups → Batting: add individual hitters or all roster players; move up/down, remove, and track last batter / next up.
+- Lineups → Pitching: innings in baseball notation (2.1 = seven outs), per-game pitches and tournament-day pitch totals. These are tracking aids, not automatic eligibility decisions.
+- Game editor: edit opponent, label, tournament day and date/time; add a new game copying the batting order and field, never previous inning/pitching logs.
+- Confirm This Outing records the field for an explicit inning. Selecting a defensive lineup never counts innings. Reconfirming the same inning replaces its assignments instead of adding a second inning.
+- Practice: configure indoor/outdoor resources and coaches, build preview, edit block text, save to the team, share, view timeline, station assignments, named groups and rotations. Saved sessions can be edited as a copy or deleted with confirmation.
+- Draft practice settings/previews, selected session and timestamp-based timer state persist to AsyncStorage under account + team keys. Saved plans live in Supabase and are visible to other member coaches. Timers have no background alarms and do not keep the screen awake.
+- Home → Rules desk: the original topic-matching rules finder and chart, opt-in USSSA 11U 2026 pack, and per-team event notes. It is not generative AI or a live rules service; other age groups/leagues are not automatically mapped to 11U. The original edition and official source link are shown. A future generative assistant requires a server-held provider key and backend integration; no AI API secrets belong in EXPO_PUBLIC environment variables.
+
+## Persistence and access
+
+`team_boards` is one team workspace containing the source Board model, games, roster, ten defenses, practice sessions, rules profile and event notes. This phase does not yet provide separate season archives, automatic original-site migration, GameChanger CSV import, practice JSON import/export, player removal, or generative chat.
+
+Saves are explicit at form boundaries and immediate for game assignments/order changes. UI shows saved only after server acknowledgement; failed form saves keep their inputs. Account/team-keyed provider isolation discards old-team request results after selection changes. No background local-to-cloud overwrite occurs. Coaches pull to refresh for other coaches' updates; revision checking rejects stale saves. Reload team data after a conflict, then reapply the intended change. There is no live collaboration subscription or offline editing queue.
+
+Member RLS permits reads; an RPC allows owner/coach writes only with active/trial/test access, bounded JSON, and a matching revision. Expired teams retain read access to their saved data. Membership removal revokes access. The shared advisory lock serializes writes against team deletion; deleting a team cascades its coaching workspace.
+
+## Verification
+
+- `npx tsc --noEmit` and ESLint.
+- `node scripts/test-coaching-logic.mjs` uses the project's TypeScript dependency to load domain helpers. Tests assignment filtering, saved defense isolation, confirmation/reconfirmation counting, practice resource/duration/group combinations and topic matching.
+- `node scripts/test-coaching-security.mjs` requires `@electric-sql/pglite` as a local test dependency; emulates Supabase auth and Storage, applies all five migrations, then tests member isolation, expired access, removed coaches, revisions and deletion cascades.
+- Expo iOS and web exports check bundling. Live Supabase/physical-device interactions require simulator review with the applied migration.

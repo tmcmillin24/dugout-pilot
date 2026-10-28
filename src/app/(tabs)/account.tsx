@@ -28,6 +28,7 @@ export default function AccountScreen() {
   return <Screen title="Account">
     <Panel><View style={s.profile}><View style={s.avatar}><Icon name="account" size={32} color="#BC450F" /></View><View style={ui.flex}><Text style={s.email}>{session?.user.email}</Text><Text style={s.caption}>{teams.length} {teams.length === 1 ? 'team' : 'teams'} · {session?.user.email_confirmed_at ? 'Email confirmed' : 'Email confirmation pending'}</Text></View></View></Panel>
     <Section title="Workspace"><Panel><MenuRow icon="teams" title="Your teams" description={active ? `Selected: ${active.name}` : 'Create or join a team'} onPress={() => router.navigate('/teams')} />
+      <MenuRow icon="link" title="Integrations" onPress={() => router.navigate('/integrations')} />
       <MenuRow icon="shield" title="Team access" description="Roles and trial status" last />
     </Panel></Section>
     {admin && <Section title="Administration"><Panel><MenuRow icon="shield" title="Super Admin" description="Test access overrides for development teams" onPress={() => router.push('/admin')} last /></Panel></Section>}
