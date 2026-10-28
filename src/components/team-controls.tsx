@@ -170,10 +170,10 @@ export function ActivationPanel({ onChanged }: { onChanged: () => Promise<void> 
 }
 const s = StyleSheet.create({
   card: { backgroundColor: palette.panel, borderRadius: 20, padding: 20, gap: 16 },
-  section: { gap: 16 }, box: { padding: 18, gap: 12, backgroundColor: palette.raised, borderColor: palette.line, borderWidth: 1, borderRadius: 12 },
+  section: { gap: 16 }, box: { padding: 18, gap: 12, backgroundColor: palette.raised, borderColor: palette.line, borderWidth: 1, borderRadius: 5 },
   heading: { color: palette.ink, fontSize: 22, fontWeight: '700' }, label: { color: palette.ink, fontSize: 16, fontWeight: '600' }, body: { color: palette.muted, fontSize: 16, lineHeight: 24 },
-  primaryAction: { backgroundColor: palette.accent, borderColor: palette.accent }, primaryActionText: { color: palette.canvas },
-  action: { borderColor: palette.line, borderWidth: 1, borderRadius: 10, padding: 14, minHeight: 48, justifyContent: 'center' }, actionText: { color: palette.accent, fontWeight: '700', textAlign: 'center' }, disabled: { opacity: 0.5 },
-  input: { backgroundColor: palette.canvas, borderColor: palette.line, borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16, color: palette.ink },
+  primaryAction: { backgroundColor: palette.accent, borderColor: palette.accent }, primaryActionText: { color: palette.ink },
+  action: { borderColor: palette.line, borderWidth: 1, borderRadius: 4, padding: 14, minHeight: 48, justifyContent: 'center' }, actionText: { color: palette.ink, fontWeight: '700', textAlign: 'center' }, disabled: { opacity: 0.5 },
+  input: { backgroundColor: palette.canvas, borderColor: palette.line, borderWidth: 1, borderRadius: 5, padding: 14, fontSize: 16, color: palette.ink },
   error: { color: palette.error, lineHeight: 22 }, notice: { color: palette.accent, lineHeight: 22 }, code: { color: palette.ink, fontFamily: 'monospace', lineHeight: 22 }, meta: { color: '#8d9bb0', fontSize: 12 },
 });

@@ -5,7 +5,8 @@
 Run each migration once, in order, in the Dugout Pilot Supabase SQL Editor:
 
 1. `supabase/migrations/202610280001_teams.sql` — skip if already applied.
-2. `supabase/migrations/202610280002_coaches_and_trials.sql` — new automatic trials, owner controls, invitations, and optional Super Admin test access.
+2. `supabase/migrations/202610280002_coaches_and_trials.sql` — automatic trials, owner controls, invitations, and optional Super Admin test access.
+3. `supabase/migrations/202610280003_team_logos.sql` — private team-logo uploads; see team-logos.md.
 
 The second migration preserves teams and memberships. Existing pending teams automatically start a 14-day Elite trial. New teams start the same trial at creation. No manual approval is needed. No payment is taken, and billing is not implemented in this phase.
 

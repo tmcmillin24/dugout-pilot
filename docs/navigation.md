@@ -1,29 +1,23 @@
-# App navigation and layout
+# Sports-app navigation
 
-The signed-in app uses four bottom tabs:
+The signed-in app uses Home, Teams, Integrations, and Account bottom tabs.
 
-- Home: selected-team overview, access badge, workspace shortcuts, and clearly labeled upcoming game/practice tools.
-- Teams: select a workspace, create or join a team, and enter owner management.
-- Integrations: GameChanger CSV integration information and its current development status. No live connection or import is advertised as working yet.
-- Account: email, workspace access, sign-out, and optional Super Admin tools.
+Home is a clubhouse: horizontal team/crest selector, a navy/orange team banner with a subtle baseball-field graphic, compact real role/team/access readouts, coaching shortcuts, and trial dates. It uses no fabricated scores, fixtures, player counts, or live badges. Unimplemented game/practice placeholder cards are removed.
 
-Team creation, invitation acceptance, team settings, coach lists, and invitation creation each have their own focused screen instead of being stacked on Home. The selected team is shared across tabs and persists under the existing user-specific device key. Teams reload when the app returns to the foreground, so membership changes are rechecked.
+Teams is a club directory with crest/logo tiles, a clear selection marker, direct owner management, and create/join actions. Integrations has a distinct GameChanger feature panel and honest development status. Account contains login details, sign-out, and optional Super Admin tools.
 
-The database, automatic trials, invitation permissions, and membership policies are unchanged. No migration is needed for this layout update.
+The design uses a compact persistent logo toolbar, light neutral content surfaces, sharper panels, condensed Barlow headlines, orange rules, and pressed feedback. Fonts are bundled and load before navigation mounts, with a system-font fallback on load failure. Team data, role boundaries, automatic trials, and database policies remain enforced by the backend.
 
-## Verify in the simulator
+Team creation/joining, details, coaches, invitation creation, and administration are focused stack/modal screens. Selected-team state is shared across tabs, persists under a user-specific device key, and reloads on foreground. The new team-logo feature requires migration 003; see team-logos.md.
 
-- Launch with an existing session and confirm four tabs appear.
-- Switch teams in Teams; confirm Home and Integrations show that same team.
-- Create a team and accept an invitation from their focused modal screens; confirm the correct team is selected afterward.
-- As owner, open Manage team -> Team details / Coach access / Invite a coach. Check back navigation and keyboard scrolling.
-- As coach, confirm owner management is unavailable. Database authorization still enforces every mutation.
-- Sign out in Account, sign into another account, and verify previous teams are not retained.
-- Pull to refresh and background/foreground the app to recheck access.
-- Check small iPhone widths, long team names, larger accessibility text, and tablet widths.
+## Simulator verification
 
-Typecheck, ESLint, and iOS bundle export are run in development. The web bundle also exports successfully. The cloud browser cannot reach the local preview server, so live visual/navigation verification must be completed on the configured simulator.
+- Verify font loading, four tabs, logo toolbar, and bottom safe areas.
+- Change teams in Home or Teams; confirm all screens show the same team and crest.
+- Check long names, larger accessibility text, small iPhone widths, and tablets.
+- Use create/join, rename, invite, revoke, remove-coach, and back navigation.
+- Verify coaches cannot enter owner controls or mutate team data.
+- Upload/change/remove a logo and confirm persistence across restart and accounts.
+- Sign out/in with another account to check that cached teams are not carried over.
 
-## Brand polish
-
-The interface uses the supplied Dugout Pilot navy/orange/white palette. Main navigation cards are white with navy text, soft shadows, orange-tinted icon tiles, and compact separators. The selected-team card has a restrained orange top edge. Page introductions are removed or reduced to short functional labels; the original logo appears on the login form. The logo asset is preserved as uploaded, without stretching or recoloring.
+TypeScript, ESLint, bundle export, and database policy tests are run during development. The cloud browser cannot reach the local preview server; visual/native picker verification must be completed in the configured simulator.

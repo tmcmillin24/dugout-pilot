@@ -55,7 +55,7 @@ export default function AuthScreen() {
             <TextInput accessibilityLabel="Password" style={styles.input} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} editable={!busy} placeholder={mode === 'signup' ? 'At least 8 characters' : 'Your password'} placeholderTextColor="#657C8E" onSubmitEditing={submit} returnKeyType="go" />
             {!!message && <Text accessibilityLiveRegion="polite" style={[styles.message, failed && styles.error]}>{message}</Text>}
             <Pressable accessibilityRole="button" disabled={busy} onPress={submit} style={[styles.button, busy && styles.disabled]}>
-              {busy ? <ActivityIndicator color={palette.canvas} /> : <Text style={styles.buttonText}>{mode === 'signin' ? 'Sign in' : 'Create account'}</Text>}
+              {busy ? <ActivityIndicator color={palette.ink} /> : <Text style={styles.buttonText}>{mode === 'signin' ? 'Sign in' : 'Create account'}</Text>}
             </Pressable>
             <Pressable accessibilityRole="button" disabled={busy} onPress={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setPassword(''); setMessage(''); setFailed(false); }} style={styles.switch}>
               <Text style={styles.switchText}>{mode === 'signin' ? 'New here? Create an account' : 'Already have an account? Sign in'}</Text>
@@ -69,13 +69,13 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 }, page: { flex: 1, backgroundColor: palette.canvas },
   content: { flexGrow: 1, justifyContent: 'center', padding: 24, width: '100%', maxWidth: 520, alignSelf: 'center' },
-  card: { backgroundColor: palette.panel, borderRadius: 22, padding: 24, boxShadow: '0px 8px 26px rgba(0, 15, 29, 0.2)' },
+  card: { backgroundColor: palette.panel, borderRadius: 6, padding: 24, boxShadow: '0px 8px 26px rgba(0, 15, 29, 0.2)' },
   logo: { width: '100%', aspectRatio: 3, marginBottom: 24 },
   heading: { color: palette.cardInk, fontSize: 24, fontWeight: '800', marginBottom: 24, letterSpacing: -0.4 },
   label: { color: palette.cardInk, marginBottom: 8, fontSize: 13, fontWeight: '600' },
-  input: { color: palette.cardInk, backgroundColor: '#F2F6F9', borderColor: '#DCE6EE', borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 20 },
+  input: { color: palette.cardInk, backgroundColor: '#F2F6F9', borderColor: '#DCE6EE', borderWidth: 1, borderRadius: 4, padding: 14, fontSize: 16, marginBottom: 20 },
   message: { color: palette.cardInk, marginBottom: 16, lineHeight: 22 }, error: { color: '#B3261E' }, disabled: { opacity: 0.6 },
-  button: { backgroundColor: palette.accent, borderRadius: 12, minHeight: 52, justifyContent: 'center', alignItems: 'center' },
-  buttonText: { color: palette.canvas, fontWeight: '800', fontSize: 16 },
+  button: { backgroundColor: palette.accent, borderRadius: 4, minHeight: 52, justifyContent: 'center', alignItems: 'center' },
+  buttonText: { color: palette.ink, fontWeight: '800', fontSize: 16 },
   switch: { paddingTop: 22, paddingBottom: 4, alignItems: 'center' }, switchText: { color: '#AD3A0D', textAlign: 'center', fontWeight: '600', fontSize: 13 },
 });

@@ -2,6 +2,8 @@ import { supabase } from './supabase';
 
 export type Team = {
   id: string;
+  logo_path?: string | null;
+  logo_url?: string | null;
   name: string;
   test_access: boolean;
   trial_ends_at: string | null;
@@ -10,10 +12,23 @@ export type Team = {
   role: 'owner' | 'coach';
 };
 
+const signedLogos = new Map<string, { url: string; expires: number }>();
+
 export async function listTeams(): Promise<Team[]> {
   const { data, error } = await supabase.rpc('list_my_teams');
   if (error) throw error;
-  return ((data ?? []) as Team[]).sort((a, b) => a.name.localeCompare(b.name));
+  const { data: { session } } = await supabase.auth.getSession();
+  return (await Promise.all(((data ?? []) as Team[]).map(async team => {
+    if (!team.logo_path || !session) return team;
+    const key = `${session.user.id}:${team.logo_path}`;
+    const cached = signedLogos.get(key);
+    if (cached && cached.expires > Date.now()) return { ...team, logo_url: cached.url };
+    const result = await supabase.storage.from('team-logos').createSignedUrl(team.logo_path, 600);
+    if (result.error) return { ...team, logo_url: null };
+    if (signedLogos.size > 100) signedLogos.clear();
+    signedLogos.set(key, { url: result.data.signedUrl, expires: Date.now() + 480000 });
+    return { ...team, logo_url: result.data.signedUrl };
+  }))).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function createTeam(name: string, requestId: string): Promise<string> {
@@ -44,6 +59,6 @@ export const setTeamTestAccess = (teamId: string, enabled: boolean) => rpc<void>
 
 export function teamError(reason: unknown): string {
   const error = reason as { message?: string; code?: string };
-  if (['42P01', 'PGRST205', 'PGRST202'].includes(error?.code ?? '')) return 'The latest team database setup is not installed yet. Apply the coaches and trials migration in Supabase, then refresh.';
+  if (['42P01', 'PGRST205', 'PGRST202'].includes(error?.code ?? '')) return 'The latest team database setup is not installed yet. Apply the latest team migration in Supabase, then refresh.';
   return error?.message || 'Could not connect. Please try again.';
 }
