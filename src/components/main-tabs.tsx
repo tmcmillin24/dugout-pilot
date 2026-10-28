@@ -6,7 +6,7 @@ export default function MainTabs() {
   const insets = useSafeAreaInsets();
   return <Tabs screenOptions={{
     headerShown: false, sceneStyle: { backgroundColor: palette.canvas },
-    tabBarStyle: { backgroundColor: '#101D2C', borderTopColor: palette.line, borderTopWidth: 1, height: 66 + Math.max(insets.bottom, 10), paddingTop: 10, paddingBottom: Math.max(insets.bottom, 10) },
+    tabBarStyle: { backgroundColor: '#06263E', borderTopColor: palette.line, borderTopWidth: 1, height: 66 + Math.max(insets.bottom, 10), paddingTop: 10, paddingBottom: Math.max(insets.bottom, 10) },
     tabBarActiveTintColor: palette.accent, tabBarInactiveTintColor: palette.muted,
     tabBarLabelStyle: { fontSize: 10, fontWeight: '700', marginTop: 4 }, tabBarHideOnKeyboard: true,
   }}>

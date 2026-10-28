@@ -32,7 +32,7 @@ export function JoinTeam({ onJoined }: { onJoined: (teamId: string) => Promise<v
     finally { inFlight.current = false; setBusy(false); }
   }
   return <View style={s.section}>
-    <Text style={s.body}>Paste your invitation code. Sign in with the confirmed email address the owner invited.</Text>
+    <Text style={s.body}>Use the email address your owner invited.</Text>
     <TextInput accessibilityLabel="Invitation code" style={s.input} value={code} onChangeText={setCode} editable={!busy} autoCorrect={false} autoCapitalize="none" placeholder="Invitation code" placeholderTextColor="#778397" />
     <Message text={error} error />
     <Action primary disabled={busy} onPress={() => { void accept(); }}>{busy ? 'Joining…' : 'Accept invitation'}</Action>
@@ -83,7 +83,7 @@ export function OwnerPanel({ team, onChanged, view = 'coaches' }: { team: Team; 
       await inviteCoach(team.id, draft.email, draft.id, draft.code);
       if (!alive.current) return;
       setIssued(draft); request.current = null; setEmail('');
-      setNotice('Invitation created. Share the code with this coach. It expires in 7 days. No email was sent automatically.');
+      setNotice('Ready to share. Expires in 7 days.');
       await load();
     });
   }
@@ -95,13 +95,13 @@ export function OwnerPanel({ team, onChanged, view = 'coaches' }: { team: Team; 
     </>}
     {view === 'invite' && <>
     <Text style={s.label}>Coach email</Text>
-    <Text style={s.body}>The invitation only works for this email address. Coaches cannot manage memberships or activate teams.</Text>
+    <Text style={s.body}>This invitation works only for the email below.</Text>
     <TextInput accessibilityLabel="Coach email" style={s.input} value={email} onChangeText={setEmail} editable={!busy} keyboardType="email-address" autoCorrect={false} autoCapitalize="none" autoComplete="email" placeholder="coach@example.com" placeholderTextColor="#778397" />
     <Action primary disabled={busy} onPress={createInvite}>{busy ? 'Working…' : 'Create coach invitation'}</Action>
     {issued && <View style={s.box}>
       <Text style={s.label}>Invitation for {issued.email}</Text>
       <Text selectable style={s.code}>{issued.code}</Text>
-      <Text style={s.body}>Copy or share this code now. For security, it cannot be retrieved after leaving this panel; create a replacement invitation if needed.</Text>
+      <Text style={s.body}>Save this code before leaving. You can issue a replacement later.</Text>
       <Action disabled={busy} onPress={() => { void run(async () => { await Share.share({ message: `You are invited to coach ${team.name} in Dugout Pilot. Sign in or create an account with ${issued.email}, confirm that email, then enter this code under Join a team:\n\n${issued.code}\n\nThis invitation expires in 7 days.` }); }); }}>Share invitation</Action>
       <Action onPress={() => setIssued(null)}>Hide code</Action>
     </View>}
@@ -109,7 +109,7 @@ export function OwnerPanel({ team, onChanged, view = 'coaches' }: { team: Team; 
     <Message text={error} error /><Message text={notice} />
     {view === 'coaches' && <>
     <Text style={s.heading}>Team access</Text>
-    {loading ? <ActivityIndicator color="#a7db91" /> : members.map(member => <View style={s.box} key={member.user_id}>
+    {loading ? <ActivityIndicator color={palette.accent} /> : members.map(member => <View style={s.box} key={member.user_id}>
       <Text style={s.label}>{member.email}</Text><Text style={s.body}>{member.role === 'owner' ? 'Owner' : 'Coach'}</Text>
       {member.role === 'coach' && <Action danger disabled={busy} onPress={() => confirmAction('Remove coach?', `Remove ${member.email} from ${team.name}? Their account and other teams stay available.`, () => { void run(async () => { await removeTeamCoach(team.id, member.user_id); await load(); if (alive.current) setNotice('Coach access removed.'); }); })}>Remove coach</Action>}
     </View>)}
@@ -156,7 +156,7 @@ export function ActivationPanel({ onChanged }: { onChanged: () => Promise<void> 
   }
   return <View style={s.section}>
     <Message text={error} error /><Message text={notice} />
-    {loading ? <ActivityIndicator color="#a7db91" /> : teams.map(team => <View style={s.box} key={team.id}>
+    {loading ? <ActivityIndicator color={palette.accent} /> : teams.map(team => <View style={s.box} key={team.id}>
       <Text style={s.label}>{team.name}</Text><Text style={s.body}>{team.test_access ? 'Active · Test access' : team.activation_status}</Text>
       <Text selectable style={s.meta}>{team.id}</Text>
       {(team.test_access || ['pending', 'trial'].includes(team.activation_status)) && <Action disabled={busy} onPress={() => change(team)}>{team.test_access ? 'Remove test access' : 'Enable test access'}</Action>}
@@ -170,7 +170,7 @@ export function ActivationPanel({ onChanged }: { onChanged: () => Promise<void> 
 }
 const s = StyleSheet.create({
   card: { backgroundColor: palette.panel, borderRadius: 20, padding: 20, gap: 16 },
-  section: { gap: 16 }, box: { padding: 16, gap: 10, borderColor: palette.line, borderWidth: 1, borderRadius: 12 },
+  section: { gap: 16 }, box: { padding: 18, gap: 12, backgroundColor: palette.raised, borderColor: palette.line, borderWidth: 1, borderRadius: 12 },
   heading: { color: palette.ink, fontSize: 22, fontWeight: '700' }, label: { color: palette.ink, fontSize: 16, fontWeight: '600' }, body: { color: palette.muted, fontSize: 16, lineHeight: 24 },
   primaryAction: { backgroundColor: palette.accent, borderColor: palette.accent }, primaryActionText: { color: palette.canvas },
   action: { borderColor: palette.line, borderWidth: 1, borderRadius: 10, padding: 14, minHeight: 48, justifyContent: 'center' }, actionText: { color: palette.accent, fontWeight: '700', textAlign: 'center' }, disabled: { opacity: 0.5 },

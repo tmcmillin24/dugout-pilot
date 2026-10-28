@@ -23,3 +23,7 @@ The database, automatic trials, invitation permissions, and membership policies 
 - Check small iPhone widths, long team names, larger accessibility text, and tablet widths.
 
 Typecheck, ESLint, and iOS bundle export are run in development. The web bundle also exports successfully. The cloud browser cannot reach the local preview server, so live visual/navigation verification must be completed on the configured simulator.
+
+## Brand polish
+
+The interface uses the supplied Dugout Pilot navy/orange/white palette. Main navigation cards are white with navy text, soft shadows, orange-tinted icon tiles, and compact separators. The selected-team card has a restrained orange top edge. Page introductions are removed or reduced to short functional labels; the original logo appears on the login form. The logo asset is preserved as uploaded, without stretching or recoloring.

@@ -1,3 +1,5 @@
+import { Image } from 'expo-image';
+import { palette } from './app-ui';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -44,18 +46,16 @@ export default function AuthScreen() {
     <SafeAreaView style={styles.page}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <Text style={styles.eyebrow}>DUGOUT PILOT</Text>
-          <Text style={styles.title}>Ready for the next inning.</Text>
-          <Text style={styles.subtitle}>Your team. Your plan. Your dugout.</Text>
           <View style={styles.card}>
+            <Image source={require('@/assets/images/dugout-pilot-logo.jpeg')} contentFit="contain" accessibilityLabel="Dugout Pilot" style={styles.logo} />
             <Text style={styles.heading}>{mode === 'signin' ? 'Welcome back' : 'Create your account'}</Text>
             <Text style={styles.label}>Email</Text>
-            <TextInput accessibilityLabel="Email" style={styles.input} value={email} onChangeText={setEmail} autoCapitalize="none" autoCorrect={false} keyboardType="email-address" autoComplete="email" editable={!busy} placeholder="coach@example.com" placeholderTextColor="#778397" />
+            <TextInput accessibilityLabel="Email" style={styles.input} value={email} onChangeText={setEmail} autoCapitalize="none" autoCorrect={false} keyboardType="email-address" autoComplete="email" editable={!busy} placeholder="coach@example.com" placeholderTextColor="#657C8E" />
             <Text style={styles.label}>Password</Text>
-            <TextInput accessibilityLabel="Password" style={styles.input} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} editable={!busy} placeholder={mode === 'signup' ? 'At least 8 characters' : 'Your password'} placeholderTextColor="#778397" onSubmitEditing={submit} returnKeyType="go" />
+            <TextInput accessibilityLabel="Password" style={styles.input} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} editable={!busy} placeholder={mode === 'signup' ? 'At least 8 characters' : 'Your password'} placeholderTextColor="#657C8E" onSubmitEditing={submit} returnKeyType="go" />
             {!!message && <Text accessibilityLiveRegion="polite" style={[styles.message, failed && styles.error]}>{message}</Text>}
             <Pressable accessibilityRole="button" disabled={busy} onPress={submit} style={[styles.button, busy && styles.disabled]}>
-              {busy ? <ActivityIndicator color="#10251c" /> : <Text style={styles.buttonText}>{mode === 'signin' ? 'Sign in' : 'Create account'}</Text>}
+              {busy ? <ActivityIndicator color={palette.canvas} /> : <Text style={styles.buttonText}>{mode === 'signin' ? 'Sign in' : 'Create account'}</Text>}
             </Pressable>
             <Pressable accessibilityRole="button" disabled={busy} onPress={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setPassword(''); setMessage(''); setFailed(false); }} style={styles.switch}>
               <Text style={styles.switchText}>{mode === 'signin' ? 'New here? Create an account' : 'Already have an account? Sign in'}</Text>
@@ -67,18 +67,15 @@ export default function AuthScreen() {
   );
 }
 const styles = StyleSheet.create({
-  flex: { flex: 1 }, page: { flex: 1, backgroundColor: '#0d1726' },
+  flex: { flex: 1 }, page: { flex: 1, backgroundColor: palette.canvas },
   content: { flexGrow: 1, justifyContent: 'center', padding: 24, width: '100%', maxWidth: 520, alignSelf: 'center' },
-  eyebrow: { color: '#a7db91', fontWeight: '800', letterSpacing: 3, marginBottom: 20 },
-  title: { color: '#fff', fontSize: 38, fontWeight: '800', lineHeight: 44 },
-  subtitle: { color: '#b2bfd0', fontSize: 17, marginTop: 12, marginBottom: 32 },
-  card: { backgroundColor: '#172438', borderRadius: 24, padding: 24 },
-  heading: { color: '#fff', fontSize: 24, fontWeight: '700', marginBottom: 24 },
-  label: { color: '#dce5ef', marginBottom: 8, fontWeight: '600' },
-  input: { color: '#fff', backgroundColor: '#0d1726', borderColor: '#40506a', borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 20 },
-  message: { color: '#b9e9a8', marginBottom: 16, lineHeight: 22 },
-  error: { color: '#ffb4ab' }, disabled: { opacity: 0.6 },
-  button: { backgroundColor: '#a7db91', borderRadius: 12, minHeight: 52, justifyContent: 'center', alignItems: 'center' },
-  buttonText: { color: '#10251c', fontWeight: '800', fontSize: 16 },
-  switch: { paddingVertical: 20, alignItems: 'center' }, switchText: { color: '#dce5ef', textAlign: 'center' },
+  card: { backgroundColor: palette.panel, borderRadius: 22, padding: 24, boxShadow: '0px 8px 26px rgba(0, 15, 29, 0.2)' },
+  logo: { width: '100%', aspectRatio: 3, marginBottom: 24 },
+  heading: { color: palette.cardInk, fontSize: 24, fontWeight: '800', marginBottom: 24, letterSpacing: -0.4 },
+  label: { color: palette.cardInk, marginBottom: 8, fontSize: 13, fontWeight: '600' },
+  input: { color: palette.cardInk, backgroundColor: '#F2F6F9', borderColor: '#DCE6EE', borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 20 },
+  message: { color: palette.cardInk, marginBottom: 16, lineHeight: 22 }, error: { color: '#B3261E' }, disabled: { opacity: 0.6 },
+  button: { backgroundColor: palette.accent, borderRadius: 12, minHeight: 52, justifyContent: 'center', alignItems: 'center' },
+  buttonText: { color: palette.canvas, fontWeight: '800', fontSize: 16 },
+  switch: { paddingTop: 22, paddingBottom: 4, alignItems: 'center' }, switchText: { color: '#AD3A0D', textAlign: 'center', fontWeight: '600', fontSize: 13 },
 });

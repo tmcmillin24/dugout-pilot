@@ -25,10 +25,10 @@ export default function AccountScreen() {
     if (Platform.OS === 'web') { if (window.confirm('Sign out of Dugout Pilot on this device?')) void signOut(); }
     else Alert.alert('Sign out?', 'Your teams and saved information will stay available when you sign back in.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign out', onPress: () => { void signOut(); } }]);
   }
-  return <Screen title="Account" subtitle="Your login and team access, all in one place.">
-    <Panel><View style={s.profile}><View style={s.avatar}><Icon name="account" size={32} color={palette.accent} /></View><View style={ui.flex}><Text style={s.email}>{session?.user.email}</Text><Text style={s.caption}>{teams.length} {teams.length === 1 ? 'team' : 'teams'} · {session?.user.email_confirmed_at ? 'Email confirmed' : 'Email confirmation pending'}</Text></View></View></Panel>
-    <Section title="Workspace"><Panel><MenuRow icon="teams" title="Your teams" description={active ? `Selected: ${active.name}` : 'Create or join your coaching workspace'} onPress={() => router.navigate('/teams')} />
-      <MenuRow icon="shield" title="Team access" description="Your role and trial belong to each individual team." last />
+  return <Screen title="Account">
+    <Panel><View style={s.profile}><View style={s.avatar}><Icon name="account" size={32} color="#BC450F" /></View><View style={ui.flex}><Text style={s.email}>{session?.user.email}</Text><Text style={s.caption}>{teams.length} {teams.length === 1 ? 'team' : 'teams'} · {session?.user.email_confirmed_at ? 'Email confirmed' : 'Email confirmation pending'}</Text></View></View></Panel>
+    <Section title="Workspace"><Panel><MenuRow icon="teams" title="Your teams" description={active ? `Selected: ${active.name}` : 'Create or join a team'} onPress={() => router.navigate('/teams')} />
+      <MenuRow icon="shield" title="Team access" description="Roles and trial status" last />
     </Panel></Section>
     {admin && <Section title="Administration"><Panel><MenuRow icon="shield" title="Super Admin" description="Test access overrides for development teams" onPress={() => router.push('/admin')} last /></Panel></Section>}
     <StatusMessage text={error} error />
@@ -36,4 +36,4 @@ export default function AccountScreen() {
     <Text style={s.footer}>DUGOUT PILOT · VERSION 1.0</Text>
   </Screen>;
 }
-const s = StyleSheet.create({ profile: { flexDirection: 'row', gap: 16, alignItems: 'center', padding: 20 }, avatar: { width: 54, height: 54, borderRadius: 18, backgroundColor: palette.raised, justifyContent: 'center', alignItems: 'center' }, email: { color: palette.ink, fontSize: 16, fontWeight: '600' }, caption: { color: palette.muted, fontSize: 12, marginTop: 8, lineHeight: 19 }, footer: { textAlign: 'center', color: palette.muted, letterSpacing: 1.4, fontSize: 10 } });
+const s = StyleSheet.create({ profile: { flexDirection: 'row', gap: 16, alignItems: 'center', padding: 20 }, avatar: { width: 54, height: 54, borderRadius: 18, backgroundColor: palette.cardTint, justifyContent: 'center', alignItems: 'center' }, email: { color: palette.cardInk, fontSize: 16, fontWeight: '600' }, caption: { color: palette.cardMuted, fontSize: 12, marginTop: 8, lineHeight: 19 }, footer: { textAlign: 'center', color: palette.muted, letterSpacing: 1.4, fontSize: 10 } });
