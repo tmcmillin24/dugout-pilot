@@ -16,7 +16,7 @@ Apply migration 202610280005_coaching.sql once after 001–004. Existing teams s
 
 ## Persistence and access
 
-`team_boards` is one team workspace containing the source Board model, games, roster, ten defenses, practice sessions, rules profile and event notes. This phase does not yet provide separate season archives, automatic original-site migration, GameChanger CSV import, practice JSON import/export, player removal, or generative chat.
+`team_boards` is one team workspace containing the source Board model, games, roster, ten defenses, practice sessions, rules profile and event notes. This phase does not yet provide separate season archives, automatic original-site migration, practice JSON import/export, player removal, or generative chat.
 
 Saves are explicit at form boundaries and immediate for game assignments/order changes. UI shows saved only after server acknowledgement; failed form saves keep their inputs. Account/team-keyed provider isolation discards old-team request results after selection changes. No background local-to-cloud overwrite occurs. Coaches pull to refresh for other coaches' updates; revision checking rejects stale saves. Reload team data after a conflict, then reapply the intended change. There is no live collaboration subscription or offline editing queue.
 
@@ -28,3 +28,21 @@ Member RLS permits reads; an RPC allows owner/coach writes only with active/tria
 - `node scripts/test-coaching-logic.mjs` uses the project's TypeScript dependency to load domain helpers. Tests assignment filtering, saved defense isolation, confirmation/reconfirmation counting, practice resource/duration/group combinations and topic matching.
 - `node scripts/test-coaching-security.mjs` requires `@electric-sql/pglite` as a local test dependency; emulates Supabase auth and Storage, applies all five migrations, then tests member isolation, expired access, removed coaches, revisions and deletion cascades.
 - Expo iOS and web exports check bundling. Live Supabase/physical-device interactions require simulator review with the applied migration.
+
+## Navigation and reference polish
+
+The shared header includes the tagline and a chat icon on every signed-in screen. The five main tabs are Home, Lineups, Practice, Imports, and Teams. Account remains accessible from the header. Rules Desk uses a team profile card, topic shortcuts, expandable reference shelf, separate profile editor, and an app-wide chat drawer with source links. Conversations survive tab changes in memory and reset when team or rules profile changes. This remains the original local rules lookup, not generative AI.
+
+USSSA is the sole selectable authority. Sport (baseball, fastpitch, slowpitch), age and season are independent. Only the reviewed 2026 USSSA 11U baseball pack supplies summarized answers today; other selections offer USSSA source links and event notes, never silently reuse 11U rules. Existing legacy profiles continue to work.
+
+The Imports tab now reads user-selected CSVs through Expo DocumentPicker/FileSystem, previews supported stats, matches names or jersey numbers, allows corrections/skips, and requires explicit single-game confirmation. Same-game file fingerprints block identical repeat imports. Applying an import replaces that game's imported statistics, so imports never add the same values repeatedly. Pitching logs and lineups are separate. A generic CSV format is supported; not every possible export layout is guaranteed. Imports are manual exports, not an official partnership or live GameChanger connection.
+
+Use `npm install` after pulling to install SDK-compatible expo-document-picker and expo-file-system. Native development builds need rebuilding when adding native modules; Expo Go includes these Expo modules. No additional SQL migration is needed beyond 005.
+
+### Rule source maintenance
+
+The source catalog is centralized in `src/lib/coaching/usssa-sources.json`. `node scripts/check-usssa-sources.mjs` checks official directory links and PDF hashes against `docs/usssa-source-baseline.json`. It fails when sources are changed, unavailable, or no longer recognized. It stores only URLs, metadata and hashes, not rulebook text. A manual GitHub Actions workflow exposes this check; no scheduled job or automatic rule-publication system is enabled.
+
+The source check currently detects broken baseball/fastpitch links in USSSA's directory and can report older directory editions alongside newer sport-specific pages. Treat those as review items, not as successful updates. After reviewing source changes, `--record-baseline` records observed source metadata; it does not approve a new answer pack. Failed links continue to fail even after a baseline is recorded. The checker does not automatically discover every new document if USSSA changes its page structure.
+
+The public USSSA Event API specification was inspected on October 28, 2026. Its documented routes cover event/team/division/pitching data; no rulebook-content endpoint was found. For broader conversational answers, obtain an approved/licensed rulebook feed or source corpus and connect a server-side retrieval service. Keep source edition, sport, age, event supplements and citations attached to answers. A general language-model API by itself does not keep USSSA rules current.

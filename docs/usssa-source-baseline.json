@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-10-28T18:06:42.267Z",
+  "directories": [
+    {
+      "url": "https://cms.usssa.net/slowpitch-rules-and-legal-info/",
+      "links": []
+    },
+    {
+      "url": "https://support.usssa.com/hc/en-us/articles/49338962052115-USSSA-Rulebooks-By-Laws",
+      "links": [
+        {
+          "label": "Softball Rulebook",
+          "url": "https://cms.usssa.net/wp-content/uploads/sites/2/2025/01/usssa-slowpitch-2025-rulebook-final.pdf"
+        },
+        {
+          "label": "Fastpitch Rulebook",
+          "url": "https://usssa.com/docs/2018/2018_usssa_fprb_rev2.pdf"
+        },
+        {
+          "label": "Baseball Rulebook",
+          "url": "https://www.usssa.com/docs/baseball/usssa_bb_rules.pdf"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "url": "https://cms.usssa.net/wp-content/uploads/sites/2/2025/01/usssa-slowpitch-2025-rulebook-final.pdf",
+      "label": "Softball Rulebook",
+      "resolvedUrl": "https://cms.usssa.net/wp-content/uploads/sites/2/2025/01/usssa-slowpitch-2025-rulebook-final.pdf",
+      "sha256": "65075eaff6e36e1acc003563cfb62d0fb827ecfb0bfc727b10d40305f1e1027f"
+    },
+    {
+      "url": "https://cms.usssa.net/wp-content/uploads/sites/2/2025/12/usssa-slowpitch-2026-rulebook-final.pdf",
+      "label": "2026 slowpitch rulebook (source only)",
+      "resolvedUrl": "https://cms.usssa.net/wp-content/uploads/sites/2/2025/12/usssa-slowpitch-2026-rulebook-final.pdf",
+      "sha256": "84d1b97123473d3bc72f887c15707b653939d4e4a62b5a3af8ca93a92809e236"
+    },
+    {
+      "url": "https://usssa.com/docs/2018/2018_usssa_fprb_rev2.pdf",
+      "label": "Fastpitch Rulebook",
+      "error": "HTTP 404"
+    },
+    {
+      "url": "https://www.usssa.com/docs/baseball/usssa_bb_rules.pdf",
+      "label": "Baseball Rulebook",
+      "error": "HTTP 404"
+    },
+    {
+      "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf",
+      "label": "2026 national by-laws",
+      "resolvedUrl": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf",
+      "sha256": "10d9b49984ea2d92d2f603533f307c1e14c4c9a62373ee1e2dc6f5f59449de93"
+    }
+  ],
+  "errors": [
+    {
+      "url": "https://cms.usssa.net/slowpitch-rules-and-legal-info/",
+      "error": "No recognized rulebook links found; review the page layout."
+    }
+  ]
+}

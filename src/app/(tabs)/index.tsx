@@ -40,7 +40,7 @@ export default function HomeScreen() {
           <View style={s.actionTop}><Icon name="link" color={palette.ink} size={25} /><Icon name="arrow" size={16} /></View><DisplayText style={s.actionTitle}>PRACTICE</DisplayText><Text style={s.actionMeta}>Build your next session</Text>
         </Pressable>
       </View></Section>
-      <Section title="Team tools"><Panel><MenuRow icon="teams" title="Roster" description="Players & jersey numbers" onPress={() => router.push('/roster')} /><MenuRow icon="shield" title="Rules desk" description="League rules & quick answers" onPress={() => router.push('/rules')} /><MenuRow icon="link" title="Integrations" description="GameChanger imports" onPress={() => router.navigate('/integrations')} last /></Panel></Section>
+      <Section title="Team tools"><Panel><MenuRow icon="teams" title="Roster" description="Players & jersey numbers" onPress={() => router.push('/roster')} /><MenuRow icon="shield" title="Rules desk" description="League rules & quick answers" onPress={() => router.push('/rules')} /><MenuRow icon="link" title="Imports" description="Bring in exported game stats" onPress={() => router.navigate('/integrations')} last /></Panel></Section>
       {active.access_status === 'trial' && active.trial_ends_at && <Panel><View style={s.trial}>
         <View style={s.trialTop}><DisplayText style={s.trialTitle}>ELITE TRIAL</DisplayText><Text style={s.trialDate}>Ends {new Date(active.trial_ends_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</Text></View>
         <View style={s.trialTrack}><View style={[s.trialFill, { width: `${Math.min(100, daysLeft / 14 * 100)}%` }]} /></View>

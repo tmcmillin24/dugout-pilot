@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { RulesAssistantProvider } from '@/providers/rules-assistant-provider';
+import { RulesChat } from '@/components/rules-chat';
 import { CoachingProvider } from '@/providers/coaching-provider';
 import { TeamProvider } from '@/providers/team-provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -30,7 +32,7 @@ function AuthGate() {
     </View>
   );
   if (!session) return <AuthScreen />;
-  return <TeamProvider><CoachingProvider><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F1F3F5' } }}>
+  return <TeamProvider><CoachingProvider><RulesAssistantProvider><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F1F3F5' } }}>
     <Stack.Screen name="(tabs)" />
     <Stack.Screen name="team-create" options={{ presentation: 'modal' }} />
     <Stack.Screen name="team-join" options={{ presentation: 'modal' }} />
@@ -41,7 +43,7 @@ function AuthGate() {
     <Stack.Screen name="team-settings" />
     <Stack.Screen name="team-coaches" />
     <Stack.Screen name="team-invite" options={{ presentation: 'modal' }} />
-  </Stack></CoachingProvider></TeamProvider>;
+  </Stack><RulesChat /></RulesAssistantProvider></CoachingProvider></TeamProvider>;
 }
 
 export default function RootLayout() {

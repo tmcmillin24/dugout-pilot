@@ -1,3 +1,4 @@
+import { useRulesAssistant } from '@/providers/rules-assistant-provider';
 import { Image } from 'expo-image';
 import { DisplayText } from './sports-type';
 import { SymbolView } from 'expo-symbols';
@@ -20,6 +21,12 @@ const icons = {
   ball: { ios: 'baseball', android: 'sports_baseball', web: 'sports_baseball' },
   clock: { ios: 'clock', android: 'schedule', web: 'schedule' },
   shield: { ios: 'checkmark.shield', android: 'verified_user', web: 'verified_user' },
+  chat: { ios: 'bubble.left.and.bubble.right', android: 'chat_bubble_outline', web: 'chat_bubble_outline' },
+  upload: { ios: 'square.and.arrow.up', android: 'upload_file', web: 'upload_file' },
+  search: { ios: 'magnifyingglass', android: 'search', web: 'search' },
+  close: { ios: 'xmark', android: 'close', web: 'close' },
+  send: { ios: 'arrow.up', android: 'arrow_upward', web: 'arrow_upward' },
+  settings: { ios: 'slider.horizontal.3', android: 'tune', web: 'tune' },
   mail: { ios: 'envelope', android: 'mail', web: 'mail' },
 } as const;
 export type IconName = keyof typeof icons;
@@ -28,11 +35,12 @@ export function Icon({ name, color = palette.muted, size = 22 }: { name: IconNam
 }
 export function Screen({ title, subtitle, children, back = false, onRefresh, trailing, hideTitle = false }: { title: string; eyebrow?: string; subtitle?: string; children: ReactNode; back?: boolean; onRefresh?: () => Promise<void>; trailing?: ReactNode; hideTitle?: boolean }) {
   const [refreshing, setRefreshing] = useState(false);
+  const assistant = useRulesAssistant();
   return <SafeAreaView edges={['top', 'left', 'right']} style={ui.screen}>
     <View style={ui.toolbar}>
       {back ? <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/'); }} style={ui.headerButton}><Icon name="back" color={palette.ink} size={20} /></Pressable> : null}
-      <Image source={require('@/assets/images/dugout-pilot-logo.jpeg')} contentFit="contain" accessibilityLabel="Dugout Pilot" style={ui.brandLogo} />
-      <View style={ui.toolbarEnd}>{trailing ?? <Pressable accessibilityRole="button" accessibilityLabel="Open account" onPress={() => router.navigate('/account')} style={ui.headerButton}><Icon name="account" color={palette.ink} size={25} /></Pressable>}</View>
+      <View style={ui.brandGroup}><Image source={require('@/assets/images/dugout-pilot-logo.jpeg')} contentFit="contain" accessibilityLabel="Dugout Pilot" style={ui.brandLogo} /><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={ui.tagline}>Navigate your way through the game</Text></View>
+      <View style={ui.toolbarEnd}>{assistant && <Pressable accessibilityRole="button" accessibilityLabel="Ask the rules assistant" onPress={() => assistant.show()} style={ui.headerButton}><Icon name="chat" color={palette.ink} size={23} /></Pressable>}{trailing ?? <Pressable accessibilityRole="button" accessibilityLabel="Open account" onPress={() => router.navigate('/account')} style={ui.headerButton}><Icon name="account" color={palette.ink} size={25} /></Pressable>}</View>
     </View>
     <KeyboardAvoidingView style={ui.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={ui.content} keyboardShouldPersistTaps="handled" refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} tintColor={palette.accent} onRefresh={() => { setRefreshing(true); void onRefresh().finally(() => setRefreshing(false)); }} /> : undefined}>
@@ -61,7 +69,7 @@ export function StatusMessage({ text, error = false }: { text: string; error?: b
 export function Loading() { return <View style={ui.loading}><ActivityIndicator color={palette.accent} accessibilityLabel="Loading teams" /></View>; }
 export const ui = StyleSheet.create({
   flex: { flex: 1 }, screen: { flex: 1, backgroundColor: palette.panel }, content: { paddingHorizontal: 18, paddingTop: 20, paddingBottom: 28, gap: 22, backgroundColor: palette.canvas, width: '100%', maxWidth: 720, alignSelf: 'center', flexGrow: 1 },
-  toolbar: { height: 58, backgroundColor: palette.panel, borderBottomWidth: 1, borderBottomColor: palette.line, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 }, brandLogo: { width: 162, height: 54 }, toolbarEnd: { marginLeft: 'auto' }, headerButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  toolbar: { height: 78, backgroundColor: palette.panel, borderBottomWidth: 1, borderBottomColor: palette.line, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 }, brandGroup: { flex: 1, maxWidth: 218, minWidth: 0, justifyContent: 'center' }, brandLogo: { width: '100%', height: 47 }, tagline: { color: palette.muted, fontSize: 9, fontWeight: '600', textAlign: 'center', marginTop: -2, paddingBottom: 6 }, toolbarEnd: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center' }, headerButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   masthead: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 24 }, trailing: { marginLeft: 'auto' }, diamond: { width: 11, height: 11, borderColor: palette.accent, borderWidth: 2, transform: [{ rotate: '45deg' }], borderRadius: 2 },
   wordmark: { color: palette.ink, fontWeight: '900', fontSize: 13, letterSpacing: 1.3 }, wordmarkAccent: { color: palette.accent },
   eyebrow: { color: palette.muted, fontSize: 11, letterSpacing: 2.4, fontWeight: '800' }, intro: { gap: 6 }, title: { color: palette.ink, fontSize: 34, fontWeight: '800', letterSpacing: 0.2 }, subtitle: { color: palette.muted, fontSize: 15, lineHeight: 23, maxWidth: 480 },
