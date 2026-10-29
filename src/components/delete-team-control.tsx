@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { OverlayModal } from './overlay-modal';
 import { DisplayText } from './sports-type';
 import { TeamLogo } from './team-logo';
 import { palette } from './app-ui';
@@ -29,7 +30,7 @@ export default function DeleteTeamControl({ team }: { team: Team }) {
   }
   return <>
     <View style={s.dangerZone}><View style={s.dangerCopy}><DisplayText style={s.zoneTitle}>DELETE TEAM</DisplayText><Text style={s.zoneCaption}>Permanently remove this team.</Text></View><Pressable accessibilityRole="button" onPress={() => { setConfirmation(''); setError(''); setOpen(true); }} style={s.openButton}><Text style={s.openText}>DELETE</Text></Pressable></View>
-    <Modal visible={open} transparent animationType="fade" presentationStyle="overFullScreen" statusBarTranslucent onRequestClose={close}>
+    <OverlayModal open={open} onClose={close}>
       <KeyboardAvoidingView style={s.overlay} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={s.modalScroll} keyboardShouldPersistTaps="handled">
           <View accessibilityViewIsModal onAccessibilityEscape={close} style={s.dialog}>
@@ -47,7 +48,7 @@ export default function DeleteTeamControl({ team }: { team: Team }) {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </Modal>
+    </OverlayModal>
   </>;
 }
 const s = StyleSheet.create({

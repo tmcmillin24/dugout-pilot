@@ -1,5 +1,6 @@
 import { useState, type ReactNode, type ComponentProps } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { OverlayModal } from './overlay-modal';
 import { router } from 'expo-router';
 import { Button, Loading, Screen, StatusMessage, palette, ui } from './app-ui';
 import { DisplayText } from './sports-type';
@@ -25,7 +26,7 @@ export function Field({ label, value, onChange, numeric = false, multiline = fal
 }
 export function Sheet({ title, open, onClose, children }: { title: string; open: boolean; onClose: () => void; children: ReactNode }) {
   const { error, busy } = useCoaching();
-  return <Modal visible={open} transparent animationType="fade" onRequestClose={onClose}><KeyboardAvoidingView style={c.scrim} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><View accessibilityViewIsModal style={c.sheet}><View style={c.sheetHead}><DisplayText accessibilityRole="header" style={c.sheetTitle}>{title.toUpperCase()}</DisplayText><Pressable accessibilityRole="button" onPress={onClose} style={c.close}><Text style={c.closeText}>Close</Text></Pressable></View><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={c.sheetBody}><StatusMessage text={error} error /><StatusMessage text={busy ? 'Saving…' : ''} />{children}</ScrollView></View></KeyboardAvoidingView></Modal>;
+  return <OverlayModal open={open} onClose={onClose}><KeyboardAvoidingView style={c.scrim} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><View accessibilityViewIsModal style={c.sheet}><View style={c.sheetHead}><DisplayText accessibilityRole="header" style={c.sheetTitle}>{title.toUpperCase()}</DisplayText><Pressable accessibilityRole="button" onPress={onClose} style={c.close}><Text style={c.closeText}>Close</Text></Pressable></View><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={c.sheetBody}><StatusMessage text={error} error /><StatusMessage text={busy ? 'Saving…' : ''} />{children}</ScrollView></View></KeyboardAvoidingView></OverlayModal>;
 }
 export function Choice({ label, value, options, onChange, disabled, fill = false }: { label: string; value: string; options: { value: string; label: string }[]; onChange: (value: string) => void; disabled?: boolean; fill?: boolean }) {
   const [open, setOpen] = useState(false);
