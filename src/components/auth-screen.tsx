@@ -47,7 +47,7 @@ export default function AuthScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <View style={styles.card}>
-            <Image source={require('@/assets/images/dugout-pilot-logo.jpeg')} contentFit="contain" accessibilityLabel="Dugout Pilot" style={styles.logo} />
+            <Image source={require('@/assets/images/dugout-pilot-wordmark.jpeg')} contentFit="contain" accessibilityLabel="Dugout Pilot" style={styles.logo} />
             <Text style={styles.heading}>{mode === 'signin' ? 'Welcome back' : 'Create your account'}</Text>
             <Text style={styles.label}>Email</Text>
             <TextInput accessibilityLabel="Email" style={styles.input} value={email} onChangeText={setEmail} autoCapitalize="none" autoCorrect={false} keyboardType="email-address" autoComplete="email" editable={!busy} placeholder="coach@example.com" placeholderTextColor="#657C8E" />

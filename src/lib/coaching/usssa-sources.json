@@ -4,7 +4,7 @@
   "sports": {
     "baseball": {
       "label": "USSSA baseball",
-      "landingUrl": "https://support.usssa.com/hc/en-us/articles/49338962052115-USSSA-Rulebooks-By-Laws",
+      "landingUrl": "https://www.usssabaseball.org/rules-by-laws",
       "snapshotUrl": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf",
       "snapshotEdition": "2026 national by-laws",
       "reviewedAges": [

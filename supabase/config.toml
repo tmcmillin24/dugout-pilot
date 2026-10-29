@@ -1,0 +1,4 @@
+# The function validates the user JWT against Supabase Auth itself, supporting
+# projects with either legacy or asymmetric signing keys. Never remove that check.
+[functions.rules-assistant]
+verify_jwt = false

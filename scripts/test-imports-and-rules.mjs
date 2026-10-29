@@ -30,4 +30,10 @@ assert.equal(answerRulesQuestion('Can a pitcher throw tomorrow?',eleven).kind,'r
 assert.equal(answerRulesQuestion('Are lead-offs allowed?',eleven).kind,'reference');
 assert.equal(answerRulesQuestion('What are Little League pitching limits?',eleven).kind,'mismatch');
 assert.equal(answerRulesQuestion('Compare 11U and 12U pitching limits',eleven).kind,'mismatch');
+assert.equal(answerRulesQuestion('What bats are allowed?',eleven).kind,'reference');
+assert.equal(answerRulesQuestion('Explain the infield fly rule.',eleven).kind,'reference');
+assert.ok(answerRulesQuestion('Explain the infield fly rule.',eleven).sources.some(source=>source.url.includes('mlbstatic.com')));
+assert.equal(answerRulesQuestion('Explain the infield fly rule.',{...eleven,sport:'fastpitch'}).kind,'unavailable');
+assert.equal(answerRulesQuestion('What bats are allowed?',{...eleven,age:'',season:''}).kind,'clarification');
+assert.equal(answerRulesQuestion('What bats are allowed? 12U 2027',{...eleven,age:'',season:''}).kind,'reference');
 console.log('PASS: quoted/BOM CSV, totals excluded, names/jerseys, ambiguous matches, stale rosters, conflicting rows, partial sections, invalid values, size limits, USSSA-only context, legacy profile, sport/age/season isolation and source fallback.');
