@@ -2,7 +2,7 @@ import { formatPlayerName } from '@/lib/coaching/player-display';
 import { useRef, useState, type ComponentRef } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Button, Panel, Section, StatusMessage, ui } from '@/components/app-ui';
-import { Chips, Choice, CoachingScreen, Field, Sheet, c } from '@/components/coaching-ui';
+import { Choice, CoachingScreen, Field, Sheet, c } from '@/components/coaching-ui';
 import { router } from 'expo-router';
 import { GameCard } from '@/components/game-card';
 import { nextGameNumber } from '@/lib/coaching/game-management';
@@ -27,7 +27,7 @@ function LineupBoard({ board,scroll }: { board: Board;scroll:BattingScroll }) {
   const update = (change: (g: Game) => Game) => commit(b => ({ ...b, games: b.games.map(g => g.id === game.id ? change(g) : g) }));
   return <>
     <GameCard board={board} game={game}/>
-    <Chips values={[{ value: 'defense', label: 'DEFENSE' }, { value: 'batting', label: 'BATTING' }, { value: 'pitching', label: 'PITCHING' }]} selected={mode} onSelect={setMode} />
+    <View style={{width:'100%',flexDirection:'row',gap:8}}>{([{value:'defense',label:'DEFENSE'},{value:'batting',label:'BATTING'},{value:'pitching',label:'PITCHING'}] as const).map(item=><Pressable key={item.value} accessibilityRole="tab" accessibilityState={{selected:mode===item.value}} onPress={()=>setMode(item.value)} style={[c.chip,{flex:1,minWidth:0,minHeight:44,paddingHorizontal:4,alignItems:'center',justifyContent:'center'},mode===item.value&&c.selected]}><Text style={[c.chipText,{textAlign:'center'},mode===item.value&&c.selectedText]}>{item.label}</Text></Pressable>)}</View>
     <Button secondary onPress={() => router.push('/roster')}>MANAGE ROSTER</Button>
     {!board.players.length ? <><Text style={ui.body}>Add your players to build a lineup.</Text><Button onPress={() => router.push('/roster')}>OPEN ROSTER</Button></> : mode === 'defense' ? <Defense board={board} game={game} update={update} /> : mode === 'batting' ? <Batting board={board} game={game} update={update} scroll={scroll} /> : <Pitching board={board} game={game} update={update} />}
   </>;
