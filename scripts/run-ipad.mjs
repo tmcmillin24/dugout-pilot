@@ -35,7 +35,7 @@ function main() {
   const output = mkdtempSync(join(tmpdir(), 'dugout-universal-ipad-'));
   console.log(`Building a verified universal app for ${ipad.name}. Native ios files will be regenerated from app.json.`);
   run('npx', ['expo', 'prebuild', '--platform', 'ios', '--clean']);
-  run('npx', ['expo', 'run:ios', '--device', 'generic', '--no-build-cache', '--no-bundler', '--output', output]);
+  run('npx', ['expo', 'run:ios', '--device', 'generic', '--no-build-cache', '--no-bundler', '--port', '8083', '--output', output]);
   const app = findApp(output);
   if (!app) throw new Error('No compiled .app was found in the build output.');
   const plist = JSON.parse(run('plutil', ['-convert', 'json', '-o', '-', join(app, 'Info.plist')], true));
