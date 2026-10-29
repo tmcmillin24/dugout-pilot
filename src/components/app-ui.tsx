@@ -10,6 +10,8 @@ import type { Team } from '@/lib/teams';
 
 export const palette = { canvas: '#F1F3F5', panel: '#FFFFFF', raised: '#E8EDF1', line: '#D8DFE5', ink: '#082E4B', muted: '#637182', accent: '#F45C1B', badgeSurface: '#FFF0E8', error: '#B3261E', cardInk: '#082E4B', cardMuted: '#637182', cardLine: '#E4E8EC', cardTint: '#FFF0E8', navy: '#082E4B', white: '#FFFFFF' };
 const icons = {
+  eye: { ios: 'eye', android: 'visibility', web: 'visibility' },
+  eyeOff: { ios: 'eye.slash', android: 'visibility_off', web: 'visibility_off' },
   home: { ios: 'house', android: 'home', web: 'home' },
   teams: { ios: 'person.2', android: 'groups', web: 'groups' },
   link: { ios: 'link', android: 'link', web: 'link' },
