@@ -21,3 +21,11 @@ for(const phase of one.phases.filter(p=>p.kind==='sequential')){const drill=dril
 const idx=one.phases.findIndex(p=>p.kind==='sequential');const alt=availableDrills(one.settings).find(d=>d.id!==one.phases[idx].drillId);const oneSwap=swapPhaseDrill(one,idx,alt.id);assert.equal(oneSwap.phases[idx].drillId,alt.id);assert.equal(oneSwap.phases[idx].duration,one.phases[idx].duration);check(oneSwap);
 const ordered=movePhase(p,2,1);const regenerated=regeneratePlan(ordered,123);assert.deepEqual(regenerated.phases.map(p=>p.kind),ordered.phases.map(p=>p.kind));assert.deepEqual(regenerated.phases.map(p=>p.duration),ordered.phases.map(p=>p.duration));
 console.log('PASS: sequential single-coach activities, per-block swap, and alternate generation preserve custom ordering/timing.');
+
+const {readFileSync}=await import('node:fs');const vm=await import('node:vm');const ts=await import('typescript');const optionExports={};vm.runInNewContext(ts.default.transpileModule(readFileSync(new URL('../src/lib/coaching/practice-options.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.default.ModuleKind.CommonJS}}).outputText,{exports:optionExports});
+const {additionalPriorities,simplifyPracticeSetup}=optionExports;
+assert.equal(additionalPriorities({...defaults,focus:'hitting',priorities:['hitting','running','running','invalid']}).join(','),'running');
+assert.equal(additionalPriorities({...defaults,focus:'throwing',priorities:['throwing','catching','infield']}).join(','),'infield');
+assert.equal(additionalPriorities({...defaults,focus:'defense',priorities:['infield','outfield','team','hitting']}).join(','),'hitting');
+const simple=simplifyPracticeSetup({...defaults,equipment:{nets:2,tees:1,screens:1,balls:0,gloves:0,bats:0,catcherGear:2}});assert.equal(Object.keys(simple.equipment).sort().join(','),'nets,screens,tees');assert.equal(simple.equipment.nets,2);assert.ok(resources(simple).balls>0);assert.equal(resources(simple).catcherGear,0);
+console.log('PASS: primary focus excluded from additional priorities, stale/duplicate priorities removed, facility counts preserved and hidden legacy gear counts cleared.');

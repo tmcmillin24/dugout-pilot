@@ -1,6 +1,6 @@
 import { drillLibrary } from './drill-library.js';
 export const categories=['hitting','throwing','infield','outfield','running','catching','team'];
-export function resources(s){return {balls:24,gloves:s.players,bats:2,cones:4,nets:0,tees:0,catcherGear:0,screens:0,...s.equipment,machine:s.machine&&s.cages>0?1:0};}
+export function resources(s){return {balls:Math.max(24,s.players*3),gloves:s.players,bats:Math.max(2,s.players),cones:16,nets:0,tees:0,catcherGear:0,screens:0,...s.equipment,machine:s.machine&&s.cages>0?1:0};}
 function random(seed){let n=(Number(seed)||1)>>>0;return()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296;};}
 function lanes(s){return [...(s.environment==='outdoor'&&s.field==='full'?[{id:'field-bat',kind:'cage',label:'Protected hitting area · entire field reserved'}]:[]),...Array.from({length:s.environment==='indoor'?s.cages:0},(_,i)=>({id:`cage-${i+1}`,kind:'cage',label:`Cage ${i+1}`})),...Array.from({length:s.environment==='indoor'?(s.turf==='full'?2:s.turf==='half'?1:0):(s.field==='full'?3:s.field==='infield'?2:1)},(_,i)=>({id:`lane-${i+1}`,kind:'lane',label:s.environment==='indoor'?`Turf lane ${i+1}`:`Marked field lane ${i+1}`}))];}
 function reserveSlot(slots,slot){if(slot.id==='field-bat'){slots.length=0;return;}const index=slots.indexOf(slot);if(index>=0)slots.splice(index,1);const field=slots.findIndex(s=>s.id==='field-bat');if(field>=0)slots.splice(field,1);}

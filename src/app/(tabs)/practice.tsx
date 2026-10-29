@@ -1,3 +1,4 @@
+import { additionalPriorities, simplifyPracticeSetup } from '@/lib/coaching/practice-options';
 import { PriorityControls, AttendanceControls, EquipmentControls, StationPicker, Toggle } from '@/components/practice-planner-controls';
 import { availableDrills, changeDuration, movePhase, regeneratePlan, swapStation, swapPhaseDrill } from '@/lib/coaching/practice-planner';
 import { getRulesContext } from '@/lib/coaching/rules-context';
@@ -29,13 +30,13 @@ function PracticeWorkspace({ storageKey }: { storageKey: string }) {
   const [editingSetup,setEditingSetup]=useState(false);
   const [now, setNow] = useState(() => Date.now());
   const latest = useRef(initial); const writes = useRef(Promise.resolve());
-  useEffect(() => { let alive = true; AsyncStorage.getItem(storageKey).then(text => { if (!alive) return; if (text) { const saved = JSON.parse(text) as Draft; if (saved.settings && saved.mode) { saved.settings={...defaultPracticeSettings,...saved.settings};latest.current = saved; setDraft(saved); setNow(Date.now()); } } setReady(true); }).catch(() => { if (alive) { setReady(true); setMessage('Could not restore this device’s practice draft.'); } }); return () => { alive = false; }; }, [storageKey]);
+  useEffect(() => { let alive = true; AsyncStorage.getItem(storageKey).then(text => { if (!alive) return; if (text) { const saved = JSON.parse(text) as Draft; if (saved.settings && saved.mode) { saved.settings=simplifyPracticeSetup({...defaultPracticeSettings,...saved.settings});latest.current = saved; setDraft(saved); setNow(Date.now()); } } setReady(true); }).catch(() => { if (alive) { setReady(true); setMessage('Could not restore this device’s practice draft.'); } }); return () => { alive = false; }; }, [storageKey]);
   function change(patch: Partial<Draft>) { const next = { ...latest.current, ...patch }; latest.current = next; setDraft(next); writes.current = writes.current.then(() => AsyncStorage.setItem(storageKey, JSON.stringify(next))).catch(() => setMessage('Draft could not be saved on this device. Save the practice to your team before leaving.')); }
   const plan = draft.selected ? board?.practicePlans?.find(p => p.id === draft.selected) : draft.preview;
   useEffect(() => { if (!draft.deadline) return; const timer = setInterval(() => setNow(Date.now()), 500); return () => clearInterval(timer); }, [draft.deadline]);
   if (!ready || !board) return <Text style={ui.body}>Restoring practice…</Text>;
   const s = draft.settings;
-  function setting<K extends keyof PracticeSettings>(key: K, value: PracticeSettings[K]) { change({ settings: { ...s, [key]: value } }); }
+  function setting<K extends keyof PracticeSettings>(key: K, value: PracticeSettings[K]) { const next={...s,[key]:value};change({settings:{...next,priorities:additionalPriorities(next)}}); }
   const numericOptions = (values: number[], suffix = '') => values.map(n => ({ value: String(n), label: `${n}${suffix}` }));
   const selectedPhase = Math.min(draft.phase, (plan?.phases.length ?? 1) - 1);
   const seconds = draft.deadline ? Math.max(0, Math.ceil((draft.deadline - now) / 1000)) : draft.seconds;
@@ -45,7 +46,7 @@ function PracticeWorkspace({ storageKey }: { storageKey: string }) {
   function safely(action:()=>void){try{action();setMessage('Changes saved on this device.');}catch(error){setMessage(error instanceof Error?error.message:'Could not update practice.');}}
   function generate(seed:number) {
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(s.start)) { setMessage('Use a start time such as 17:00.'); return; }
-    const settings = { ...s, machine: s.cages > 0 && s.machine, players: draft.useRoster ? attending.length : s.players,age:getRulesContext(board!).age,sport:getRulesContext(board!).sport };
+    const settings = simplifyPracticeSetup({ ...s, machine: s.cages > 0 && s.machine, players: draft.useRoster ? attending.length : s.players,age:getRulesContext(board!).age,sport:getRulesContext(board!).sport });
     if (settings.players < 1 || settings.players > 18) { setMessage('Choose 1–18 players for this practice.'); return; }
     const built = build(settings,{seed,recent}); let cursor = 0;
     const groups = draft.useRoster ? built.sizes.map(size => { const names = attending.slice(cursor, cursor + size).map(p => p.name); cursor += size; return names; }) : undefined;

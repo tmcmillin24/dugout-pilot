@@ -4,7 +4,7 @@ The planner now uses 120 distinct, original drill activities across hitting (20)
 
 Each drill defines setup/execution, a coaching cue, required equipment, space type, age range, supported sports, minimum group size and setup allowance. Team sport/age comes from the Rules Desk profile. Missing age uses the simpler minimum-age activities. Players attending can be selected from the roster (up to the existing 18-player session limit); manual player counts remain available. Coach count means adults actually supervising today, not membership count.
 
-The primary focus plus additional priorities influence selection. Equipment inventory includes balls, gloves, bats, cones, nets, protective screens, tees, catcher gear, cages, machine and available turf/field space. Defaults for legacy drafts assume 24 balls, a glove per player, two bats and four cones; nets, tees, screens and catcher gear default to zero. Coaches should set actual quantities before building.
+The primary focus plus additional priorities influence selection. The form asks only about cages, machine, turf/field space, nets, protective screens and tees. Basic balls, gloves, bats and marking cones are assumed in the internal planner, without quantity questions. Restored drafts and new builds discard old hidden basic-equipment/catcher-gear counts. Live catcher activities needing protective gear are excluded by default; dry catching activities remain available. Facility counts default to zero and are set by the coach.
 
 Concurrent stations reserve equipment quantities and distinct coach-designated areas; station count cannot exceed available coaches, four stations, or supported player/group limits. Live swings and dry bat work require a cage, or an outdoor full-field protected area reserved exclusively for that activity. A machine station requires a cage. Front toss reserves a protective screen as well as a net. There is no claim that marking a lane automatically makes a facility safe: the supervising coach verifies space, screen suitability, waiting areas and age/rules-specific instructions.
 
@@ -26,3 +26,5 @@ Run `node scripts/test-practice-planner.mjs`. It tests library uniqueness, staff
 ## Account navigation
 
 Account is now a root stack screen (`src/app/account.tsx`) instead of a hidden tab. The shared person button explicitly pushes it, and Back returns to the originating screen. Authentication and team providers still wrap it. Native navigation and touch/layout behavior need simulator verification.
+
+Additional priorities use one dropdown opening a multi-select sheet with Done and Clear. Categories covered by the main focus are excluded (hitting; throwing/catching; baserunning; or infield/outfield/team for defense). Changing focus removes newly redundant selections and restored drafts drop stale/duplicate selections.
