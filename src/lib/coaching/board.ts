@@ -1,3 +1,4 @@
+import { formatPlayerName } from './player-display';
 import type { RulesContext } from './rules-context';
 import type { PracticePlan } from './practice';
 import { randomUUID } from 'expo-crypto';
@@ -10,7 +11,7 @@ export type Game = {id:string; day:number; label:string; opponent:string; time:s
 export type Board = {name:string; players:Player[]; games:Game[]; activeGameId:string; defensiveLineups:DefensiveLineup[]; practicePlans?:PracticePlan[]; activePracticeId?:string; rulesProfile?:'usssa-11u-2026'|'custom'; eventRules?:string; rulesContext?:RulesContext};
 export function newGame(day=1, number=1, previous?:Game):Game { return {id:randomUUID(),day,label:`Game ${number}`,opponent:'Opponent TBD',time:'',status:'planned',lineup:previous ? [...previous.lineup] : [],positions:previous ? {...previous.positions} : {},defensiveLineupId:previous?.defensiveLineupId||'manual',pitchers:{},stats:{},importLabel:'',score:'',notes:''}; }
 export function defaultBoard(name = 'Team'):Board { const g=newGame(); return {name,players:[],games:[g],activeGameId:g.id,defensiveLineups:createDefensiveLineups()}; }
-export function playerName(board:Board,id:string) { return board.players.find(p=>p.id===id)?.name || 'Unassigned'; }
+export function playerName(board:Board,id:string) { const name = board.players.find(p=>p.id===id)?.name; return name ? formatPlayerName(name) : 'Unassigned'; }
 export function pitchTotals(board:Board, excludeGameId?:string) { const totals:Record<string,{pitches:number;innings:number;games:number}>={}; for(const g of board.games) { if(g.id===excludeGameId) continue; for(const [id,log] of Object.entries(g.pitchers)) { const t=totals[id] ||= {pitches:0,innings:0,games:0}; t.pitches+=Number(log.pitches)||0; const [whole, outs]=String(log.innings||'0').split('.').map(Number); t.innings+=(whole||0)+Math.min(2,outs||0)/3; if(log.pitches || log.innings) t.games++; } } return totals; }
 
 export function createDefensiveLineups(positions:Record<string,string>={}):DefensiveLineup[] { return Array.from({length:10},(_,i)=>({id:`defense-${i+1}`,name:`Lineup ${i+1}`,positions:{...positions}})); }

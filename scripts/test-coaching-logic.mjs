@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import { randomUUID } from 'node:crypto';
 import { build } from '../src/lib/coaching/practice-engine.js';
-function load(file) { const source = ts.transpileModule(readFileSync(new URL(file,import.meta.url),'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText; const exports={}; vm.runInNewContext(source,{exports,require:name=>name==='expo-crypto'?{randomUUID}:createRequire(import.meta.url)(name)}); return exports; }
+function load(file) { const source = ts.transpileModule(readFileSync(new URL(file,import.meta.url),'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText; const exports={}; vm.runInNewContext(source,{exports,require:name=>name==='expo-crypto'?{randomUUID}:name.startsWith('.')?load(new URL(`${name}.ts`,new URL(file,import.meta.url))):createRequire(import.meta.url)(name)}); return exports; }
 const {defaultBoard,assignPosition,applyDefensiveLineup,recordFieldInning,fieldInnings,dayFieldInnings,playersForPosition}=load('../src/lib/coaching/board.ts');
 const b=defaultBoard('My Team'); assert.equal(b.name,'My Team'); assert.equal(b.defensiveLineups.length,10);
 b.players=[{id:'a',name:'A',positions:['P','SS']},{id:'b',name:'B',positions:['C']}];

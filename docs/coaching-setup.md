@@ -12,11 +12,11 @@ Apply migration 202610280005_coaching.sql once after 001–004. Existing teams s
 - Confirm This Outing records the field for an explicit inning. Selecting a defensive lineup never counts innings. Reconfirming the same inning replaces its assignments instead of adding a second inning.
 - Practice: configure indoor/outdoor resources and coaches, build preview, edit block text, save to the team, share, view timeline, station assignments, named groups and rotations. Saved sessions can be edited as a copy or deleted with confirmation.
 - Draft practice settings/previews, selected session and timestamp-based timer state persist to AsyncStorage under account + team keys. Saved plans live in Supabase and are visible to other member coaches. Timers have no background alarms and do not keep the screen awake.
-- Home → Rules desk: the original topic-matching rules finder and chart, opt-in USSSA 11U 2026 pack, and per-team event notes. It is not generative AI or a live rules service; other age groups/leagues are not automatically mapped to 11U. The original edition and official source link are shown. The optional cloud AI backend and offline-first Ask Dugout modes are documented in rules-assistant-setup.md. Cloud activation requires deployment and a server-held provider key; no AI API secrets belong in EXPO_PUBLIC environment variables.
+- Home → Rules Desk: four Quick Calls and six initial reference topics, expandable via Show more. Ask Dugout uses the local Apple model when available and Saved Rules otherwise; see rules-assistant-setup.md. MLB fallback is limited to saved baseball references, never softball. No AI budget SQL or cloud-provider connection is needed.
 
 ## Persistence and access
 
-`team_boards` is one team workspace containing the source Board model, games, roster, ten defenses, practice sessions, rules profile and event notes. This phase does not yet provide separate season archives, automatic original-site migration, practice JSON import/export, player removal, or an on-device generative model.
+`team_boards` is one team workspace containing the source Board model, games, roster, ten defenses, practice sessions, rules profile and event notes. This phase does not yet provide separate season archives, automatic original-site migration, practice JSON import/export, player removal.
 
 Saves are explicit at form boundaries and immediate for game assignments/order changes. UI shows saved only after server acknowledgement; failed form saves keep their inputs. Account/team-keyed provider isolation discards old-team request results after selection changes. No background local-to-cloud overwrite occurs. Coaches pull to refresh for other coaches' updates; revision checking rejects stale saves. Reload team data after a conflict, then reapply the intended change. There is no live collaboration subscription or offline editing queue.
 
@@ -31,7 +31,7 @@ Member RLS permits reads; an RPC allows owner/coach writes only with active/tria
 
 ## Navigation and reference polish
 
-The shared header includes the tagline and a chat icon on every signed-in screen. The five main tabs are Home, Lineups, Practice, Imports, and Teams. Account remains accessible from the header. Rules Desk uses a team profile card, topic shortcuts, expandable reference shelf, separate profile editor, and an app-wide chat drawer with source links. Conversations survive tab changes in memory and reset when team or rules profile changes. This remains the original local rules lookup, not generative AI.
+The shared header includes the tagline and a chat icon on every signed-in screen. The five main tabs are Home, Lineups, Practice, Imports, and Teams. Account remains accessible from the header. Rules Desk uses a team profile card, topic shortcuts, expandable reference shelf, separate profile editor, and an app-wide chat drawer with source links. Conversations survive tab changes in memory and reset when team or rules profile changes. Saved Rules stays available alongside native on-device explanations.
 
 USSSA is the sole selectable authority. Sport (baseball, fastpitch, slowpitch), age and season are independent. Only the reviewed 2026 USSSA 11U baseball pack supplies summarized answers today; other selections offer USSSA source links and event notes, never silently reuse 11U rules. Existing legacy profiles continue to work.
 
@@ -45,6 +45,12 @@ The source catalog is centralized in `src/lib/coaching/usssa-sources.json`. `nod
 
 The source check currently detects broken baseball/fastpitch links in USSSA's directory and can report older directory editions alongside newer sport-specific pages. Treat those as review items, not as successful updates. After reviewing source changes, `--record-baseline` records observed source metadata; it does not approve a new answer pack. Failed links continue to fail even after a baseline is recorded. The checker does not automatically discover every new document if USSSA changes its page structure.
 
-The public USSSA Event API specification was inspected on October 28, 2026. Its documented routes cover event/team/division/pitching data; no rulebook-content endpoint was found. For broader conversational answers, obtain an approved/licensed rulebook feed or source corpus and connect a server-side retrieval service. Keep source edition, sport, age, event supplements and citations attached to answers. A general language-model API by itself does not keep USSSA rules current.
+The public USSSA Event API specification was inspected on October 28, 2026. Its documented routes cover event/team/division/pitching data; no rulebook-content endpoint was found. For broader on-device coverage, add reviewed/approved source packs to the local reference library. Keep source edition, sport, age, event supplements and citations attached to answers. A language model by itself does not keep USSSA rules current.
 
-See [rules-assistant-setup.md](rules-assistant-setup.md) for the current wordmark header, labeled Ask Dugout launcher, improved saved answers, optional source-backed AI backend and activation requirements.
+See [rules-assistant-setup.md](rules-assistant-setup.md) for the current wordmark header, labeled Ask Dugout launcher, on-device AI, saved references, device availability and native-build requirements.
+
+## Lineup interaction
+
+Batting order rows support a 280 ms hold and vertical drag, animated placement, edge auto-scrolling, cancellation, and one server save on drop. Failed saves restore the order. Screen-reader increase/decrease actions remain available without visible arrow buttons. Pitcher selection and workload rows show only players whose roster positions include P; removing P does not delete previously saved logs. The tagline is centered beneath the wordmark.
+
+Player names use first initial and last name throughout displays, selections, diamonds, practice sharing and import previews. Roster editing and CSV matching retain full names. Games use a full-width selector with an overflow menu for editing, adding and confirmed deletion; deleting the final game preserves the roster, practices and saved defenses.

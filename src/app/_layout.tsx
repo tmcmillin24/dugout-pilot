@@ -1,3 +1,4 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import { SportsTypeProvider } from '@/components/sports-type';
 import { Stack, ThemeProvider, DefaultTheme } from 'expo-router';
@@ -49,5 +50,5 @@ function AuthGate() {
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({ DugoutDisplay: require('@expo-google-fonts/barlow-condensed/800ExtraBold/BarlowCondensed_800ExtraBold.ttf'), DugoutDisplayItalic: require('@expo-google-fonts/barlow-condensed/800ExtraBold_Italic/BarlowCondensed_800ExtraBold_Italic.ttf') });
   if (!fontsLoaded && !fontError) return null;
-  return <SafeAreaProvider><ThemeProvider value={DefaultTheme}><SportsTypeProvider ready={fontsLoaded}><StatusBar style="dark" /><AuthProvider><AuthGate /></AuthProvider></SportsTypeProvider></ThemeProvider></SafeAreaProvider>;
+  return <GestureHandlerRootView style={{ flex: 1 }}><SafeAreaProvider><ThemeProvider value={DefaultTheme}><SportsTypeProvider ready={fontsLoaded}><StatusBar style="dark" /><AuthProvider><AuthGate /></AuthProvider></SportsTypeProvider></ThemeProvider></SafeAreaProvider></GestureHandlerRootView>;
 }

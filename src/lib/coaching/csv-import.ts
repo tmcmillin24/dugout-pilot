@@ -1,3 +1,4 @@
+import { formatPlayerName } from './player-display';
 import type { Player, Stat } from './board';
 export type ImportRow = { id: string; name: string; number: string; stats: Stat; playerId: string; ambiguous: boolean };
 const norm = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -34,7 +35,7 @@ export function parseStatsImport(text: string, players: Player[]): ImportRow[] {
 export function compileStatsImport(rows: ImportRow[], players: Player[]): Record<string,Stat> {
   const stats: Record<string,Stat>={};
   for(const row of rows) { if(!row.playerId)continue;if(!players.some(p=>p.id===row.playerId))throw new Error('A selected player is no longer on this roster. Match players again.');const previous=stats[row.playerId]??{};
-    for(const [key,value] of Object.entries(row.stats)) { if(key in previous && previous[key as keyof Stat]!==value)throw new Error(`Conflicting rows for ${players.find(p=>p.id===row.playerId)?.name}. Import one game and match each row carefully.`); }
+    for(const [key,value] of Object.entries(row.stats)) { if(key in previous && previous[key as keyof Stat]!==value)throw new Error(`Conflicting rows for ${formatPlayerName(players.find(p=>p.id===row.playerId)?.name)}. Import one game and match each row carefully.`); }
     stats[row.playerId]={...previous,...row.stats};
   }
   if(!Object.keys(stats).length)throw new Error('Match at least one player before importing.');return stats;
