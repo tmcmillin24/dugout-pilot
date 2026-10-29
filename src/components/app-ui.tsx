@@ -4,7 +4,7 @@ import { DisplayText } from './sports-type';
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { useState, type ComponentProps, type ReactNode, type ComponentRef, type RefObject } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, type ScrollViewProps } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ScrollViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Team } from '@/lib/teams';
 
@@ -38,16 +38,18 @@ export function Icon({ name, color = palette.muted, size = 22 }: { name: IconNam
   return <SymbolView name={icons[name]} tintColor={color} size={size} style={{ width: size, height: size }} />;
 }
 export function Screen({ title, subtitle, children, back = false, onRefresh, trailing, hideTitle = false, scrollRef, scrollEnabled = true, onScroll }: { title: string; eyebrow?: string; subtitle?: string; children: ReactNode; back?: boolean; onRefresh?: () => Promise<void>; trailing?: ReactNode; hideTitle?: boolean; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>; scrollEnabled?: boolean; onScroll?: ScrollViewProps['onScroll'] }) {
+  const { width } = useWindowDimensions();
+  const tablet = width >= 768;
   const [refreshing, setRefreshing] = useState(false);
   const assistant = useRulesAssistant();
   return <SafeAreaView edges={['top', 'left', 'right']} style={ui.screen}>
-    <View style={ui.toolbar}>
+    <View style={[ui.toolbar, tablet && { paddingHorizontal: 32, height: 88 }]}>
       {back ? <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/'); }} style={ui.headerButton}><Icon name="back" color={palette.ink} size={20} /></Pressable> : null}
       <View style={ui.brandGroup}><Image source={require('@/assets/images/dugout-pilot-wordmark.jpeg')} contentFit="contain" contentPosition="left center" accessibilityLabel="Dugout Pilot" style={ui.brandLogo} /></View>
       <View style={ui.toolbarEnd}>{assistant && <Pressable accessibilityRole="button" accessibilityLabel="Ask the rules assistant" onPress={() => assistant.show()} style={ui.assistantButton}><Icon name="chat" color={palette.ink} size={18} /><Text style={ui.assistantLabel}>{'ASK\nDUGOUT'}</Text></Pressable>}{trailing ?? <Pressable accessibilityRole="button" accessibilityLabel="Open account" onPress={() => router.push('/account')} style={ui.headerButton}><Icon name="account" color={palette.ink} size={25} /></Pressable>}</View>
     </View>
     <KeyboardAvoidingView style={ui.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView ref={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} scrollEventThrottle={16} contentContainerStyle={ui.content} keyboardShouldPersistTaps="handled" refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} tintColor={palette.accent} onRefresh={() => { setRefreshing(true); void onRefresh().finally(() => setRefreshing(false)); }} /> : undefined}>
+      <ScrollView ref={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} scrollEventThrottle={16} style={{ backgroundColor: palette.canvas }} contentContainerStyle={[ui.content, tablet && { maxWidth: 1180, paddingHorizontal: 32, paddingTop: 28, paddingBottom: 40, gap: 26 }]} keyboardShouldPersistTaps="handled" refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} tintColor={palette.accent} onRefresh={() => { setRefreshing(true); void onRefresh().finally(() => setRefreshing(false)); }} /> : undefined}>
         {!hideTitle && <View style={ui.intro}><DisplayText accessibilityRole="header" style={ui.title}>{title.toUpperCase()}</DisplayText>{subtitle && <Text style={ui.subtitle}>{subtitle}</Text>}</View>}
         {children}
       </ScrollView>

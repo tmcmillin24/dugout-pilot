@@ -1,6 +1,7 @@
 import { useState, type ReactNode, type ComponentProps } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { OverlayModal } from './overlay-modal';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Button, Loading, Screen, StatusMessage, palette, ui } from './app-ui';
 import { DisplayText } from './sports-type';
@@ -26,7 +27,8 @@ export function Field({ label, value, onChange, numeric = false, multiline = fal
 }
 export function Sheet({ title, open, onClose, children }: { title: string; open: boolean; onClose: () => void; children: ReactNode }) {
   const { error, busy } = useCoaching();
-  return <OverlayModal open={open} onClose={onClose}><KeyboardAvoidingView style={c.scrim} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><View accessibilityViewIsModal style={c.sheet}><View style={c.sheetHead}><DisplayText accessibilityRole="header" style={c.sheetTitle}>{title.toUpperCase()}</DisplayText><Pressable accessibilityRole="button" onPress={onClose} style={c.close}><Text style={c.closeText}>Close</Text></Pressable></View><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={c.sheetBody}><StatusMessage text={error} error /><StatusMessage text={busy ? 'Saving…' : ''} />{children}</ScrollView></View></KeyboardAvoidingView></OverlayModal>;
+  const insets = useSafeAreaInsets();
+  return <OverlayModal open={open} onClose={onClose}><KeyboardAvoidingView style={[c.scrim, { paddingTop: Math.max(20, insets.top), paddingBottom: Math.max(20, insets.bottom), paddingLeft: Math.max(20, insets.left), paddingRight: Math.max(20, insets.right) }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><View accessibilityViewIsModal style={c.sheet}><View style={c.sheetHead}><DisplayText accessibilityRole="header" style={c.sheetTitle}>{title.toUpperCase()}</DisplayText><Pressable accessibilityRole="button" onPress={onClose} style={c.close}><Text style={c.closeText}>Close</Text></Pressable></View><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={c.sheetBody}><StatusMessage text={error} error /><StatusMessage text={busy ? 'Saving…' : ''} />{children}</ScrollView></View></KeyboardAvoidingView></OverlayModal>;
 }
 export function Choice({ label, value, options, onChange, disabled, fill = false }: { label: string; value: string; options: { value: string; label: string }[]; onChange: (value: string) => void; disabled?: boolean; fill?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -36,7 +38,7 @@ export const c = StyleSheet.create({
   stack: { gap: 8 }, group: { gap: 16 }, row: { flexDirection: 'row', alignItems: 'center', gap: 10 }, grow: { flex: 1 },
   chips: { gap: 7 }, chip: { paddingHorizontal: 16, paddingVertical: 13, minHeight: 44, borderWidth: 1, borderColor: palette.line, backgroundColor: palette.panel, borderRadius: 3 }, selected: { backgroundColor: palette.navy, borderColor: palette.navy }, chipText: { color: palette.ink, fontSize: 12, fontWeight: '800' }, selectedText: { color: palette.white },
   choice: { minHeight: 55, padding: 14, backgroundColor: palette.panel, borderWidth: 1, borderColor: palette.line, gap: 6, borderRadius: 4 }, choiceValue: { color: palette.ink, fontSize: 15, fontWeight: '600' },
-  scrim: { flex: 1, backgroundColor: '#001426B8', justifyContent: 'center', padding: 20 }, sheet: { backgroundColor: palette.canvas, maxHeight: '85%', width: '100%', maxWidth: 620, alignSelf: 'center', borderRadius: 6, overflow: 'hidden' }, sheetHead: { backgroundColor: palette.navy, borderBottomWidth: 3, borderBottomColor: palette.accent, padding: 17, flexDirection: 'row', alignItems: 'center', gap: 8 }, sheetTitle: { color: palette.white, fontSize: 28, flex: 1 }, close: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 8 }, closeText: { color: palette.white, fontWeight: '700' }, sheetBody: { padding: 18, gap: 16 }, option: { padding: 17, minHeight: 52, borderBottomWidth: 1, borderBottomColor: palette.line },
+  scrim: { flex: 1, backgroundColor: '#001426B8', justifyContent: 'center', padding: 20 }, sheet: { backgroundColor: palette.canvas, maxHeight: '85%', width: '100%', maxWidth: 760, alignSelf: 'center', borderRadius: 6, overflow: 'hidden' }, sheetHead: { backgroundColor: palette.navy, borderBottomWidth: 3, borderBottomColor: palette.accent, padding: 17, flexDirection: 'row', alignItems: 'center', gap: 8 }, sheetTitle: { color: palette.white, fontSize: 28, flex: 1 }, close: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 8 }, closeText: { color: palette.white, fontWeight: '700' }, sheetBody: { padding: 18, gap: 16 }, option: { padding: 17, minHeight: 52, borderBottomWidth: 1, borderBottomColor: palette.line },
   number: { width: 32, color: palette.accent, fontSize: 23, fontWeight: '800' }, item: { padding: 15, borderBottomColor: palette.line, borderBottomWidth: 1, gap: 7 }, small: { fontSize: 12, lineHeight: 18, color: palette.muted },
   headline: { fontSize: 27, color: palette.ink }, danger: { color: palette.error, fontWeight: '700' }, compact: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 });

@@ -32,7 +32,7 @@ export function OverlayModal({ open, onClose, children }: { open: boolean; onClo
     animation.start(({ finished }) => { if (finished && !open) setVisible(false); });
     return () => animation.stop();
   }, [open, opacity, reduceMotion]);
-  return <Modal visible={visible} transparent animationType="none" presentationStyle="overFullScreen" statusBarTranslucent onRequestClose={onClose}>
+  return <Modal supportedOrientations={['portrait', 'portrait-upside-down', 'landscape-left', 'landscape-right']} visible={visible} transparent animationType="none" presentationStyle="overFullScreen" statusBarTranslucent onRequestClose={onClose}>
     <Animated.View pointerEvents={open ? 'auto' : 'none'} accessibilityElementsHidden={!open} importantForAccessibility={open ? 'auto' : 'no-hide-descendants'} style={[styles.frame, { opacity }]}>
       <FrozenContent frozen={!open}>{children}</FrozenContent>
     </Animated.View>
