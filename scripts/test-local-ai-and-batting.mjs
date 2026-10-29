@@ -9,7 +9,7 @@ function loader(mocks={}) {
     if(path.pathname.endsWith('.json'))return JSON.parse(readFileSync(path,'utf8'));
     const exports={};cache.set(path.href,exports);
     const code=ts.transpileModule(readFileSync(path,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true,resolveJsonModule:true}}).outputText;
-    vm.runInNewContext(code,{exports,Date,Math,Set,Promise,AbortController,URL,require:name=>mocks[name]??load(new URL(name.endsWith('.json')?name:`${name}.ts`,path))});return exports;
+    vm.runInNewContext(code,{exports,Date,Math,Set,Promise,AbortController,URL,Error,require:name=>mocks[name]??load(new URL(name.endsWith('.json')?name:`${name}.ts`,path))});return exports;
   }
   return load;
 }
@@ -36,8 +36,8 @@ const native={generate:async(id)=>{generatedId=id;return new Promise(resolve=>{r
 const cancel=new AbortController();const pending=ios.runLocalModel('instructions','prompt',cancel.signal,native);cancel.abort();await assert.rejects(pending);assert.equal(generatedId,cancelledId);resolveNative('late result');
 const {moveBatter,dragTarget,sameBattingOrder}=load('../src/lib/coaching/batting-order.ts');
 const order=['a','b','c','d'];assert.equal(moveBatter(order,'a',3).join(','),'b,c,d,a');assert.equal(moveBatter(order,'d',0).join(','),'d,a,b,c');assert.equal(order.join(','),'a,b,c,d');assert.equal(moveBatter(order,'unknown',1).join(','),order.join(','));assert.equal(moveBatter(order,'a',999).join(','),'b,c,d,a');assert.equal(dragTarget(1,76,76,4),3);assert.equal(dragTarget(0,-999,0,4),0);assert.equal(sameBattingOrder(order,[...order]),true);
-assert.equal(existsSync(new URL('../supabase/migrations/202610290006_rules_ai_budget.sql',import.meta.url)),false);
-console.log('PASS: local source selection/explanation, edition and sport isolation, unknown-source/URL rejection, context bounds, Expo Go/Android fallback, native cancellation and late-result handling, drag ordering/scroll delta/bounds, cloud migration removal. Native model generation is mocked.');
+assert.equal(existsSync(new URL('../supabase/migrations/202610290006_rules_ai_budget.sql',import.meta.url)),true);
+console.log('PASS: local source selection/explanation, edition and sport isolation, unknown-source/URL rejection, context bounds, Expo Go/Android fallback, native cancellation and late-result handling, drag ordering/scroll delta/bounds, online budget migration present. Native model generation is mocked.');
 
 const {formatPlayerName}=load('../src/lib/coaching/player-display.ts');
 for(const [full,short] of [['Tristan McMillin','T McMillin'],['  Tristan  James McMillin  ','T McMillin'],['Ana de la Cruz','A de la Cruz'],['Sam Jones Jr.','S Jones Jr.'],['McMillin, Tristan','T McMillin'],['Prince','Prince'],['','Player']]) assert.equal(formatPlayerName(full),short);
@@ -59,3 +59,23 @@ const wrong=await explainRulesLocally({...options,question:'An outfielder loses 
 const {dateKey,parseCalendarDate,monthCells}=load('../src/lib/coaching/calendar.ts');
 assert.equal(parseCalendarDate('2026-02-29'),null);assert.equal(dateKey(parseCalendarDate('2028-02-29')),'2028-02-29');assert.equal(monthCells(2026,9).filter(Boolean).length,31);assert.equal(monthCells(2026,9)[4],'2026-10-01');assert.equal(monthCells(2027,0).filter(Boolean)[0],'2027-01-01');
 console.log('PASS: reported boundary play, paraphrases, runner award, flight/throw ambiguity, dimension isolation, softball exclusion, rejected irrelevant model source and calendar leap/month boundaries.');
+
+const {answerDugout}=load('../src/lib/coaching/ask-dugout.ts');
+const baseRoute={...options,history:[],teamId:'team',connected:true,localAvailable:false,online:async()=>({answer:'Verified online answer',reference:'USSSA',url:null,kind:'reference'}),generate:async()=>{throw Error('Should not generate');}};
+assert.equal((await answerDugout(baseRoute)).route,'online');
+let onlineCalls=0;const offlineRoute=await answerDugout({...baseRoute,question:reported,connected:false,online:async()=>{onlineCalls++;throw Error('Must not call online');}});assert.equal(onlineCalls,0);assert.equal(offlineRoute.route,'offline');assert.match(offlineRoute.answer,/automatic double/);
+const failedOnline=await answerDugout({...baseRoute,question:reported,online:async()=>{throw Error('Service unavailable');}});assert.equal(failedOnline.route,'offline');assert.equal(failedOnline.notice,'Service unavailable');
+const denied=new Error('Sign in again');denied.noFallback=true;await assert.rejects(answerDugout({...baseRoute,online:async()=>{throw denied;}}));
+const stop=new AbortController();const interrupted=answerDugout({...baseRoute,signal:stop.signal,online:async()=>{stop.abort();throw Error('Request lost');}});await assert.rejects(interrupted);
+const runner=await answerDugout({...baseRoute,connected:false,question:'There is a runner on first when that happens. Where does he go?',history:[{question:reported,answer:offlineRoute.answer}]});assert.match(runner.answer,/third base/);
+const noTeam=await answerDugout({...baseRoute,teamId:undefined});assert.match(noTeam.notice,/Choose a team/);
+console.log('PASS: single conversation online/offline routing, no network call offline, visible service failure, auth denial, cancellation, follow-up context and no-team handling.');
+
+let invokeOptions,invokeResult={data:{answer:'A ruling [1]',kind:'reference',citations:[{start:9,end:12,url:'https://www.usssa.com/rules',title:'USSSA'}]},error:null};
+const client=loader({'./supabase':{supabase:{functions:{invoke:async(name,options)=>{assert.equal(name,'rules-assistant');invokeOptions=options;return invokeResult;}}}}})('../src/lib/rules-assistant.ts');
+const onlineRequest={teamId:'team',question:'A play?',history:[{question:'Earlier play?',answer:'Earlier answer'}],signal:new AbortController().signal};
+assert.equal((await client.askRulesOnline(onlineRequest)).kind,'reference');assert.equal(invokeOptions.body.history[0].content,'Earlier play?');assert.equal(invokeOptions.signal,onlineRequest.signal);assert.equal(Object.keys(invokeOptions.body).sort().join(','),'history,question,teamId');
+invokeResult={data:{answer:'A ruling [1]',kind:'reference',citations:[{start:9,end:12,url:'https://evil.test/rules',title:'Fake'}]},error:null};await assert.rejects(client.askRulesOnline(onlineRequest));
+invokeResult={data:null,error:{context:new Response('{}',{status:403})}};await assert.rejects(client.askRulesOnline(onlineRequest),error=>error.noFallback===true);
+invokeResult={data:null,error:{context:new Response(JSON.stringify({code:'not_configured'}),{status:503})}};await assert.rejects(client.askRulesOnline(onlineRequest),/isn’t connected yet/);
+console.log('PASS: online client bounded dialogue, no client roster/keys, official-source validation, access denial and setup notices.');

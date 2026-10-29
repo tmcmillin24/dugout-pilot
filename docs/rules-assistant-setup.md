@@ -1,53 +1,50 @@
-# Ask Dugout: on-device AI
+# Ask Dugout: one conversation, automatic online/offline routing
 
-Ask Dugout uses Apple's **SystemLanguageModel.default**, the on-device Foundation Models model. There is no cloud AI client, Edge Function, API key, or AI budget migration in the current app. Do not run the former 006 budget SQL. If you already ran it manually, its unused objects can remain; this app never calls them. Keep the existing team migrations 001–005.
+The chat has one composer and a small Online / Offline connection indicator. It has no mode buttons. Network changes update the indicator; sending rechecks the network. Online means the device reports a connection, not that the AI service is deployed or healthy. Service errors show a short notice on the affected offline answer. Auth/access denials remain explicit errors. Stopping/closing cancels the current request; switching networks does not clear history or replay a question.
 
-## Build and device requirements
+## Activate online answers
 
-- Use Xcode 26 or newer and a native iOS build. The custom module is not available inside Expo Go.
-- AI availability requires iOS/iPadOS 26 or newer, compatible Apple Intelligence hardware, a supported region/language, Apple Intelligence enabled and the system model ready. Availability is checked at runtime; OS version alone does not imply support.
-- Enable Apple Intelligence in device Settings and let its model finish downloading while connected. Once ready, classification and explanations run offline. Opening external source links, signing in, team synchronization, and downloading future app/reference updates still need connectivity.
-- Android, web, older/unsupported Apple devices, and Expo Go retain Saved Rules. Android on-device model support is not included in this implementation.
+The code is ready for deployment, but a GitHub pull alone does not activate the backend. This environment has no Supabase deployment credentials or OpenAI API key. Do not paste secrets into chat, GitHub, or EXPO_PUBLIC variables.
 
-From the app folder on your Mac:
+1. In Supabase SQL Editor, run `supabase/migrations/202610290006_rules_ai_budget.sql` after migrations 001–005. The current 006 is safe to rerun if the former version was already applied. It creates private usage counters and a service-only budget RPC, not a chat-history table.
+2. In Supabase Edge Functions → Secrets, set `OPENAI_API_KEY` for the app's API project with Responses/web-search access. Optional `OPENAI_RULES_MODEL` defaults to `gpt-5-mini`. Provider API usage is billed separately from a ChatGPT subscription.
+3. Deploy from the project folder:
+
+```bash
+npx supabase login
+npx supabase functions deploy rules-assistant --project-ref YOUR_PROJECT_REF --no-verify-jwt
+```
+
+The handler independently verifies bearer tokens against Supabase Auth and checks membership and team access. `verify_jwt=false` supports asymmetric project signing keys; never remove the handler checks. It loads rules context/event notes from the server rather than trusting client profile values. It uses built-in Supabase credentials, including support for named default keys.
+
+Default budgets: 20 requests/user/hour, 100/user/day, 500/team/day, 2,000/project/day (UTC). Each question can make two model calls, each with at most three web-tool calls and 2,400 output tokens. Failed provider requests consume the reserved budget. These are request caps, not a guaranteed dollar cap; configure API-project spending limits as appropriate.
+
+## Answer behavior
+
+Online answers use domain-filtered Responses web search against official USSSA sources first. General baseball questions may trigger a separate MLB-source fallback; softball never uses MLB. Sport/division/season and event exceptions remain attached. Missing or ambiguous facts prompt clarification; unverified answers cannot masquerade as sourced rulings. Inline citations and source links are rendered from validated API annotations. No provider key or service credential ships in the app.
+
+Up to three recent question/answer pairs are sent for follow-up context. Roster records are not sent. User-entered questions and event notes may contain personal information: avoid putting sensitive details there. `store:false` is sent to the provider; it does not promise exemption from provider abuse-monitoring/data policies. Conversation UI state remains in memory and is isolated by team/profile.
+
+Offline answers use bundled edition-specific references, with private Apple Foundation Models explanations where supported. Unsupported questions must decline or clarify. The library currently includes original 2026 USSSA 11U baseball summaries, packaged 11U/12U bat guidance, and MLB baseball infield-fly and boundary-double summaries. It is not a complete USSSA/MLB corpus. Explicit boundary and field-dimension matching prevents the reported fence-word collision. Short runner follow-ups to the automatic-double play work without a native model.
+
+Apple explanations require compatible Apple Intelligence hardware, iOS/iPadOS 26+, enabled/supported Apple Intelligence, a downloaded model, and the native build. Expo Go, web and Android retain offline references. No remote model or API calls are made when offline. Opening source URLs, authentication and team synchronization still need internet; this is not full offline team editing or cold-start sign-in support.
+
+## Update the app
 
 ```bash
 git pull --ff-only
+npm install
 npx expo run:ios --port 8083
 ```
 
-This generates the native iOS project through Expo CNG and installs the local module. Do not hand-edit generated ios/android folders. No JavaScript dependency was added for this local module. If an existing development build predates this module, rebuild it; restarting Metro cannot add native Swift code to a binary.
-
-The simulator can verify navigation and Saved Rules. AI availability in a simulator depends on the host/runtime; validate actual generation on a compatible physical iPhone/iPad as well. Device signing must use the intended Dugout Pilot developer team; no Apple team or deployment credentials are set in this repository. The app bundle identifier is com.dugoutpilot.app.
-
-## Local processing
-
-`modules/dugout-on-device-ai` is an iOS-only local Expo module discovered by autolinking. It exposes availability, generation and request-ID-specific cancellation. It explicitly instantiates Apple's SystemLanguageModel, not a Private Cloud Compute or third-party adapter. Only one request runs at a time. Older OS/device/model-unavailable states return clear fallback messages.
-
-The app uses a local retrieval/explanation pipeline:
-
-1. Filter the saved reference index by sport, division and edition. Missing settings may prompt a clarification before model work.
-2. Ask the on-device model to choose up to three relevant source IDs from the eligible local catalogue.
-3. Pass only those source summaries, bounded recent dialogue and coach event notes into a fresh local session to explain the question.
-4. Validate the generated JSON and source IDs. Source titles, editions and URLs come from the app's reference index, never invented model links. An invalid/unsupported response uses the reference lookup, which must decline unmatched topics. The UI is one Ask Dugout conversation; About Ask Dugout reveals capability and availability details without mode switches.
-
-No roster is sent to the model. Questions/history are retained in UI memory during the current team/profile session, not sent to Supabase or an AI provider. The AI performs no network search and cannot discover a rule absent from the saved library. Links open externally only when tapped. Coach notes and dialogue are untrusted data, not official rules or instructions.
-
-## Coverage and limits
-
-The library contains the original 2026 USSSA 11U baseball summaries, 11U/12U baseball bat guidance for the packaged 2026/2027 editions, and general MLB 2026 boundary-double and infield-fly explanations with USSSA/youth-exception context. MLB references are excluded from softball profiles. Broader sport/division packs still require reviewed source data; installing a local model does not install every USSSA rulebook.
-
-The model selects and explains saved material; it is not an official ruling and a valid source ID does not prove that every generated sentence is correct. Verify the linked source and local event exceptions. No full copyrighted rulebooks are bundled or automatically ingested. The current source-check tooling detects upstream changes for review; reference updates are delivered with app releases, not silently published.
-
-Input/history/reference sizes are bounded and each native response is limited to 600 tokens. A new session is used for each selection/explanation step to limit context growth. Requests can be stopped; late results and old request IDs do not cancel a newer request. There is no usage-count SQL or paid AI-provider fallback.
+A native rebuild adds expo-network and the existing local model bridge. Reopening Metro cannot add missing native modules. Do not hand-edit generated ios/android directories. The bundle identifier is com.dugoutpilot.app; signing stays on the user's developer account.
 
 ## Verification
 
-- Expo autolinking resolves DugoutOnDeviceAIModule / DugoutOnDeviceAI for Apple.
-- TypeScript, changed-file ESLint, iOS/web JS bundle exports.
-- `node scripts/test-local-ai-and-batting.mjs`: mocked native model/bridge checks for source selection, edition/sport isolation, unknown IDs/links, context bounds, missing native modules, unsupported platforms and cancellation. Also tests batting-order movement and drag/scroll bounds.
-- `node scripts/test-imports-and-rules.mjs`: saved-rule and CSV behavior.
+- TypeScript and changed-file ESLint.
+- `node scripts/test-local-ai-and-batting.mjs`: mocked single-chat routing, offline no-network path, explicit online failure, auth/access denial, cancellation, bounded context, profile isolation, model-source validation, boundary regressions, follow-up runners, names, dates and game/drag behavior.
+- `node scripts/test-rules-ai.mjs`: mocked auth/membership/access/budget enforcement, source-domain search, baseball-only fallback, citations, server context, failures and key/roster exclusion.
+- `node scripts/test-rules-ai-budget.mjs`: service-only budget access, caps/rollback and repeatable migration in embedded Postgres (requires local PGlite test dependency).
+- `node scripts/test-imports-and-rules.mjs` and `node scripts/test-coaching-logic.mjs` cover offline rule/import/coaching behavior.
 
-This Linux workspace has no Xcode/Swift toolchain or Apple Intelligence device. Native Swift compilation, real-model answer quality, drag gestures and simulator/physical-device layout still require testing on your Mac/device. JS export and mocked model tests are not a native compilation or model-accuracy test.
-
-Boundary regression: a fair batted ball bouncing over the fence returns the verified automatic-double summary, including time-of-pitch runner awards, without model inference. In-flight, thrown, and ambiguous boundary plays ask for clarification. Dimensions references require an explicit measurements question in both reference matching and model source selection. This prevents the reported fence-word collision; it does not make the limited library a complete rules agent.
+These checks do not establish live model accuracy. Deployment, provider credentials, real question/follow-up evaluation, airplane-mode transitions and native Apple model quality still require testing on the configured app/device. Do not call the rules assistant ready based only on mocked tests or a JavaScript export.

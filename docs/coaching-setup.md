@@ -47,7 +47,7 @@ The source check currently detects broken baseball/fastpitch links in USSSA's di
 
 The public USSSA Event API specification was inspected on October 28, 2026. Its documented routes cover event/team/division/pitching data; no rulebook-content endpoint was found. For broader on-device coverage, add reviewed/approved source packs to the local reference library. Keep source edition, sport, age, event supplements and citations attached to answers. A language model by itself does not keep USSSA rules current.
 
-See [rules-assistant-setup.md](rules-assistant-setup.md) for the current wordmark header, labeled Ask Dugout launcher, on-device AI, saved references, device availability and native-build requirements.
+See [rules-assistant-setup.md](rules-assistant-setup.md) for the current wordmark header, labeled Ask Dugout launcher, automatic online/offline answers, source references, backend setup and native-build requirements.
 
 ## Lineup interaction
 
@@ -56,3 +56,5 @@ Batting order rows support a 280 ms hold and vertical drag, animated placement, 
 Player names use first initial and last name throughout displays, selections, diamonds, practice sharing and import previews. Roster editing and CSV matching retain full names. Games use a full-width selector with an overflow menu for editing, adding and confirmed deletion; deleting the final game preserves the roster, practices and saved defenses.
 
 Game dates and practice dates use the same inline tap-to-select calendar, with month navigation, today and clear actions. Game dates are stored separately from existing free-text time values, which remain intact. Date-only values use local calendar components to avoid UTC day shifts.
+
+Ask Dugout now uses one conversation with an Online/Offline connection indicator. Online responses require deploying the authenticated rules-assistant function, adding the provider secret and applying migration 006 for usage caps. Offline references remain automatic fallback, with a visible notice if an online service fails. See rules-assistant-setup.md for the current setup; earlier instructions to skip 006 applied to the former device-only implementation.
