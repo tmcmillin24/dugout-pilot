@@ -56,3 +56,7 @@ These checks do not establish live model accuracy. Deployment, provider credenti
 ## Migration from the former OpenAI backend
 
 Deploy this function again after adding GEMINI_API_KEY. Existing OPENAI_API_KEY/OPENAI_RULES_MODEL secrets are ignored and may be removed if unused elsewhere. Migration 006 is unchanged; no additional SQL is needed if already applied. This is a backend-only update: after pulling, deploy the function; no app/native rebuild is required for this provider switch. A live Gemini call cannot be verified here without the project key/deployment.
+
+## Chat presentation
+
+Ask Dugout uses an opaque full-screen modal with a centered 720-point content limit on tablets and a full-width white keyboard background. The composer removes bottom safe-area padding and hides the informational footer while the keyboard is visible. Keyboard dismissal can be interactive on iOS, and viewport/content changes keep the latest message visible only when the reader is already near the bottom. Online status includes Gemini 3.5 Flash Lite as the configured provider label; service-fallback notices still disclose offline responses. Reference links are grouped with compact spacing. Actual iOS keyboard/rotation behavior requires simulator/device visual verification.
