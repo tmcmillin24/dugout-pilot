@@ -29,13 +29,13 @@ The app uses a local retrieval/explanation pipeline:
 1. Filter the saved reference index by sport, division and edition. Missing settings may prompt a clarification before model work.
 2. Ask the on-device model to choose up to three relevant source IDs from the eligible local catalogue.
 3. Pass only those source summaries, bounded recent dialogue and coach event notes into a fresh local session to explain the question.
-4. Validate the generated JSON and source IDs. Source titles, editions and URLs come from the app's reference index, never invented model links. An invalid/unsupported response falls back to Saved Rules and is labeled accordingly.
+4. Validate the generated JSON and source IDs. Source titles, editions and URLs come from the app's reference index, never invented model links. An invalid/unsupported response uses the reference lookup, which must decline unmatched topics. The UI is one Ask Dugout conversation; About Ask Dugout reveals capability and availability details without mode switches.
 
 No roster is sent to the model. Questions/history are retained in UI memory during the current team/profile session, not sent to Supabase or an AI provider. The AI performs no network search and cannot discover a rule absent from the saved library. Links open externally only when tapped. Coach notes and dialogue are untrusted data, not official rules or instructions.
 
 ## Coverage and limits
 
-The library contains the original 2026 USSSA 11U baseball summaries, 11U/12U baseball bat guidance for the packaged 2026/2027 editions, and a general MLB 2026 infield-fly explanation with USSSA/youth-exception context. MLB references are excluded from softball profiles. Broader sport/division packs still require reviewed source data; installing a local model does not install every USSSA rulebook.
+The library contains the original 2026 USSSA 11U baseball summaries, 11U/12U baseball bat guidance for the packaged 2026/2027 editions, and general MLB 2026 boundary-double and infield-fly explanations with USSSA/youth-exception context. MLB references are excluded from softball profiles. Broader sport/division packs still require reviewed source data; installing a local model does not install every USSSA rulebook.
 
 The model selects and explains saved material; it is not an official ruling and a valid source ID does not prove that every generated sentence is correct. Verify the linked source and local event exceptions. No full copyrighted rulebooks are bundled or automatically ingested. The current source-check tooling detects upstream changes for review; reference updates are delivered with app releases, not silently published.
 
@@ -49,3 +49,5 @@ Input/history/reference sizes are bounded and each native response is limited to
 - `node scripts/test-imports-and-rules.mjs`: saved-rule and CSV behavior.
 
 This Linux workspace has no Xcode/Swift toolchain or Apple Intelligence device. Native Swift compilation, real-model answer quality, drag gestures and simulator/physical-device layout still require testing on your Mac/device. JS export and mocked model tests are not a native compilation or model-accuracy test.
+
+Boundary regression: a fair batted ball bouncing over the fence returns the verified automatic-double summary, including time-of-pitch runner awards, without model inference. In-flight, thrown, and ambiguous boundary plays ask for clarification. Dimensions references require an explicit measurements question in both reference matching and model source selection. This prevents the reported fence-word collision; it does not make the limited library a complete rules agent.

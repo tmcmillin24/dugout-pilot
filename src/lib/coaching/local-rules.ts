@@ -1,3 +1,4 @@
+import { boundaryIntent, boundarySource, boundarySummary, isDimensionQuestion } from './boundary-rules';
 import { rules, rulesSource } from './rules';
 import { answerRulesQuestion, hasReferencePack, type RulesAnswer, type RulesContext } from './rules-context';
 export type LocalReference = {id:string;title:string;text:string;keywords:string[];sources:{title:string;url:string}[]};
@@ -13,6 +14,7 @@ export function localReferences(context:RulesContext):LocalReference[] {
     references.push({id:`usssa-2026-11u-${i}`,title:rule.keys[0],text:rule.answer,keywords:rule.keys,sources:[{title:`${rule.ref} · USSSA 11U baseball · 2026`,url:rulesSource}]});
   });
   if(context.sport==='baseball') {
+    references.push({id:'mlb-2026-boundary-double',title:'Fair batted ball bounces over the fence: automatic double',text:boundarySummary,keywords:['ground rule double','bounce','hop','fence','two bases'],sources:[{title:'MLB 2026 · 5.05(a)(6), 5.06(b)(4)',url:boundarySource}]});
     const infield=answerRulesQuestion('Explain the infield fly rule.',context);
     references.push({id:'mlb-2026-infield-fly',title:'Infield fly: ordinary effort, runners, outs and youth exceptions',text:infield.answer,keywords:['infield fly','in field fly','pop up','popup','bases loaded','ordinary effort'],sources:infield.sources??[]});
     const bats=answerRulesQuestion('What bats are allowed?',context);
@@ -36,12 +38,15 @@ export async function explainRulesLocally(options:{question:string;context:Rules
   if(signal.aborted)throw new Error('Answer stopped.');
   if(question.length>800)throw new Error('Keep the question under 800 characters.');
   const saved=answerRulesQuestion(question,context);
-  if(saved.kind==='clarification'||saved.kind==='mismatch')return{...saved,mode:'saved'};
-  const references=localReferences(context);
+  if(saved.kind==='clarification'||saved.kind==='mismatch'||(context.sport==='baseball'&&boundaryIntent(question)==='bounce'))return{...saved,mode:'saved'};
+  const references=localReferences(context).filter(ref=>!ref.sources.some(source=>source.title.includes('7.01.A'))||isDimensionQuestion(question));
   if(!references.length)return fallback(question,context,'No matching saved reference pack is installed for this profile.');
   const history=options.history.slice(-2).map(turn=>({question:turn.question.slice(0,400),answer:turn.answer.slice(0,500)}));
-  const catalogue=references.map(ref=>({id:ref.id,topic:ref.title,keywords:ref.keywords.slice(0,4)}));
-  const selection=await generate(instructions,JSON.stringify({task:'Select up to three relevant references for the current question, considering follow-up history. Return only {"sourceIds":["id"]}. Use an empty list when no topic fits. Do not answer the question yet.',context,history,question,catalogue}),signal);
+  const catalogue=references.map(ref=>({id:ref.id,topic:ref.title,keywords:ref.keywords.slice(0,4),summary:ref.text.slice(0,130)}));
+  let selectionPrompt=JSON.stringify({task:'Select up to three references that directly establish the ruling for the current question, considering follow-up history. A shared word alone is not relevance. Field measurements cannot answer a ball-in-play ruling. Never select the closest topic just because the actual rule is missing. Return only {"sourceIds":["id"]}. Use an empty list when no topic fits. Do not answer the question yet.',context,history,question,catalogue});
+  if(selectionPrompt.length>7800)selectionPrompt=JSON.stringify({...JSON.parse(selectionPrompt),catalogue:catalogue.map(ref=>({id:ref.id,topic:ref.topic,keywords:ref.keywords}))});
+  if(selectionPrompt.length>7800)return fallback(question,context,'The question context is too long.');
+  const selection=await generate(instructions,selectionPrompt,signal);
   if(signal.aborted)throw new Error('Answer stopped.');
   const ids=selectedIds(parseObject(selection)?.sourceIds,references);
   if(!ids?.length)return fallback(question,context,'No relevant saved source was selected. Showing Saved Rules.');

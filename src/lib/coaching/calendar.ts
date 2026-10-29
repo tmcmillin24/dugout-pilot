@@ -1,0 +1,4 @@
+export function dateKey(date: Date): string { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
+export function parseCalendarDate(value:string):Date|null { const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(value);if(!match)return null;const date=new Date(+match[1],+match[2]-1,+match[3],12);return dateKey(date)===value?date:null; }
+export function displayDate(value:string):string { return parseCalendarDate(value)?.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})??value; }
+export function monthCells(year:number,month:number):(string|null)[] { const start=new Date(year,month,1,12);return [...Array(start.getDay()).fill(null),...Array.from({length:new Date(year,month+1,0).getDate()},(_,i)=>dateKey(new Date(year,month,i+1,12)))]; }

@@ -1,3 +1,4 @@
+import { isDimensionQuestion } from './boundary-rules';
 // Adapted from the user-provided Thundercats rules hub. This is an edition-specific reference, not live rule retrieval.
 export const rulesSource = 'https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf';
 export const rulesEdition = 'USSSA · 11U · 2026 national rules';
@@ -11,7 +12,7 @@ export const rules: { keys: string[]; answer: string; ref: string }[] = [
       {keys:['8 players','eight players','minimum players','short player'],answer:'A team may start or continue with 8 eligible players. The ninth batting position is an out each time it comes up. Later arrivals may be added to the bottom.',ref:'Rules 7.02.G–H'},
       {keys:['mercy','run rule'],answer:'For an 11U six-inning game, the national mercy rule is 15 runs beginning in the 3rd inning or 8 runs beginning in the 4th inning.',ref:'Rule 7.03.B; Chart 7.03.B-1'},
       {keys:['inning','game length','how long'],answer:'A regulation 11U game is 6 innings, but it may be shortened by a time limit, mercy rule, weather, or because the home team has already won. The event sets any approved time limit.',ref:'Rules 7.02.B and 7.03.A'},
-      {keys:['field','base path','mound','pitching distance','fence'],answer:'The recommended 11U dimensions are 70-foot base paths and a 50-foot pitching distance. Recommended fence distances are 230 feet at the foul lines and 275 feet to center.',ref:'Rule 7.01.A; Chart 7.01.A-1'},
+      {keys:['field dimensions','base path','mound','pitching distance','fence distance','how far'],answer:'The recommended 11U dimensions are 70-foot base paths and a 50-foot pitching distance. Recommended fence distances are 230 feet at the foul lines and 275 feet to center.',ref:'Rule 7.01.A; Chart 7.01.A-1'},
       {keys:['fake bunt','slash','bunt swing'],answer:'Yes. Feinting or faking a bunt and then swinging is allowed for ages 9 and older under the national by-laws. A tournament may publish a stricter event rule, so confirm it.',ref:'Rule 7.04.F'},
       {keys:['courtesy runner','runner for catcher','runner for pitcher'],answer:'A courtesy runner may be used for the pitcher or catcher of record from the previous defensive inning. Use someone not currently in the lineup; if none is available, use the last batted out, subject to the special first-inning procedure.',ref:'Rule 7.04.B'},
       {keys:['slide','contact','jump over','collision'],answer:'When a tag play is evident, the runner must slide or seek to avoid contact. Malicious contact can result in an out and ejection. A runner who jumps over a defensive player is out whether contact occurs or not.',ref:'Rules 7.04.C–D'},
@@ -152,6 +153,6 @@ export const rulesChart = [
 ];
 export function findRule(question: string) {
   const normalized = ' ' + question.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() + ' ';
-  const ranked = rules.map(rule => ({ ...rule, score: rule.keys.reduce((n,key) => n + (normalized.includes(' '+key.replace(/[^a-z0-9]+/g,' ')+' ') ? key.split(' ').length + 1 : 0), 0) })).sort((a,b) => b.score-a.score);
+  const ranked = rules.filter(rule => rule.ref !== 'Rule 7.01.A; Chart 7.01.A-1' || isDimensionQuestion(question)).map(rule => ({ ...rule, score: rule.keys.reduce((n,key) => n + (normalized.includes(' '+key.replace(/[^a-z0-9]+/g,' ')+' ') ? key.split(' ').length + 1 : 0), 0) })).sort((a,b) => b.score-a.score);
   return ranked[0]?.score ? ranked[0] : null;
 }

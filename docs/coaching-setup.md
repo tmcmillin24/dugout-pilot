@@ -54,3 +54,5 @@ See [rules-assistant-setup.md](rules-assistant-setup.md) for the current wordmar
 Batting order rows support a 280 ms hold and vertical drag, animated placement, edge auto-scrolling, cancellation, and one server save on drop. Failed saves restore the order. Screen-reader increase/decrease actions remain available without visible arrow buttons. Pitcher selection and workload rows show only players whose roster positions include P; removing P does not delete previously saved logs. The tagline is centered beneath the wordmark.
 
 Player names use first initial and last name throughout displays, selections, diamonds, practice sharing and import previews. Roster editing and CSV matching retain full names. Games use a full-width selector with an overflow menu for editing, adding and confirmed deletion; deleting the final game preserves the roster, practices and saved defenses.
+
+Game dates and practice dates use the same inline tap-to-select calendar, with month navigation, today and clear actions. Game dates are stored separately from existing free-text time values, which remain intact. Date-only values use local calendar components to avoid UTC day shifts.
