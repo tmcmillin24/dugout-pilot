@@ -23,3 +23,11 @@ A small phone-shaped app surrounded by black, with an OS zoom control, indicates
 ## Tablet layout overflow correction
 
 Paired sections use explicit measured widths, not intrinsic flex sizing. Each pair needs at least 350 points per column plus a 22-point gap; otherwise sections stack. Child wrappers cannot exceed their parent width. This fixes the observed Practice equipment column and bench extending off-screen. The Home team selector has a fixed 96-point height and does not absorb unused vertical space. Defense groups field, save controls and outing confirmation on one side, and bench/field-innings lists on the other; lists scroll within a 300-point maximum instead of forcing a large empty area under the field. Choice grids use zero flex basis for equal widths.
+
+## Dugout display and compact practice setup
+
+Coach’s Corner uses three full-width menu rows to match Team Tools. Practice session controls use two rows of three equal columns when at least 674 points are available, and stack in narrow windows. Attendance and equipment remain separate aligned sections; equipment cells use a 76-point minimum rather than oversized 92-point cells. The compact session date opens a full-size calendar sheet.
+
+Bench and Field innings both include player counts. Overflowing lists show a persistent position rail and scrolling hint. Batting pickup uses a 160ms hold. Dugout Display fills the current window, highlights At Bat in orange and On Deck in blue, and keeps the screen awake only while open. Batter Finished saves the current player as the game’s last batter; the selector corrects or resets that position. Save failure leaves the saved position unchanged. The display adapts to one, two or three order columns and supports normal window rotation.
+
+Validation: `node scripts/test-batting-display.mjs`, `node scripts/test-tablet-layout.mjs`, TypeScript, scoped ESLint and iOS bundle export. Native device rendering, touch latency and auto-lock still require device verification.

@@ -34,14 +34,11 @@ export default function HomeScreen() {
       </View>
     </View> : !error ? <View style={s.empty}><Icon name="ball" size={40} color={palette.accent} /><DisplayText italic style={s.emptyTitle}>MAKE IT YOUR DUGOUT.</DisplayText><Text style={s.emptyCopy}>Create your team or join your coaching staff.</Text><Button onPress={() => router.push('/team-create')}>CREATE A TEAM</Button><Button secondary onPress={() => router.push('/team-join')}>JOIN A TEAM</Button></View> : <Button secondary onPress={() => { void refresh(); }}>Try again</Button>}
     {active && <>
-      <ResponsiveColumns><Section title="Coach's corner"><View style={s.actions}>
-        <Pressable accessibilityRole="button" onPress={() => { if (active.role === 'owner') router.push({ pathname: '/team-coaches', params: { id: active.id } }); else router.navigate('/teams'); }} style={({ pressed }) => [s.action, pressed && s.pressed]}>
-          <View style={s.actionTop}><Icon name="teams" color={palette.ink} size={26} /><Icon name="arrow" size={16} /></View><DisplayText style={s.actionTitle}>STAFF</DisplayText><Text style={s.actionMeta}>{active.role === 'owner' ? 'Manage team access' : 'Your coaching access'}</Text>
-        </Pressable>
-        <Pressable accessibilityRole="button" onPress={() => router.navigate('/practice')} style={({ pressed }) => [s.action, pressed && s.pressed]}>
-          <View style={s.actionTop}><Icon name="link" color={palette.ink} size={25} /><Icon name="arrow" size={16} /></View><DisplayText style={s.actionTitle}>PRACTICE</DisplayText><Text style={s.actionMeta}>Build your next session</Text>
-        </Pressable>
-      </View></Section>
+      <ResponsiveColumns><Section title="Coach's corner"><Panel>
+        <MenuRow icon="teams" title="Coaching staff" description={active.role === 'owner' ? 'Manage team access' : 'Your coaching access'} onPress={() => { if (active.role === 'owner') router.push({ pathname: '/team-coaches', params: { id: active.id } }); else router.navigate('/teams'); }} />
+        <MenuRow icon="link" title="Practice" description="Build your next session" onPress={() => router.navigate('/practice')} />
+        <MenuRow icon="ball" title="Lineups" description="Set your game-day order" onPress={() => router.navigate('/lineups')} last />
+      </Panel></Section>
       <Section title="Team tools"><Panel><MenuRow icon="teams" title="Roster" description="Players & jersey numbers" onPress={() => router.push('/roster')} /><MenuRow icon="shield" title="Rules desk" description="League rules & quick answers" onPress={() => router.push('/rules')} /><MenuRow icon="link" title="Imports" description="Bring in exported game stats" onPress={() => router.navigate('/integrations')} last /></Panel></Section></ResponsiveColumns>
       {active.access_status === 'trial' && active.trial_ends_at && <Panel><View style={s.trial}>
         <View style={s.trialTop}><DisplayText style={s.trialTitle}>ELITE TRIAL</DisplayText><Text style={s.trialDate}>Ends {new Date(active.trial_ends_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</Text></View>
