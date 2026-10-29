@@ -1,3 +1,4 @@
+import { InlineNameEditor } from './inline-name-editor';
 import { palette } from './app-ui';
 import { randomUUID } from 'expo-crypto';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
@@ -40,7 +41,7 @@ export function JoinTeam({ onJoined }: { onJoined: (teamId: string) => Promise<v
 }
 
 export function OwnerPanel({ team, onChanged, view = 'coaches' }: { team: Team; onChanged: () => Promise<void>; view?: 'settings' | 'coaches' | 'invite' }) {
-  const [name, setName] = useState(team.name);
+  const [editingName, setEditingName] = useState(false);
   const [email, setEmail] = useState('');
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [invitations, setInvitations] = useState<TeamInvitation[]>([]);
@@ -90,8 +91,7 @@ export function OwnerPanel({ team, onChanged, view = 'coaches' }: { team: Team; 
   return <View style={s.section}>
     {view === 'settings' && <>
     <Text style={s.label}>Team name</Text>
-    <TextInput accessibilityLabel="Edit team name" style={s.input} value={name} onChangeText={setName} editable={!busy} maxLength={80} />
-    <Action primary disabled={busy || name.trim().length < 2} onPress={() => { void run(async () => { await renameTeam(team.id, name); await onChanged(); if (alive.current) setNotice('Team name saved.'); }); }}>Save team name</Action>
+    {editingName?<InlineNameEditor value={team.name} label="Team name" minLength={2} onCancel={()=>setEditingName(false)} onSave={async name=>{await renameTeam(team.id,name);await onChanged();if(alive.current){setEditingName(false);setNotice('Team name saved.');}return true;}}/>:<View style={s.section}><Text style={s.body}>{team.name}</Text><Action disabled={busy} onPress={()=>setEditingName(true)}>Edit name</Action></View>}
     </>}
     {view === 'invite' && <>
     <Text style={s.label}>Coach email</Text>
