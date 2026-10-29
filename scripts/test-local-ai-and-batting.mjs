@@ -16,7 +16,7 @@ function loader(mocks={}) {
 const load=loader();const {explainRulesLocally,localReferences,selectedIds}=load('../src/lib/coaching/local-rules.ts');
 const context={sport:'baseball',organization:'usssa',age:'11U',season:'2026'};
 const options={question:'Explain infield fly.',context,history:[],eventNotes:'',signal:new AbortController().signal};
-assert.ok(localReferences(context).length>20);assert.equal(localReferences({...context,sport:'fastpitch'}).length,0);
+assert.ok(localReferences(context).length>20);assert.equal(localReferences({...context,sport:'fastpitch'}).some(ref=>ref.id.startsWith('mlb-')),false);assert.ok(localReferences({...context,sport:'fastpitch'}).some(ref=>ref.id.endsWith('-bats')));
 assert.equal(selectedIds(['fake-source'],localReferences(context)),null);
 let calls=[];
 let response=await explainRulesLocally({...options,generate:async(instructions,prompt)=>{calls.push({instructions,prompt});return calls.length===1?'```json\n{"sourceIds":["mlb-2026-infield-fly"]}\n```':'{"answer":"A short explanation of the saved infield-fly reference.","sourceIds":["mlb-2026-infield-fly"]}';}});
@@ -79,3 +79,6 @@ invokeResult={data:{answer:'A ruling [1]',kind:'reference',citations:[{start:9,e
 invokeResult={data:null,error:{context:new Response('{}',{status:403})}};await assert.rejects(client.askRulesOnline(onlineRequest),error=>error.noFallback===true);
 invokeResult={data:null,error:{context:new Response(JSON.stringify({code:'not_configured'}),{status:503})}};await assert.rejects(client.askRulesOnline(onlineRequest),/isn’t connected yet/);
 console.log('PASS: online client bounded dialogue, no client roster/keys, official-source validation, access denial and setup notices.');
+
+for(const season of ['2026','2027'])for(let age=4;age<=18;age++)for(const question of ['Can a pitcher throw tomorrow?','What bats are legal?']){let called=false;const answer=await explainRulesLocally({...options,question,context:{...context,season,age:`${age}U`},generate:async()=>{called=true;throw Error('No model needed');}});assert.equal(answer.kind,'reference');assert.equal(called,false);}
+console.log('PASS: core FAQs answer offline for 4U–18U baseball without model or network.');

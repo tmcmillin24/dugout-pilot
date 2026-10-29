@@ -27,7 +27,7 @@ const calls=h.calls.filter(call=>call.url.includes('generativelanguage'));assert
 for(const [options,status] of [[{authFailure:true},401],[{member:false},403],[{expired:true},403],[{noKey:true},503],[{limited:true},429]]){h=harness(options);assert.equal((await h.handler(req())).status,status);assert.equal(h.calls.filter(c=>c.url.includes('generativelanguage')).length,0);}
 h=harness({quota:true});assert.equal((await h.handler(req())).status,429);assert.equal(h.calls.filter(c=>c.url.includes('generativelanguage')).length,1);
 h=harness({failure:true});response=await h.handler(req());assert.equal(response.status,502);assert.ok(!(await response.text()).includes('private provider failure'));
-h=harness({sport:'fastpitch'});data=await(await h.handler(req())).json();assert.equal(data.kind,'unverified');assert.equal(h.calls.filter(c=>c.url.includes('generativelanguage')).length,0);
+h=harness({sport:'slowpitch'});data=await(await h.handler(req())).json();assert.equal(data.kind,'unverified');assert.equal(h.calls.filter(c=>c.url.includes('generativelanguage')).length,0);
 assert.equal(referencesFor({...context,age:'12U',season:'2027'}).some(r=>r.id.startsWith('usssa-2026-11u-')),false);
 assert.ok(referencesFor({...context,age:'',season:''}).length>0);
 const refs=referencesFor(context);
@@ -46,3 +46,8 @@ for(const [question,id] of [['What is obstruction considered?','mlb-2026-obstruc
 }
 assert.equal(referencesFor({...context,sport:'fastpitch'}).some(ref=>ref.id.includes('obstruction')),false);
 console.log('PASS: obstruction/interference references reach Gemini with definition guidance and valid citations; MLB fallback excluded from softball.');
+
+for(const season of ['2026','2027'])for(let age=4;age<=18;age++){const scoped=referencesFor({...context,season,age:`${age}U`});for(const topic of ['bats','pitching'])assert.ok(scoped.some(ref=>ref.id===`usssa-baseball-${season}-${age}U-${topic}`));assert.ok(!scoped.some(ref=>ref.id.startsWith('usssa-baseball-')&&!ref.id.includes(`-${season}-${age}U-`)));}
+assert.ok(referencesFor({...context,sport:'fastpitch',age:'16U'}).some(ref=>ref.id==='usssa-fastpitch-2026-16U-bats'));
+assert.ok(!referencesFor({...context,sport:'fastpitch'}).some(ref=>ref.id.startsWith('mlb-')));
+console.log('PASS: age-specific bat/pitching coverage for every baseball division 4U–18U in 2026/2027; fastpitch references remain separate.');

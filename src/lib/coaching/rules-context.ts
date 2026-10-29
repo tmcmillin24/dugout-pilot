@@ -1,3 +1,5 @@
+import { coreReferences, coreTopic, baseballBooks, fastpitchBook } from './usssa-core';
+import { contactReferences } from './contact-rules';
 import { boundaryIntent, boundarySource, boundarySummary } from './boundary-rules';
 import sources from './usssa-sources.json';
 import { findRule, rulesSource } from './rules';
@@ -11,6 +13,8 @@ export function getRulesContext(board: RulesBoard): RulesContext {
 export function hasReferencePack(context: RulesContext) { return context.sport === 'baseball' && context.organization === 'usssa' && context.age === '11U' && context.season === '2026'; }
 export function contextLabel(context: RulesContext) { return [organizationNames[context.organization], context.age, sportNames[context.sport]].filter(Boolean).join(' · '); }
 export function officialRulesLink(context: RulesContext) {
+  if (context.sport === 'baseball' && baseballBooks[context.season]) return baseballBooks[context.season];
+  if (context.sport === 'fastpitch' && context.season === '2026') return fastpitchBook;
   if (hasReferencePack(context)) return rulesSource;
   return sources.sports[context.sport].landingUrl;
 }
@@ -22,6 +26,16 @@ export function answerRulesQuestion(question: string, selected: RulesContext): R
   const otherAuthority = /\b(?:USA\s+Softball|NFHS|NCAA|Little\s+League)\b/i.test(question);
   const mismatch = otherAuthority || ages.some(age => age !== context.age) || (/\bsoftball\b/i.test(question) && context.sport === 'baseball') || (/\bbaseball\b/i.test(question) && context.sport !== 'baseball');
   if (mismatch) return { answer: 'That question appears to use a different rules authority, sport, or age group. Update your team rules profile before checking this play.', reference: 'Check team rules profile', url: null, kind: 'mismatch' };
+  const topic = coreTopic(question);
+  if (topic) {
+    if (!context.age || !context.season) return { answer: 'Choose the age division and season in Team rules first. Pitching and bat rules depend on that profile.', reference: 'Division and season needed', url: null, kind: 'clarification' };
+    const core = coreReferences(context).find(ref => ref.id.endsWith('-'+topic));
+    if (core) return { answer: core.text, reference: core.sources[0].title, url: core.sources[0].url, sources: core.sources, kind: 'reference' };
+  }
+  if (context.sport === 'baseball') {
+    const contact = contactReferences.find(ref => new RegExp(ref.id.endsWith('obstruction') ? 'obstruct' : 'interferen', 'i').test(question));
+    if (contact) return { answer: contact.text, reference: contact.sources[0].title, url: contact.sources[0].url, sources: contact.sources, kind: 'reference' };
+  }
   const boundary = boundaryIntent(question);
   if (context.sport === 'baseball' && boundary === 'bounce') return {answer:boundarySummary,reference:'MLB 2026 · 5.05(a)(6), 5.06(b)(4); USSSA/event exceptions apply',url:boundarySource,kind:'reference'};
   if (context.sport === 'baseball' && boundary === 'unclear') return {answer:'Did the fair batted ball touch the ground before going over the fence, clear it in flight, or was it thrown out of play? Those plays have different rulings.',reference:'Boundary play: more detail needed',url:null,kind:'clarification'};

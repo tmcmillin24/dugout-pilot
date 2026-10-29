@@ -473,22 +473,20 @@
   "bats": {
     "2026-11U": [
       {
-        "id": "usssa-2026-11U-bats",
-        "title": "Legal bats, certification and equipment",
-        "text": "For 11U USSSA baseball, look for permanent USSSA 1.15 BPF certification, BBCOR .50 certification, or wood from a licensed USSSA manufacturer. Permanently marked USA Baseball bats are also accepted where BBCOR is not required. Check the event’s approved exceptions and any current disallowed-bat list before using a specific model.",
+        "id": "usssa-baseball-2026-11U-bats",
+        "title": "11U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
         "keywords": [
-          "bats",
           "bat",
+          "bats",
           "bbcor",
           "bpf",
           "drop",
-          "equipment",
-          "stamp",
-          "usa"
+          "legal"
         ],
         "sources": [
           {
-            "title": "USSSA 2026 baseball · 7.01.C–D",
+            "title": "USSSA 2026 11U baseball · 7.01.C–D",
             "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
           }
         ]
@@ -496,22 +494,20 @@
     ],
     "2026-12U": [
       {
-        "id": "usssa-2026-12U-bats",
-        "title": "Legal bats, certification and equipment",
-        "text": "For 12U USSSA baseball, look for permanent USSSA 1.15 BPF certification, BBCOR .50 certification, or wood from a licensed USSSA manufacturer. Permanently marked USA Baseball bats are also accepted where BBCOR is not required. Check the event’s approved exceptions and any current disallowed-bat list before using a specific model.",
+        "id": "usssa-baseball-2026-12U-bats",
+        "title": "12U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
         "keywords": [
-          "bats",
           "bat",
+          "bats",
           "bbcor",
           "bpf",
           "drop",
-          "equipment",
-          "stamp",
-          "usa"
+          "legal"
         ],
         "sources": [
           {
-            "title": "USSSA 2026 baseball · 7.01.C–D",
+            "title": "USSSA 2026 12U baseball · 7.01.C–D",
             "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
           }
         ]
@@ -519,22 +515,20 @@
     ],
     "2027-11U": [
       {
-        "id": "usssa-2027-11U-bats",
-        "title": "Legal bats, certification and equipment",
-        "text": "For 11U USSSA baseball, look for permanent USSSA 1.15 BPF certification, BBCOR .50 certification, or wood from a licensed USSSA manufacturer. Permanently marked USA Baseball bats are also accepted where BBCOR is not required. Check the event’s approved exceptions and any current disallowed-bat list before using a specific model.",
+        "id": "usssa-baseball-2027-11U-bats",
+        "title": "11U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
         "keywords": [
-          "bats",
           "bat",
+          "bats",
           "bbcor",
           "bpf",
           "drop",
-          "equipment",
-          "stamp",
-          "usa"
+          "legal"
         ],
         "sources": [
           {
-            "title": "USSSA 2027 baseball · 7.01.C–D",
+            "title": "USSSA 2027 11U baseball · 7.01.C–D",
             "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
           }
         ]
@@ -542,26 +536,1871 @@
     ],
     "2027-12U": [
       {
-        "id": "usssa-2027-12U-bats",
-        "title": "Legal bats, certification and equipment",
-        "text": "For 12U USSSA baseball, look for permanent USSSA 1.15 BPF certification, BBCOR .50 certification, or wood from a licensed USSSA manufacturer. Permanently marked USA Baseball bats are also accepted where BBCOR is not required. Check the event’s approved exceptions and any current disallowed-bat list before using a specific model.",
+        "id": "usssa-baseball-2027-12U-bats",
+        "title": "12U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
         "keywords": [
-          "bats",
           "bat",
+          "bats",
           "bbcor",
           "bpf",
           "drop",
-          "equipment",
-          "stamp",
-          "usa"
+          "legal"
         ],
         "sources": [
           {
-            "title": "USSSA 2027 baseball · 7.01.C–D",
+            "title": "USSSA 2027 12U baseball · 7.01.C–D",
             "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
           }
         ]
       }
     ]
+  },
+  "scoped": {
+    "baseball-2026-4U": [
+      {
+        "id": "usssa-baseball-2026-4U-bats",
+        "title": "4U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 4U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-4U-pitching",
+        "title": "4U baseball: pitching",
+        "text": "Identify tee-ball, coach-pitch, machine-pitch or player-pitch format before applying pitcher eligibility rules.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 4U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-5U": [
+      {
+        "id": "usssa-baseball-2026-5U-bats",
+        "title": "5U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 5U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-5U-pitching",
+        "title": "5U baseball: pitching",
+        "text": "Identify tee-ball, coach-pitch, machine-pitch or player-pitch format before applying pitcher eligibility rules.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 5U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-6U": [
+      {
+        "id": "usssa-baseball-2026-6U-bats",
+        "title": "6U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 6U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-6U-pitching",
+        "title": "6U baseball: pitching",
+        "text": "Identify tee-ball, coach-pitch, machine-pitch or player-pitch format before applying pitcher eligibility rules.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 6U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-7U": [
+      {
+        "id": "usssa-baseball-2026-7U-bats",
+        "title": "7U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 7U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-7U-pitching",
+        "title": "7U baseball: pitching",
+        "text": "Player-pitch 7U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 7U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-8U": [
+      {
+        "id": "usssa-baseball-2026-8U-bats",
+        "title": "8U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 8U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-8U-pitching",
+        "title": "8U baseball: pitching",
+        "text": "Player-pitch 8U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 8U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-9U": [
+      {
+        "id": "usssa-baseball-2026-9U-bats",
+        "title": "9U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 9U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-9U-pitching",
+        "title": "9U baseball: pitching",
+        "text": "Player-pitch 9U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 9U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-10U": [
+      {
+        "id": "usssa-baseball-2026-10U-bats",
+        "title": "10U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 10U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-10U-pitching",
+        "title": "10U baseball: pitching",
+        "text": "Player-pitch 10U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 10U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-11U": [
+      {
+        "id": "usssa-baseball-2026-11U-bats",
+        "title": "11U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 11U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-11U-pitching",
+        "title": "11U baseball: pitching",
+        "text": "Player-pitch 11U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 11U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-12U": [
+      {
+        "id": "usssa-baseball-2026-12U-bats",
+        "title": "12U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 12U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-12U-pitching",
+        "title": "12U baseball: pitching",
+        "text": "Player-pitch 12U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 12U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-13U": [
+      {
+        "id": "usssa-baseball-2026-13U-bats",
+        "title": "13U baseball: bats",
+        "text": "13U uses maximum drop -8 with USSSA 1.15 BPF or accepted USA certification; BBCOR or licensed wood also qualify. Elite World Series 13 Majors requires -5, BBCOR or wood. Certification and event exceptions still apply. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 13U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-13U-pitching",
+        "title": "13U baseball: pitching",
+        "text": "Player-pitch 13U: daily maximum 7 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 13U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-14U": [
+      {
+        "id": "usssa-baseball-2026-14U-bats",
+        "title": "14U baseball: bats",
+        "text": "14U’s national standard is -3 BBCOR or wood; a state may adopt a -5 event exception. Verify the event’s adopted rule. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 14U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-14U-pitching",
+        "title": "14U baseball: pitching",
+        "text": "Player-pitch 14U: daily maximum 7 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 14U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-15U": [
+      {
+        "id": "usssa-baseball-2026-15U-bats",
+        "title": "15U baseball: bats",
+        "text": "Scholastic events require NFHS-compliant -3 BBCOR or licensed wood. Confirm whether this event uses the scholastic rules. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 15U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-15U-pitching",
+        "title": "15U baseball: pitching",
+        "text": "The scholastic 15U–18U chart lists unlimited innings. Confirm scholastic/event rules; do not apply younger divisions’ innings limits.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 15U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-16U": [
+      {
+        "id": "usssa-baseball-2026-16U-bats",
+        "title": "16U baseball: bats",
+        "text": "Scholastic events require NFHS-compliant -3 BBCOR or licensed wood. Confirm whether this event uses the scholastic rules. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 16U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-16U-pitching",
+        "title": "16U baseball: pitching",
+        "text": "The scholastic 15U–18U chart lists unlimited innings. Confirm scholastic/event rules; do not apply younger divisions’ innings limits.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 16U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-17U": [
+      {
+        "id": "usssa-baseball-2026-17U-bats",
+        "title": "17U baseball: bats",
+        "text": "Scholastic events require NFHS-compliant -3 BBCOR or licensed wood. Confirm whether this event uses the scholastic rules. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 17U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-17U-pitching",
+        "title": "17U baseball: pitching",
+        "text": "The scholastic 15U–18U chart lists unlimited innings. Confirm scholastic/event rules; do not apply younger divisions’ innings limits.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 17U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2026-18U": [
+      {
+        "id": "usssa-baseball-2026-18U-bats",
+        "title": "18U baseball: bats",
+        "text": "Scholastic events require NFHS-compliant -3 BBCOR or licensed wood. Confirm whether this event uses the scholastic rules. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 18U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2026-18U-pitching",
+        "title": "18U baseball: pitching",
+        "text": "The scholastic 15U–18U chart lists unlimited innings. Confirm scholastic/event rules; do not apply younger divisions’ innings limits.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 18U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2026_USSSA_National_By-Laws.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-4U": [
+      {
+        "id": "usssa-baseball-2027-4U-bats",
+        "title": "4U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 4U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-4U-pitching",
+        "title": "4U baseball: pitching",
+        "text": "Identify tee-ball, coach-pitch, machine-pitch or player-pitch format before applying pitcher eligibility rules.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 4U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-5U": [
+      {
+        "id": "usssa-baseball-2027-5U-bats",
+        "title": "5U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 5U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-5U-pitching",
+        "title": "5U baseball: pitching",
+        "text": "Identify tee-ball, coach-pitch, machine-pitch or player-pitch format before applying pitcher eligibility rules.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 5U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-6U": [
+      {
+        "id": "usssa-baseball-2027-6U-bats",
+        "title": "6U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 6U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-6U-pitching",
+        "title": "6U baseball: pitching",
+        "text": "Identify tee-ball, coach-pitch, machine-pitch or player-pitch format before applying pitcher eligibility rules.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 6U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-7U": [
+      {
+        "id": "usssa-baseball-2027-7U-bats",
+        "title": "7U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 7U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-7U-pitching",
+        "title": "7U baseball: pitching",
+        "text": "Player-pitch 7U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 7U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-8U": [
+      {
+        "id": "usssa-baseball-2027-8U-bats",
+        "title": "8U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 8U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-8U-pitching",
+        "title": "8U baseball: pitching",
+        "text": "Player-pitch 8U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 8U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-9U": [
+      {
+        "id": "usssa-baseball-2027-9U-bats",
+        "title": "9U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 9U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-9U-pitching",
+        "title": "9U baseball: pitching",
+        "text": "Player-pitch 9U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 9U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-10U": [
+      {
+        "id": "usssa-baseball-2027-10U-bats",
+        "title": "10U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 10U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-10U-pitching",
+        "title": "10U baseball: pitching",
+        "text": "Player-pitch 10U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 10U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-11U": [
+      {
+        "id": "usssa-baseball-2027-11U-bats",
+        "title": "11U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 11U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-11U-pitching",
+        "title": "11U baseball: pitching",
+        "text": "Player-pitch 11U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 11U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-12U": [
+      {
+        "id": "usssa-baseball-2027-12U-bats",
+        "title": "12U baseball: bats",
+        "text": "Use USSSA 1.15 BPF, BBCOR .50, licensed wood, or USA Baseball certification where BBCOR is not required. No national drop restriction is stated for this division. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 12U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-12U-pitching",
+        "title": "12U baseball: pitching",
+        "text": "Player-pitch 12U: daily maximum 6 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 12U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-13U": [
+      {
+        "id": "usssa-baseball-2027-13U-bats",
+        "title": "13U baseball: bats",
+        "text": "13U uses maximum drop -8 with USSSA 1.15 BPF or accepted USA certification; BBCOR or licensed wood also qualify. Elite World Series 13 Majors requires -5, BBCOR or wood. Certification and event exceptions still apply. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 13U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-13U-pitching",
+        "title": "13U baseball: pitching",
+        "text": "Player-pitch 13U: daily maximum 7 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 13U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-14U": [
+      {
+        "id": "usssa-baseball-2027-14U-bats",
+        "title": "14U baseball: bats",
+        "text": "14U’s national standard is -3 BBCOR or wood; a state may adopt a -5 event exception. Verify the event’s adopted rule. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 14U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-14U-pitching",
+        "title": "14U baseball: pitching",
+        "text": "Player-pitch 14U: daily maximum 7 innings; three-day maximum 8. Next-day threshold: 3 innings. Rest after more than 3 in a day, 8 over two days, or three consecutive pitching days. One out is one-third inning. Ask for outs recorded today and each preceding day before deciding eligibility tomorrow. Approved major events may use pitch counts.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 14U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-15U": [
+      {
+        "id": "usssa-baseball-2027-15U-bats",
+        "title": "15U baseball: bats",
+        "text": "Scholastic events require NFHS-compliant -3 BBCOR or licensed wood. Confirm whether this event uses the scholastic rules. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 15U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-15U-pitching",
+        "title": "15U baseball: pitching",
+        "text": "The scholastic 15U–18U chart lists unlimited innings. Confirm scholastic/event rules; do not apply younger divisions’ innings limits.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 15U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-16U": [
+      {
+        "id": "usssa-baseball-2027-16U-bats",
+        "title": "16U baseball: bats",
+        "text": "Scholastic events require NFHS-compliant -3 BBCOR or licensed wood. Confirm whether this event uses the scholastic rules. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 16U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-16U-pitching",
+        "title": "16U baseball: pitching",
+        "text": "The scholastic 15U–18U chart lists unlimited innings. Confirm scholastic/event rules; do not apply younger divisions’ innings limits.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 16U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-17U": [
+      {
+        "id": "usssa-baseball-2027-17U-bats",
+        "title": "17U baseball: bats",
+        "text": "Scholastic events require NFHS-compliant -3 BBCOR or licensed wood. Confirm whether this event uses the scholastic rules. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 17U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-17U-pitching",
+        "title": "17U baseball: pitching",
+        "text": "The scholastic 15U–18U chart lists unlimited innings. Confirm scholastic/event rules; do not apply younger divisions’ innings limits.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 17U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "baseball-2027-18U": [
+      {
+        "id": "usssa-baseball-2027-18U-bats",
+        "title": "18U baseball: bats",
+        "text": "Scholastic events require NFHS-compliant -3 BBCOR or licensed wood. Confirm whether this event uses the scholastic rules. Check current disallowed models and event rules.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 18U baseball · 7.01.C–D",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-baseball-2027-18U-pitching",
+        "title": "18U baseball: pitching",
+        "text": "The scholastic 15U–18U chart lists unlimited innings. Confirm scholastic/event rules; do not apply younger divisions’ innings limits.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2027 18U baseball · 7.05.B; Chart 7.05.B-1",
+            "url": "https://www.usssabaseball.org/images/2025/USSSA_National_By-Laws_9-12-2026.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-4U": [
+      {
+        "id": "usssa-fastpitch-2026-4U-bats",
+        "title": "4U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 4U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-4U-pitching",
+        "title": "4U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 4U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-5U": [
+      {
+        "id": "usssa-fastpitch-2026-5U-bats",
+        "title": "5U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 5U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-5U-pitching",
+        "title": "5U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 5U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-6U": [
+      {
+        "id": "usssa-fastpitch-2026-6U-bats",
+        "title": "6U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 6U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-6U-pitching",
+        "title": "6U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 6U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-7U": [
+      {
+        "id": "usssa-fastpitch-2026-7U-bats",
+        "title": "7U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 7U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-7U-pitching",
+        "title": "7U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 7U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-8U": [
+      {
+        "id": "usssa-fastpitch-2026-8U-bats",
+        "title": "8U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 8U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-8U-pitching",
+        "title": "8U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 8U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-9U": [
+      {
+        "id": "usssa-fastpitch-2026-9U-bats",
+        "title": "9U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 9U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-9U-pitching",
+        "title": "9U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 9U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-10U": [
+      {
+        "id": "usssa-fastpitch-2026-10U-bats",
+        "title": "10U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 10U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-10U-pitching",
+        "title": "10U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 10U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-11U": [
+      {
+        "id": "usssa-fastpitch-2026-11U-bats",
+        "title": "11U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 11U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-11U-pitching",
+        "title": "11U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 11U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-12U": [
+      {
+        "id": "usssa-fastpitch-2026-12U-bats",
+        "title": "12U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 12U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-12U-pitching",
+        "title": "12U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 12U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-13U": [
+      {
+        "id": "usssa-fastpitch-2026-13U-bats",
+        "title": "13U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 13U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-13U-pitching",
+        "title": "13U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 13U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-14U": [
+      {
+        "id": "usssa-fastpitch-2026-14U-bats",
+        "title": "14U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 14U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-14U-pitching",
+        "title": "14U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 14U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-15U": [
+      {
+        "id": "usssa-fastpitch-2026-15U-bats",
+        "title": "15U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 15U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-15U-pitching",
+        "title": "15U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 15U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-16U": [
+      {
+        "id": "usssa-fastpitch-2026-16U-bats",
+        "title": "16U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 16U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-16U-pitching",
+        "title": "16U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 16U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-17U": [
+      {
+        "id": "usssa-fastpitch-2026-17U-bats",
+        "title": "17U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 17U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-17U-pitching",
+        "title": "17U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 17U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2026-18U": [
+      {
+        "id": "usssa-fastpitch-2026-18U-bats",
+        "title": "18U fastpitch: bats",
+        "text": "Non-wood fastpitch bats require a licensed manufacturer and the 2020 Fastpitch Only or accepted 2014 USSSA certification mark, with 1.20 BPF or less. Licensed wood bats need no BPF mark. Withdrawn/non-compliant bats are illegal. Check current model status separately.",
+        "keywords": [
+          "bat",
+          "bats",
+          "bbcor",
+          "bpf",
+          "drop",
+          "legal"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 18U fastpitch · 18th edition · 2-10",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      },
+      {
+        "id": "usssa-fastpitch-2026-18U-pitching",
+        "title": "18U fastpitch: pitching",
+        "text": "The reviewed fastpitch pitching chapter does not specify baseball-style daily innings or next-day rest limits. Do not apply baseball’s 3/6/8 chart to softball. Check event restrictions before confirming eligibility tomorrow.",
+        "keywords": [
+          "pitcher",
+          "pitching",
+          "tomorrow",
+          "next day",
+          "rest",
+          "innings"
+        ],
+        "sources": [
+          {
+            "title": "USSSA 2026 18U fastpitch · 18th edition · Rule 6",
+            "url": "https://dev-newsfeed.usssa.com/wp-content/uploads/2025/12/usssa-fastpitch-rulebook-edition-18.pdf"
+          }
+        ]
+      }
+    ],
+    "fastpitch-2027-4U": [],
+    "fastpitch-2027-5U": [],
+    "fastpitch-2027-6U": [],
+    "fastpitch-2027-7U": [],
+    "fastpitch-2027-8U": [],
+    "fastpitch-2027-9U": [],
+    "fastpitch-2027-10U": [],
+    "fastpitch-2027-11U": [],
+    "fastpitch-2027-12U": [],
+    "fastpitch-2027-13U": [],
+    "fastpitch-2027-14U": [],
+    "fastpitch-2027-15U": [],
+    "fastpitch-2027-16U": [],
+    "fastpitch-2027-17U": [],
+    "fastpitch-2027-18U": [],
+    "slowpitch-2026-4U": [],
+    "slowpitch-2026-5U": [],
+    "slowpitch-2026-6U": [],
+    "slowpitch-2026-7U": [],
+    "slowpitch-2026-8U": [],
+    "slowpitch-2026-9U": [],
+    "slowpitch-2026-10U": [],
+    "slowpitch-2026-11U": [],
+    "slowpitch-2026-12U": [],
+    "slowpitch-2026-13U": [],
+    "slowpitch-2026-14U": [],
+    "slowpitch-2026-15U": [],
+    "slowpitch-2026-16U": [],
+    "slowpitch-2026-17U": [],
+    "slowpitch-2026-18U": [],
+    "slowpitch-2027-4U": [],
+    "slowpitch-2027-5U": [],
+    "slowpitch-2027-6U": [],
+    "slowpitch-2027-7U": [],
+    "slowpitch-2027-8U": [],
+    "slowpitch-2027-9U": [],
+    "slowpitch-2027-10U": [],
+    "slowpitch-2027-11U": [],
+    "slowpitch-2027-12U": [],
+    "slowpitch-2027-13U": [],
+    "slowpitch-2027-14U": [],
+    "slowpitch-2027-15U": [],
+    "slowpitch-2027-16U": [],
+    "slowpitch-2027-17U": [],
+    "slowpitch-2027-18U": []
   }
 }
