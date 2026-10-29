@@ -5,7 +5,7 @@ import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { useState, type ComponentProps, type ReactNode, type ComponentRef, type RefObject } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ScrollViewProps } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Team } from '@/lib/teams';
 
 export const palette = { canvas: '#F1F3F5', panel: '#FFFFFF', raised: '#E8EDF1', line: '#D8DFE5', ink: '#082E4B', muted: '#637182', accent: '#F45C1B', badgeSurface: '#FFF0E8', error: '#B3261E', cardInk: '#082E4B', cardMuted: '#637182', cardLine: '#E4E8EC', cardTint: '#FFF0E8', navy: '#082E4B', white: '#FFFFFF' };
@@ -40,16 +40,19 @@ export function Icon({ name, color = palette.muted, size = 22 }: { name: IconNam
 export function Screen({ title, subtitle, children, back = false, onRefresh, trailing, hideTitle = false, scrollRef, scrollEnabled = true, onScroll }: { title: string; eyebrow?: string; subtitle?: string; children: ReactNode; back?: boolean; onRefresh?: () => Promise<void>; trailing?: ReactNode; hideTitle?: boolean; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>; scrollEnabled?: boolean; onScroll?: ScrollViewProps['onScroll'] }) {
   const { width } = useWindowDimensions();
   const tablet = width >= 768;
+  const roomy = width >= 600;
+  const insets = useSafeAreaInsets();
+  const windowControlsInset = Platform.OS === 'ios' && Platform.isPad && insets.top < 24 ? 26 : 0;
   const [refreshing, setRefreshing] = useState(false);
   const assistant = useRulesAssistant();
   return <SafeAreaView edges={['top', 'left', 'right']} style={ui.screen}>
-    <View style={[ui.toolbar, tablet && { paddingHorizontal: 32, height: 88 }]}>
+    <View style={[ui.toolbar, { width: '100%', maxWidth: 1180, alignSelf: 'center', paddingHorizontal: tablet ? 32 : roomy ? 24 : 16, height: (tablet ? 88 : 78) + windowControlsInset, paddingTop: windowControlsInset }]}>
       {back ? <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/'); }} style={ui.headerButton}><Icon name="back" color={palette.ink} size={20} /></Pressable> : null}
       <View style={ui.brandGroup}><Image source={require('@/assets/images/dugout-pilot-wordmark.jpeg')} contentFit="contain" contentPosition="left center" accessibilityLabel="Dugout Pilot" style={ui.brandLogo} /></View>
       <View style={ui.toolbarEnd}>{assistant && <Pressable accessibilityRole="button" accessibilityLabel="Ask the rules assistant" onPress={() => assistant.show()} style={ui.assistantButton}><Icon name="chat" color={palette.ink} size={18} /><Text style={ui.assistantLabel}>{'ASK\nDUGOUT'}</Text></Pressable>}{trailing ?? <Pressable accessibilityRole="button" accessibilityLabel="Open account" onPress={() => router.push('/account')} style={ui.headerButton}><Icon name="account" color={palette.ink} size={25} /></Pressable>}</View>
     </View>
     <KeyboardAvoidingView style={ui.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView ref={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} scrollEventThrottle={16} style={{ backgroundColor: palette.canvas }} contentContainerStyle={[ui.content, tablet && { maxWidth: 1180, paddingHorizontal: 32, paddingTop: 28, paddingBottom: 40, gap: 26 }]} keyboardShouldPersistTaps="handled" refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} tintColor={palette.accent} onRefresh={() => { setRefreshing(true); void onRefresh().finally(() => setRefreshing(false)); }} /> : undefined}>
+      <ScrollView ref={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} scrollEventThrottle={16} style={{ backgroundColor: palette.canvas }} contentContainerStyle={[ui.content, roomy && { maxWidth: 1180, paddingHorizontal: tablet ? 32 : 24, paddingTop: tablet ? 28 : 24, paddingBottom: 40, gap: 24 }]} keyboardShouldPersistTaps="handled" refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} tintColor={palette.accent} onRefresh={() => { setRefreshing(true); void onRefresh().finally(() => setRefreshing(false)); }} /> : undefined}>
         {!hideTitle && <View style={ui.intro}><DisplayText accessibilityRole="header" style={ui.title}>{title.toUpperCase()}</DisplayText>{subtitle && <Text style={ui.subtitle}>{subtitle}</Text>}</View>}
         {children}
       </ScrollView>

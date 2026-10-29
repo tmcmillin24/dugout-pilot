@@ -10,6 +10,7 @@ import { useTeams } from '@/providers/team-provider';
 
 export default function HomeScreen() {
   const { teams, active, loading, error, notice, refresh, select } = useTeams();
+  const [heroWidth, setHeroWidth] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60000); return () => clearInterval(timer); }, []);
   const daysLeft = active?.trial_ends_at ? Math.max(0, Math.ceil((Date.parse(active.trial_ends_at) - now) / 86400000)) : 0;
@@ -20,10 +21,10 @@ export default function HomeScreen() {
       <Pressable accessibilityRole="button" accessibilityLabel="Add a team" onPress={() => router.push('/team-create')} style={s.railItem}><View style={s.railCrest}><Icon name="plus" color={palette.ink} size={20} /></View><Text style={s.railName}>Add team</Text></Pressable>
     </ScrollView>}
     {loading ? <Loading /> : active ? <View>
-      <View style={s.hero}>
-        <Image source={require('@/assets/images/clubhouse-field.svg')} contentFit="contain" style={s.field} pointerEvents="none" />
+      <View onLayout={event => setHeroWidth(event.nativeEvent.layout.width)} style={[s.hero, heroWidth >= 700 && { minHeight: 280, padding: 28 }]}> 
+        <Image source={require('@/assets/images/clubhouse-field.svg')} contentFit="contain" style={[s.field, heroWidth >= 700 && { width: 420, height: 380, right: -30, bottom: -70 }]} pointerEvents="none" />
         <View style={s.heroTop}><Text style={s.heroKicker}>THE CLUBHOUSE</Text><AccessBadge team={active} /></View>
-        <View style={s.heroIdentity}><TeamLogo team={active} size={64} fallback="none" /><DisplayText italic style={s.teamTitle}>{active.name.toUpperCase()}</DisplayText></View>
+        <View style={s.heroIdentity}><TeamLogo team={active} size={64} fallback="none" /><DisplayText italic style={[s.teamTitle, heroWidth >= 700 && { fontSize: 48, lineHeight: 50, maxWidth: '70%' }]}>{active.name.toUpperCase()}</DisplayText></View>
         <Pressable accessibilityRole="button" onPress={() => router.navigate('/lineups')} style={({ pressed }) => [s.heroCta, pressed && ui.dim]}><Text style={s.heroCtaLabel}>OPEN LINEUPS</Text><Icon name="arrow" color={palette.white} size={16} /></Pressable>
       </View>
       <View style={s.readouts}>

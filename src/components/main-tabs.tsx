@@ -15,6 +15,7 @@ export default function MainTabs() {
     headerShown:false,sceneStyle:{backgroundColor:palette.canvas},
     tabBarStyle:{backgroundColor:palette.panel,borderTopColor:palette.line,borderTopWidth:1,height:66+Math.max(insets.bottom,10),paddingTop:10,paddingBottom:Math.max(insets.bottom,10)},
     tabBarActiveTintColor:palette.ink,tabBarInactiveTintColor:palette.muted,
+    tabBarLabelPosition:'below-icon',tabBarIconStyle:{height:30},
     tabBarLabelStyle:{fontSize:10,fontWeight:'800',marginTop:4},tabBarHideOnKeyboard:true,
   }}>
     {tabs.map(tab=><Tabs.Screen key={tab.name} name={tab.name} options={{title:tab.title,tabBarIcon:({color,focused})=><View style={{alignItems:'center',gap:5}}><View style={{width:20,height:3,backgroundColor:focused?palette.accent:'transparent'}}/><Icon name={tab.icon} color={color}/></View>}}/>)}

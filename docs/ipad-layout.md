@@ -11,3 +11,7 @@ Overlays and chat support all orientations. Shared sheets include safe-area padd
 TypeScript, scoped lint, iOS JavaScript export and Expo introspection can run in the Linux workspace. Xcode/iPad simulator rendering cannot. The generated Info.plist was checked for all four iPad orientations and `UIRequiresFullScreen: false`.
 
 Verify on 11-inch and 13-inch iPads in portrait and landscape, then resize in Split View. Check Home, roster, defense assignments, batting drag, pitching, practice setup, saved practices, guide scrolling, Imports, Teams, Rules desk and chat with the keyboard open. Also check iPhone portrait and landscape. Native visual behavior still requires these device checks.
+
+## iPadOS window mode
+
+A narrow floating window with wallpaper around it is controlled by iPadOS Windowed Apps, not the app's content maxWidth. In the iPad Settings app, choose Multitasking & Gestures → Full Screen Apps to test full-display layouts. The Mac Simulator window's green control is separate. If the installation still uses an older iPhone-only binary, regenerate and rebuild the iOS project; do not try to compensate by scaling React Native fonts. The shared header reserves room for window controls when an iPad window reports no top safe-area inset. Medium windows use intermediate margins, and bottom-tab labels remain below icons across widths.
