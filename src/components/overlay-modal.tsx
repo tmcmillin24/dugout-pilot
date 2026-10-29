@@ -18,20 +18,30 @@ export function OverlayModal({ open, onClose, children }: { open: boolean; onClo
     return () => { active = false; subscription.remove(); };
   }, []);
   useEffect(() => {
-    if (open) {
-      // The native window must remain present until our exit animation finishes.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setVisible(true);
+    // Closed Modal children have no mounted Animated.View. Do not create a
+    // native animation for every hidden selector/sheet during screen startup.
+    if (!visible) {
+      if (open) {
+        // Mount first; the next effect runs after its animated view commits.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setVisible(true);
+      }
+      return;
+    }
+    if (reduceMotion) {
+      opacity.setValue(open ? 1 : 0);
+      if (!open) setVisible(false);
+      return;
     }
     const animation = Animated.timing(opacity, {
       toValue: open ? 1 : 0,
-      duration: reduceMotion ? 0 : open ? 200 : 160,
+      duration: open ? 200 : 160,
       easing: open ? Easing.out(Easing.cubic) : Easing.in(Easing.quad),
       useNativeDriver: true,
     });
     animation.start(({ finished }) => { if (finished && !open) setVisible(false); });
     return () => animation.stop();
-  }, [open, opacity, reduceMotion]);
+  }, [open, visible, opacity, reduceMotion]);
   return <Modal supportedOrientations={['portrait', 'portrait-upside-down', 'landscape-left', 'landscape-right']} visible={visible} transparent animationType="none" presentationStyle="overFullScreen" statusBarTranslucent onRequestClose={onClose}>
     <Animated.View pointerEvents={open ? 'auto' : 'none'} accessibilityElementsHidden={!open} importantForAccessibility={open ? 'auto' : 'no-hide-descendants'} style={[styles.frame, { opacity }]}>
       <FrozenContent frozen={!open}>{children}</FrozenContent>
