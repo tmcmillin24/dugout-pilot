@@ -1,5 +1,6 @@
+import { openInAppBrowser } from '@/lib/in-app-browser';
 import { useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button, Icon, Panel, Section, StatusMessage, palette, ui } from '@/components/app-ui';
 import { Choice, CoachingScreen, Field, Sheet, c } from '@/components/coaching-ui';
 import { DisplayText } from '@/components/sports-type';
@@ -28,7 +29,7 @@ function RulesDesk({ board }: { board: Board }) {
   const [query, setQuery] = useState(''); const [visible, setVisible] = useState(6); const [topic, setTopic] = useState('All'); const [expanded, setExpanded] = useState<string | null>(null); const [error, setError] = useState('');
   const filtered = rulesChart.filter(rule => `${rule.topic} ${rule.summary}`.toLowerCase().includes(query.toLowerCase()) && (topic === 'All' || topics.find(t => t.label === topic)?.match.test(rule.topic)));
   function openSettings() { setDraft(context); setNotes(board.eventRules ?? ''); setSettingsOpen(true); }
-  function openSource() { if (source) void Linking.openURL(source).catch(() => setError('Could not open the official source.')); }
+  function openSource() { if (source) void openInAppBrowser(source).catch(() => setError('Could not open the official source.')); }
   return <>
     <Pressable accessibilityRole="button" accessibilityLabel="Edit team rules profile" onPress={openSettings} style={s.profile}>
       <View style={s.profileIcon}><Icon name="shield" color={palette.ink} size={24} /></View><View style={ui.flex}><Text style={s.kicker}>TEAM RULES</Text><Text style={s.profileTitle}>{contextLabel(context)}</Text><Text style={s.profileSub}>{context.season || 'Choose a season'} · {supported ? 'Saved reference available' : 'Official-source links & event notes'}</Text></View><Icon name="settings" color={palette.ink} size={21} />

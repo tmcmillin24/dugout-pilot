@@ -1,8 +1,9 @@
+import { openInAppBrowser } from '@/lib/in-app-browser';
 import { getNetworkStateAsync, useNetworkState } from 'expo-network';
 import { answerDugout, type DugoutAnswer } from '@/lib/coaching/ask-dugout';
 import { askRulesOnline } from '@/lib/rules-assistant';
 import { useEffect, useRef, useState, type ComponentRef } from 'react';
-import { ActivityIndicator, AppState, Keyboard, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, AppState, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, palette, ui } from './app-ui';
 import { DisplayText } from './sports-type';
@@ -57,7 +58,7 @@ function RulesConversation({board,assistant}:{board:ReturnType<typeof useCoachin
   function close(){controller.current?.abort();Keyboard.dismiss();assistant.close();}
   function openSource(url:string) {
     try{const parsed=new URL(url);if(parsed.protocol!=='https:')return;}catch{return;}
-    void Linking.openURL(url).catch(()=>setError('Could not open the source.'));
+    void openInAppBrowser(url).catch(()=>setError('Could not open the source.'));
   }
   return <Modal visible={assistant.open} presentationStyle="fullScreen" animationType="slide" onRequestClose={close}><View style={[s.surface,{paddingTop:insets.top}]}><KeyboardAvoidingView behavior={Platform.OS==='ios'?'padding':undefined} style={s.keyboardFrame}><View accessibilityViewIsModal style={s.inner}>
     <View style={s.header}><View style={s.avatar}><Icon name="chat" color={palette.white} size={24}/></View><View style={ui.flex}><DisplayText accessibilityRole="header" style={s.title}>ASK DUGOUT</DisplayText><Text numberOfLines={2} style={s.context}>{contextLabel(context)}{context.season?' · '+context.season:''}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Close rules assistant" onPress={close} style={ui.headerButton}><Icon name="close" color={palette.ink} size={20}/></Pressable></View>
