@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { Icon, palette } from './app-ui';
-import { useRef, useState } from 'react';
+import { useRef, useState, type ComponentRef } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '@/lib/supabase';
@@ -11,7 +11,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
-  const confirmationRef = useRef<TextInput>(null);
+  const confirmationRef = useRef<ComponentRef<typeof TextInput>>(null);
   const signupBlocked = mode === 'signup' && (!confirmPassword || password !== confirmPassword);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
