@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
+        "backgroundColor": "#082E4B",
         "foregroundImage": "./assets/images/dugout-adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false,
