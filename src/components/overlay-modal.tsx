@@ -33,11 +33,13 @@ export function OverlayModal({ open, onClose, children }: { open: boolean; onClo
       if (!open) setVisible(false);
       return;
     }
+    // Keep these short transitions on JS: native value callbacks can arrive
+    // after iOS suspends/resumes the app and detaches their listeners.
     const animation = Animated.timing(opacity, {
       toValue: open ? 1 : 0,
       duration: open ? 200 : 160,
       easing: open ? Easing.out(Easing.cubic) : Easing.in(Easing.quad),
-      useNativeDriver: true,
+      useNativeDriver: false,
     });
     animation.start(({ finished }) => { if (finished && !open) setVisible(false); });
     return () => animation.stop();

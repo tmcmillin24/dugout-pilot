@@ -19,3 +19,7 @@ A narrow floating window with wallpaper around it is controlled by iPadOS Window
 ## iPhone compatibility mode on iPad
 
 A small phone-shaped app surrounded by black, with an OS zoom control, indicates a native device-family compatibility problem rather than React Native content spacing. Open one iPad simulator and run `npm run ios:ipad` on the Mac. This regenerates iOS from configuration, builds a fresh generic simulator binary, checks the compiled Info.plist for UIDeviceFamily [1,2], and installs that exact binary on the selected booted iPad before starting Metro on 8083. It refuses an iPhone-only binary. This Mac/Xcode flow cannot be executed in the Linux workspace.
+
+## Tablet layout overflow correction
+
+Paired sections use explicit measured widths, not intrinsic flex sizing. Each pair needs at least 350 points per column plus a 22-point gap; otherwise sections stack. Child wrappers cannot exceed their parent width. This fixes the observed Practice equipment column and bench extending off-screen. The Home team selector has a fixed 96-point height and does not absorb unused vertical space. Defense groups field, save controls and outing confirmation on one side, and bench/field-innings lists on the other; lists scroll within a 300-point maximum instead of forcing a large empty area under the field. Choice grids use zero flex basis for equal widths.

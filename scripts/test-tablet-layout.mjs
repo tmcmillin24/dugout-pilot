@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+const geometry={};vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/responsive-layout.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:geometry});
+const fixtures=[['iPad mini portrait',744,1133,false],['iPad mini landscape',1133,744,true],['iPad 11 portrait',834,1194,true],['iPad 11 landscape',1194,834,true],['iPad 13 portrait',1032,1376,true],['iPad 13 landscape',1376,1032,true],['split window',507,1032,false],['iPhone',393,852,false]];
+for(const [name,width,,expected]of fixtures){const padding=width>=768?32:width>=600?24:18;const available=Math.min(width,width>=600?1180:720)-padding*2;const result=geometry.columnLayout(available,2);assert.equal(result.wide,expected,name);assert.ok(result.columnWidth<=available);if(result.wide){assert.ok(result.columnWidth>=350);assert.equal(result.columnWidth*2+22,available);}console.log(`${name}: ${available}pt content, ${result.wide?'two':'one'} column(s), ${result.columnWidth}pt per column`);}
+// Exercise the actual component styles after each available-width update.
+let measured=0;const exports={};const jsx=(type,props)=>({type,props});
+vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/components/responsive-columns.tsx',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports,require:name=>name==='react'?{Children:{toArray:x=>x},useState:()=>[measured,value=>{measured=value;}]}:name==='react-native'?{View:'View'}:name.includes('responsive-layout')?geometry:{jsx,jsxs:jsx}});
+for(const width of [770,696,1116,320,968,507]){let tree=exports.ResponsiveColumns({children:['session details','space and equipment']});tree.props.onLayout({nativeEvent:{layout:{width}}});tree=exports.ResponsiveColumns({children:['session details','space and equipment']});const children=tree.props.children;assert.equal(tree.props.style.width,'100%');for(const child of children){assert.ok(child.props.style.width<=width);assert.equal(child.props.style.flexGrow,0);assert.equal(child.props.style.minWidth,0);}if(tree.props.style.flexDirection==='row')assert.equal(children.reduce((n,c)=>n+c.props.style.width,0)+22,width);}
+console.log('PASS: actual column styles stay within their parent across resize; mini/11/13 portrait/landscape geometry. Native rendering still requires iPad checks.');
