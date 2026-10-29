@@ -11,7 +11,7 @@ export default function TeamLogoEditor({ team, onChanged }: { team: Team; onChan
   async function choose() {
     if (lock.current) return; lock.current = true; setBusy(true); setError(''); setNotice('');
     try {
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 1 });
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: false, quality: 1 });
       if (result.canceled || !result.assets[0]) return;
       await uploadTeamLogo(team.id, result.assets[0]); await onChanged(); setNotice('Team logo updated.');
     } catch (reason) { setError(teamError(reason)); }

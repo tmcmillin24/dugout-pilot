@@ -13,10 +13,11 @@ async function cleanUp(path: string | null) {
 }
 export async function uploadTeamLogo(teamId: string, asset: ImagePickerAsset) {
   const context = ImageManipulator.manipulate(asset.uri);
-  const side = Math.min(asset.width, asset.height);
-  if (!Number.isFinite(side) || side < 1) throw new Error('This photo could not be read. Choose another image.');
-  context.crop({ originX: Math.floor((asset.width - side) / 2), originY: Math.floor((asset.height - side) / 2), width: side, height: side });
-  context.resize({ width: 1024, height: 1024 });
+  const { width, height } = asset;
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1) throw new Error('This photo could not be read. Choose another image.');
+  // Resize the long edge only. Supplying one dimension preserves the original
+  // aspect ratio; square cropping here discarded the framing chosen by coaches.
+  if (Math.max(width, height) > 1024) context.resize(width >= height ? { width: 1024 } : { height: 1024 });
   const rendered = await context.renderAsync();
   const image = await rendered.saveAsync({ format: SaveFormat.PNG, base64: true });
   if (!image.base64) throw new Error('Could not prepare this photo. Try another image.');
