@@ -40,6 +40,7 @@ function AuthGate() {
     <Stack.Screen name="team-manage" />
     <Stack.Screen name="admin" />
     <Stack.Screen name="roster" />
+    <Stack.Screen name="account" />
     <Stack.Screen name="rules" />
     <Stack.Screen name="team-settings" />
     <Stack.Screen name="team-coaches" />

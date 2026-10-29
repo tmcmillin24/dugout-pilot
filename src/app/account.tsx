@@ -25,7 +25,7 @@ export default function AccountScreen() {
     if (Platform.OS === 'web') { if (window.confirm('Sign out of Dugout Pilot on this device?')) void signOut(); }
     else Alert.alert('Sign out?', 'Your teams and saved information will stay available when you sign back in.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign out', onPress: () => { void signOut(); } }]);
   }
-  return <Screen title="Account">
+  return <Screen title="Account" back>
     <Panel><View style={s.profile}><View style={s.avatar}><Icon name="account" size={32} color="#BC450F" /></View><View style={ui.flex}><Text style={s.email}>{session?.user.email}</Text><Text style={s.caption}>{teams.length} {teams.length === 1 ? 'team' : 'teams'} · {session?.user.email_confirmed_at ? 'Email confirmed' : 'Email confirmation pending'}</Text></View></View></Panel>
     <Section title="Workspace"><Panel><MenuRow icon="teams" title="Your teams" description={active ? `Selected: ${active.name}` : 'Create or join a team'} onPress={() => router.navigate('/teams')} />
       <MenuRow icon="link" title="Imports" onPress={() => router.navigate('/integrations')} />

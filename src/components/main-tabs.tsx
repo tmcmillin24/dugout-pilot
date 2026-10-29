@@ -18,6 +18,5 @@ export default function MainTabs() {
     tabBarLabelStyle:{fontSize:10,fontWeight:'800',marginTop:4},tabBarHideOnKeyboard:true,
   }}>
     {tabs.map(tab=><Tabs.Screen key={tab.name} name={tab.name} options={{title:tab.title,tabBarIcon:({color,focused})=><View style={{alignItems:'center',gap:5}}><View style={{width:20,height:3,backgroundColor:focused?palette.accent:'transparent'}}/><Icon name={tab.icon} color={color}/></View>}}/>)}
-    <Tabs.Screen name="account" options={{href:null,title:'Account'}}/>
   </Tabs>;
 }
