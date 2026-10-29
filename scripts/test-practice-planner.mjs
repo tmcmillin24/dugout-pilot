@@ -29,3 +29,7 @@ assert.equal(additionalPriorities({...defaults,focus:'throwing',priorities:['thr
 assert.equal(additionalPriorities({...defaults,focus:'defense',priorities:['infield','outfield','team','hitting']}).join(','),'hitting');
 const simple=simplifyPracticeSetup({...defaults,equipment:{nets:2,tees:1,screens:1,balls:0,gloves:0,bats:0,catcherGear:2}});assert.equal(Object.keys(simple.equipment).sort().join(','),'nets,screens,tees');assert.equal(simple.equipment.nets,2);assert.ok(resources(simple).balls>0);assert.equal(resources(simple).catcherGear,0);
 console.log('PASS: primary focus excluded from additional priorities, stale/duplicate priorities removed, facility counts preserved and hidden legacy gear counts cleared.');
+
+const timeExports={};vm.runInNewContext(ts.default.transpileModule(readFileSync(new URL('../src/lib/coaching/practice-time.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.default.ModuleKind.CommonJS}}).outputText,{exports:timeExports});
+assert.equal(timeExports.timeLabel('00:00'),'12:00 AM');assert.equal(timeExports.timeLabel('12:00'),'12:00 PM');assert.equal(timeExports.timeLabel('17:05'),'5:05 PM');assert.equal(timeExports.timeValue(23,59),'23:59');assert.equal(timeExports.timeParts('bad').hour,17);
+console.log('PASS: time picker noon/midnight, minute padding, legacy 24-hour storage and invalid-value fallback.');
