@@ -15,3 +15,7 @@ Verify on 11-inch and 13-inch iPads in portrait and landscape, then resize in Sp
 ## iPadOS window mode
 
 A narrow floating window with wallpaper around it is controlled by iPadOS Windowed Apps, not the app's content maxWidth. In the iPad Settings app, choose Multitasking & Gestures → Full Screen Apps to test full-display layouts. The Mac Simulator window's green control is separate. If the installation still uses an older iPhone-only binary, regenerate and rebuild the iOS project; do not try to compensate by scaling React Native fonts. The shared header reserves room for window controls when an iPad window reports no top safe-area inset. Medium windows use intermediate margins, and bottom-tab labels remain below icons across widths.
+
+## iPhone compatibility mode on iPad
+
+A small phone-shaped app surrounded by black, with an OS zoom control, indicates a native device-family compatibility problem rather than React Native content spacing. Open one iPad simulator and run `npm run ios:ipad` on the Mac. This regenerates iOS from configuration, builds a fresh generic simulator binary, checks the compiled Info.plist for UIDeviceFamily [1,2], and installs that exact binary on the selected booted iPad before starting Metro on 8083. It refuses an iPhone-only binary. This Mac/Xcode flow cannot be executed in the Linux workspace.
