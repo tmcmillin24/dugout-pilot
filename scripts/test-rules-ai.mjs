@@ -35,3 +35,14 @@ for(const answer of [{kind:'reference',answer:'Fake',sourceIds:['unknown']},{kin
 assert.throws(()=>extractAnswer(provider(undefined,'MAX_TOKENS'),refs));assert.equal(extractAnswer(provider({kind:'clarification',answer:'Did it bounce?',sourceIds:[]}),refs).kind,'clarification');
 h=harness();assert.equal((await h.handler(req({teamId:'invalid',question:'Hi'}))).status,400);assert.equal((await h.handler(req(undefined,''))).status,401);
 console.log('PASS: Gemini 3.5 Flash Lite only; exactly one attempt/no search or paid fallback; auth/membership/access/budgets, quota, history and server context, roster/key exclusion, owned citations, edition/sport isolation, structured output/finish validation and errors. Provider mocked; live accuracy untested.');
+
+for(const [question,id] of [['What is obstruction considered?','mlb-2026-obstruction'],['What is interference?','mlb-2026-interference']]){
+ const reference=refs.find(ref=>ref.id===id);assert.ok(reference?.text.length>200);
+ h=harness({result:provider({kind:'reference',answer:'General MLB baseball fallback: '+reference.text,sourceIds:[id]})});
+ data=await(await h.handler(req({teamId:team,question}))).json();assert.equal(data.kind,'reference');assert.equal(data.mlbFallback,true);assert.ok(data.citations.length);
+ const request=JSON.parse(h.calls.find(call=>call.url.includes('generativelanguage')).init.body);
+ const supplied=JSON.parse(request.contents[0].parts[0].text).references;assert.ok(supplied.find(ref=>ref.id===id));
+ assert.match(request.systemInstruction.parts[0].text,/general definition question/);
+}
+assert.equal(referencesFor({...context,sport:'fastpitch'}).some(ref=>ref.id.includes('obstruction')),false);
+console.log('PASS: obstruction/interference references reach Gemini with definition guidance and valid citations; MLB fallback excluded from softball.');

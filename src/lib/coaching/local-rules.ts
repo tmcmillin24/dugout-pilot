@@ -1,3 +1,4 @@
+import { contactReferences } from './contact-rules';
 import { boundaryIntent, boundarySource, boundarySummary, isDimensionQuestion } from './boundary-rules';
 import { rules, rulesSource } from './rules';
 import { answerRulesQuestion, hasReferencePack, type RulesAnswer, type RulesContext } from './rules-context';
@@ -14,6 +15,7 @@ export function localReferences(context:RulesContext):LocalReference[] {
     references.push({id:`usssa-2026-11u-${i}`,title:rule.keys[0],text:rule.answer,keywords:rule.keys,sources:[{title:`${rule.ref} · USSSA 11U baseball · 2026`,url:rulesSource}]});
   });
   if(context.sport==='baseball') {
+    references.push(...contactReferences);
     references.push({id:'mlb-2026-boundary-double',title:'Fair batted ball bounces over the fence: automatic double',text:boundarySummary,keywords:['ground rule double','bounce','hop','fence','two bases'],sources:[{title:'MLB 2026 · 5.05(a)(6), 5.06(b)(4)',url:boundarySource}]});
     const infield=answerRulesQuestion('Explain the infield fly rule.',context);
     references.push({id:'mlb-2026-infield-fly',title:'Infield fly: ordinary effort, runners, outs and youth exceptions',text:infield.answer,keywords:['infield fly','in field fly','pop up','popup','bases loaded','ordinary effort'],sources:infield.sources??[]});
