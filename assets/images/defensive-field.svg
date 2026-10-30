@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 460" fill="none">
+  <!-- Foul territory, warning track and alternating outfield mowing bands. -->
+  <path d="M210 398 12 196Q210-80 408 196Z" fill="#286471"/>
+  <path d="M210 385 22 194Q210-58 398 194Z" fill="#0D4A5B"/>
+  <path d="M210 385 49 220Q210-1 371 220Z" fill="#125567"/>
+  <path d="M210 385 78 249Q210 60 342 249Z" fill="#0D4A5B"/>
+  <path d="M210 385 106 276Q210 128 314 276Z" fill="#125567"/>
+  <path d="M22 194Q210-58 398 194" stroke="#79A2A7" stroke-width="2"/>
+  <!-- Infield dirt surrounds the grass diamond. -->
+  <path d="M210 385 92 278Q89 221 145 178Q210 128 275 178Q331 221 328 278Z" fill="#AE8058"/>
+  <path d="M210 370 118 278 210 186 302 278Z" fill="#125567"/>
+  <!-- Foul lines and base paths. -->
+  <path d="M210 385 22 194M210 385 398 194" stroke="#D4E5E5" stroke-width="1.5" opacity=".8"/>
+  <path d="M210 385 105 280 210 175 315 280Z" stroke="#F4E9D7" stroke-width="2"/>
+  <circle cx="210" cy="280" r="19" fill="#AE8058"/>
+  <path d="M203 280H217" stroke="white" stroke-width="3"/>
+  <!-- Three bases and home plate. -->
+  <path d="M202 175 210 167 218 175 210 183ZM97 280 105 272 113 280 105 288ZM307 280 315 272 323 280 315 288Z" fill="white"/>
+  <circle cx="210" cy="385" r="24" fill="#AE8058"/>
+  <path d="M202 378H218V386L210 393 202 386Z" fill="white"/>
+  <path d="M192 411Q210 424 228 411" stroke="#F45C1B" stroke-width="2"/>
+  <path d="M179 375V394M241 375V394" stroke="#F4E9D7" stroke-width="1.5"/>
+</svg>
