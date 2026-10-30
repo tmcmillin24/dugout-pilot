@@ -1,3 +1,4 @@
+import type { StatImport, StatColumn, StatGroup } from './stat-data';
 import { gameSchedule } from './game-schedule';
 import { formatPlayerName } from './player-display';
 import type { RulesContext } from './rules-context';
@@ -6,10 +7,10 @@ import { randomUUID } from 'expo-crypto';
 export const POSITIONS = ['P','C','1B','2B','3B','SS','LF','CF','RF'] as const;
 export type Position = typeof POSITIONS[number];
 export type Player = {id:string; name:string; number:string; bats:string; throws:string; notes:string; positions?:Position[]};
-export type Stat = {pa?:number; ab?:number; h?:number; bb?:number; so?:number; avg?:number; obp?:number; ops?:number; era?:number; ip?:string; pitches?:number};
+export type Stat = Partial<Record<StatGroup,Record<string,number>>> & {pa?:number; ab?:number; h?:number; bb?:number; so?:number; avg?:number; obp?:number; ops?:number; era?:number; ip?:string; pitches?:number};
 export type DefensiveLineup = {id:string; name:string; positions:Record<string,string>};
-export type Game = {id:string; day:number; label:string; opponent:string; date?:string; time:string; status:'planned'|'final'; lineup:string[]; lastBatterId?:string; positions:Record<string,string>; defensiveLineupId?:string; defenseTrackingInning?:number; defenseInnings?:Record<string,Record<string,string>>; pitchers:Record<string,{innings:string;pitches:number}>; stats:Record<string,Stat>; importLabel:string; importFingerprint?:string; score:string; notes:string};
-export type Board = {name:string; players:Player[]; games:Game[]; activeGameId:string; defensiveLineups:DefensiveLineup[]; practicePlans?:PracticePlan[]; activePracticeId?:string; rulesProfile?:'usssa-11u-2026'|'custom'; eventRules?:string; rulesContext?:RulesContext};
+export type Game = {id:string; day:number; label:string; opponent:string; date?:string; time:string; status:'planned'|'final'; lineup:string[]; lastBatterId?:string; positions:Record<string,string>; defensiveLineupId?:string; defenseTrackingInning?:number; defenseInnings?:Record<string,Record<string,string>>; pitchers:Record<string,{innings:string;pitches:number}>; stats:Record<string,Stat>; statsSeason?:string; statColumns?:StatColumn[]; importedAt?:string; importLabel:string; importFingerprint?:string; score:string; notes:string};
+export type Board = {seasonImports?:StatImport[];statsSeason?:string;name:string; players:Player[]; games:Game[]; activeGameId:string; defensiveLineups:DefensiveLineup[]; practicePlans?:PracticePlan[]; activePracticeId?:string; rulesProfile?:'usssa-11u-2026'|'custom'; eventRules?:string; rulesContext?:RulesContext};
 export function newGame(day=1, number=1, previous?:Game):Game { return {id:randomUUID(),day,label:`Game ${number}`,opponent:'Opponent TBD',time:'',status:'planned',lineup:previous ? [...previous.lineup] : [],positions:previous ? {...previous.positions} : {},defensiveLineupId:previous?.defensiveLineupId||'manual',pitchers:{},stats:{},importLabel:'',score:'',notes:''}; }
 export function defaultBoard(name = 'Team'):Board { const g=newGame(); return {name,players:[],games:[g],activeGameId:g.id,defensiveLineups:createDefensiveLineups()}; }
 export function playerName(board:Board,id:string) { const name = board.players.find(p=>p.id===id)?.name; return name ? formatPlayerName(name) : 'Unassigned'; }

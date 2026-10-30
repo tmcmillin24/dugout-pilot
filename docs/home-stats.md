@@ -4,8 +4,8 @@ Home uses the selected team from Teams. It has no team selector or access/trial 
 
 A compact upcoming-event row appears only for dated planned games or saved practices on/after today. The selected team card retains the shared field artwork. Coaching and team tools use matching three-row panels.
 
-Season Snapshot links to the root Team Stats screen (Season / Games / Players). The current data source is imported game stats in the existing private team board. No database migration or new API is required. No season CSV ingestion or automatic roster creation is introduced in this change. Season totals are explicitly labeled as imported-game coverage; they are not asserted to be a complete season. Empty/loading/error states do not manufacture zero stats.
+Season Snapshot links to Team Stats (Season / Games / Players / Elite Insights). Season snapshots and individual game imports now use the existing private board; a season snapshot is never summed with games. CSV review can create a fresh roster. See `stats-imports-elite.md` for data mapping, matching, column preferences, algorithms, access and limitations.
 
-AVG uses total H / total AB only with complete supporting counts, never an average of player averages. Missing counts show a dash, pitching-only records are excluded from batting aggregation, and zero AB has no average. OBP, runs and ERA are deferred until the importer stores their complete supporting fields. Game details retain the original import label, and player names use the shared formatter.
+Empty/loading/error states do not manufacture zero stats. Date-in-time compatibility for older games remains intact.
 
 Validation: TypeScript, scoped ESLint, iOS export and test-team-stats.mjs. Native iPhone/iPad visuals require device review.
