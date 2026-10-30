@@ -2,7 +2,7 @@ import { useRulesAssistant } from '@/providers/rules-assistant-provider';
 import { Image } from 'expo-image';
 import { DisplayText } from './sports-type';
 import { SymbolView } from 'expo-symbols';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { useState, type ComponentProps, type ReactNode, type ComponentRef, type RefObject } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,6 +39,7 @@ export function Icon({ name, color = palette.muted, size = 22 }: { name: IconNam
   return <SymbolView name={icons[name]} tintColor={color} size={size} style={{ width: size, height: size }} />;
 }
 export function Screen({ title, subtitle, children, back = false, onRefresh, trailing, titleAction, hideTitle = false, scrollRef, scrollEnabled = true, onScroll }: { title: string; eyebrow?: string; subtitle?: string; children: ReactNode; back?: boolean; onRefresh?: () => Promise<void>; trailing?: ReactNode; titleAction?:ReactNode; hideTitle?: boolean; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>; scrollEnabled?: boolean; onScroll?: ScrollViewProps['onScroll'] }) {
+  const pathname = usePathname();
   const { width } = useWindowDimensions();
   const tablet = width >= 768;
   const roomy = width >= 600;
@@ -50,7 +51,7 @@ export function Screen({ title, subtitle, children, back = false, onRefresh, tra
     <View style={[ui.toolbar, { width: '100%', maxWidth: 1180, alignSelf: 'center', paddingHorizontal: tablet ? 32 : roomy ? 24 : 16, height: (tablet ? 88 : 78) + windowControlsInset, paddingTop: windowControlsInset }]}>
       {back ? <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/'); }} style={ui.headerButton}><Icon name="back" color={palette.ink} size={20} /></Pressable> : null}
       <View style={ui.brandGroup}><Image source={require('@/assets/images/dugout-pilot-wordmark.jpeg')} contentFit="contain" contentPosition="left center" accessibilityLabel="Dugout Pilot" style={ui.brandLogo} /></View>
-      <View style={ui.toolbarEnd}>{assistant && <Pressable accessibilityRole="button" accessibilityLabel="Ask the rules assistant" onPress={() => assistant.show()} style={[ui.assistantButton, roomy && { minWidth: 148, minHeight: 50, paddingHorizontal: 16, gap: 9, flexDirection: 'row' }]}><Icon name="chat" color={palette.ink} size={roomy ? 28 : 18} /><Text style={[ui.assistantLabel, roomy && { fontSize: 12, lineHeight: 14, letterSpacing: 0.8 }]}>{roomy ? 'ASK DUGOUT' : 'ASK\nDUGOUT'}</Text></Pressable>}{trailing ?? <Pressable accessibilityRole="button" accessibilityLabel="Open account" onPress={() => router.push('/account')} style={[ui.headerButton, roomy && { minWidth: 62, minHeight: 62, marginLeft: 10 }]}><Icon name="account" color={palette.ink} size={roomy ? 40 : 25} /></Pressable>}</View>
+      <View style={ui.toolbarEnd}>{assistant && <Pressable accessibilityRole="button" accessibilityLabel="Ask the rules assistant" onPress={() => assistant.show()} style={[ui.assistantButton, roomy && { minWidth: 148, minHeight: 50, paddingHorizontal: 16, gap: 9, flexDirection: 'row' }]}><Icon name="chat" color={palette.ink} size={roomy ? 28 : 18} /><Text style={[ui.assistantLabel, roomy && { fontSize: 12, lineHeight: 14, letterSpacing: 0.8 }]}>{roomy ? 'ASK DUGOUT' : 'ASK\nDUGOUT'}</Text></Pressable>}{trailing ?? <Pressable accessibilityRole="button" accessibilityLabel="Open account" onPress={() => { if (pathname !== '/account') router.navigate('/account'); }} style={[ui.headerButton, roomy && { minWidth: 62, minHeight: 62, marginLeft: 10 }]}><Icon name="account" color={palette.ink} size={roomy ? 40 : 25} /></Pressable>}</View>
     </View>
     <KeyboardAvoidingView style={ui.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView ref={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} scrollEventThrottle={16} style={{ backgroundColor: palette.canvas }} contentContainerStyle={[ui.content, roomy && { maxWidth: 1180, paddingHorizontal: tablet ? 32 : 24, paddingTop: tablet ? 28 : 24, paddingBottom: 40, gap: 24 }]} keyboardShouldPersistTaps="handled" refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} tintColor={palette.accent} onRefresh={() => { setRefreshing(true); void onRefresh().finally(() => setRefreshing(false)); }} /> : undefined}>
