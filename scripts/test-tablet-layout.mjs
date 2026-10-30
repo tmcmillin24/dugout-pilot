@@ -16,3 +16,6 @@ for(const width of [696,770,968,1069,1116]){const result=geometry.columnLayout(w
 assert.equal(geometry.columnLayout(357,3,22,210).wide,false);
 
 const beforeHidden=measured;const hiddenTree=exports.ResponsiveColumns({children:['field','bench']});hiddenTree.props.onLayout({nativeEvent:{layout:{width:0}}});assert.equal(measured,beforeHidden,'Hidden panels must retain their last real width');
+
+measured=770;const aligned=exports.ResponsiveColumns({children:['field','innings'],stretch:true});assert.equal(aligned.props.style.alignItems,'stretch');
+measured=357;const stacked=exports.ResponsiveColumns({children:['field','innings'],stretch:true});assert.equal(stacked.props.style.alignItems,'flex-start');

@@ -37,3 +37,11 @@ Validation: `node scripts/test-batting-display.mjs`, `node scripts/test-tablet-l
 The native iOS launch storyboard and React loader share `config/launch-layout.json`: phone width 300pt; regular iPad windows use 65% of the shorter dimension, capped at 640pt. This gives approximately 542pt on the 11-inch and 640pt on the 13-inch, with no orientation-dependent zoom. Compact windows keep the phone sizing. Native assets are generated at 640pt before display scaling.
 
 `with-responsive-launch` must precede `expo-splash-screen` in the plugin list so Expo builds the image first and our mod then adds constraints. Native changes require prebuild/rebuild; a Metro reload cannot update the installed launch storyboard. No generated native files are maintained manually. SDK introspection and the launch-handoff test verify the mod order, generated constraints, phone/mini/11/13 sizing, rotation, idempotence and auth readiness. Xcode compilation and cold-launch visuals need device verification.
+
+## Shared-control uniformity
+
+Defense opts into stretched columns. Field Innings grows its native scroll viewport to use the available column height, and the left column anchors Confirm This Outing at its bottom. The phone layout remains stacked. The save-slot button matches the adjacent 76pt selector.
+
+Date, duration, time, priorities, attendance and equipment selectors use the shared 76pt minimum card height, 14pt padding, white surface and value typography. Compact dates use the same caret and calendar sheet. Practice session grids use a 12pt control gap; multiple priorities display a compact summary while retaining their complete accessibility label. Practice action buttons and mode tabs use 52pt minimum heights, with shared action typography and corner treatment.
+
+Validation: control-uniformity and tablet-layout tests, lineup-mode regression test, scoped lint, TypeScript and iOS export. Native visual alignment remains a device QA check.

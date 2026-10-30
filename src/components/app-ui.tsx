@@ -4,7 +4,7 @@ import { DisplayText } from './sports-type';
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { useState, type ComponentProps, type ReactNode, type ComponentRef, type RefObject } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ScrollViewProps } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Team } from '@/lib/teams';
 
@@ -59,12 +59,12 @@ export function Screen({ title, subtitle, children, back = false, onRefresh, tra
     </KeyboardAvoidingView>
   </SafeAreaView>;
 }
-export function Section({ title, children }: { title: string; children: ReactNode }) {
-  return <View style={ui.section}><View style={ui.sectionHeader}><View style={ui.sectionMarker} /><DisplayText accessibilityRole="header" style={ui.sectionTitle}>{title.toUpperCase()}</DisplayText></View>{children}</View>;
+export function Section({ title, children, style }: { title: string; children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  return <View style={[ui.section,style]}><View style={ui.sectionHeader}><View style={ui.sectionMarker} /><DisplayText accessibilityRole="header" style={ui.sectionTitle}>{title.toUpperCase()}</DisplayText></View>{children}</View>;
 }
-export function Panel({ children }: { children: ReactNode }) { return <View style={ui.panel}>{children}</View>; }
-export function Button({ children, onPress, secondary = false, disabled = false }: { children: ReactNode; onPress: () => void; secondary?: boolean; disabled?: boolean }) {
-  return <Pressable accessibilityRole="button" onPress={onPress} disabled={disabled} style={({ pressed }) => [ui.button, secondary && ui.secondary, (pressed || disabled) && ui.dim]}><Text style={[ui.buttonText, secondary && ui.secondaryText]}>{children}</Text></Pressable>;
+export function Panel({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) { return <View style={[ui.panel,style]}>{children}</View>; }
+export function Button({ children, onPress, secondary = false, disabled = false, style }: { children: ReactNode; onPress: () => void; secondary?: boolean; disabled?: boolean; style?: StyleProp<ViewStyle> }) {
+  return <Pressable accessibilityRole="button" onPress={onPress} disabled={disabled} style={({ pressed }) => [ui.button, secondary && ui.secondary, style, (pressed || disabled) && ui.dim]}><Text style={[ui.buttonText, secondary && ui.secondaryText]}>{children}</Text></Pressable>;
 }
 export function MenuRow({ icon, title, description, onPress, last = false, end }: { icon: IconName; title: string; description?: string; onPress?: () => void; last?: boolean; end?: ReactNode }) {
   const content = <><View style={ui.iconTile}><Icon name={icon} color={palette.ink} /></View><View style={ui.rowCopy}><Text style={ui.rowTitle}>{title}</Text>{description && <Text style={ui.rowDescription}>{description}</Text>}</View>{end ?? (onPress ? <Icon name="arrow" color={palette.cardMuted} size={16} /> : null)}</>;
@@ -86,7 +86,7 @@ export const ui = StyleSheet.create({
   panel: { borderColor: palette.line, borderWidth: 1, borderRadius: 5, backgroundColor: palette.panel, overflow: 'hidden' },
   menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, minHeight: 67 }, divider: { borderBottomWidth: 1, borderBottomColor: palette.cardLine }, iconTile: { width: 26, height: 34, borderRadius: 0, backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
   rowCopy: { flex: 1, minWidth: 0, gap: 5 }, rowTitle: { color: palette.cardInk, fontSize: 16, fontWeight: '600' }, rowDescription: { color: palette.cardMuted, fontSize: 13, lineHeight: 19 },
-  button: { backgroundColor: palette.accent, minHeight: 52, padding: 15, borderRadius: 4, alignItems: 'center', justifyContent: 'center' }, buttonText: { fontSize: 15, fontWeight: '800', color: palette.ink, textAlign: 'center' }, secondary: { backgroundColor: palette.raised, borderWidth: 1, borderColor: palette.line }, secondaryText: { color: palette.ink }, dim: { opacity: 0.65 },
+  button: { backgroundColor: palette.accent, minHeight: 52, padding: 15, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }, buttonText: { fontSize: 15, fontWeight: '800', color: palette.ink, textAlign: 'center' }, secondary: { backgroundColor: palette.raised, borderWidth: 1, borderColor: palette.line }, secondaryText: { color: palette.ink }, dim: { opacity: 0.65 },
   badge: { alignSelf: 'flex-start', backgroundColor: palette.badgeSurface, paddingVertical: 6, paddingHorizontal: 9, borderRadius: 2 }, badgeMuted: { backgroundColor: '#EAF0F5' }, badgeText: { color: '#9D3A10', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
   message: { color: palette.ink, fontSize: 14, lineHeight: 21 }, error: { color: palette.error }, loading: { padding: 32 },
   back: { flexDirection: 'row', gap: 6, alignItems: 'center', alignSelf: 'flex-start', minHeight: 44 }, backText: { color: palette.ink, fontSize: 15 },
