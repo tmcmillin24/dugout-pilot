@@ -37,6 +37,77 @@
       ]
     },
     {
+      "id": "mlb-2026-wild-throw",
+      "title": "Wild throw into dead territory",
+      "text": "A throw out of play generally awards two bases. For an infielder’s first play, use pitch-time positions, unless every runner, including the batter, advanced a base before release; then use release-time positions. Other throws use release-time positions. The ball is dead.",
+      "keywords": [
+        "overthrow",
+        "wild throw",
+        "dugout",
+        "stands",
+        "two bases"
+      ],
+      "sources": [
+        {
+          "title": "MLB 2026 · 5.06(b)(4)(G) · general baseball fallback",
+          "url": "https://mktg.mlbstatic.com/mlb/official-information/2026-official-baseball-rules.pdf"
+        }
+      ]
+    },
+    {
+      "id": "mlb-2026-juggled-catch",
+      "title": "Retouch timing on a juggled catch",
+      "text": "After a legal catch, runners may advance from their bases from the first fielder’s initial touch, even if control was secured later. Leaving before that touch permits a retouch appeal.",
+      "keywords": [
+        "juggle",
+        "bobble",
+        "tag up",
+        "first touch",
+        "retouch"
+      ],
+      "sources": [
+        {
+          "title": "MLB 2026 · Definitions: Catch · general baseball fallback",
+          "url": "https://mktg.mlbstatic.com/mlb/official-information/2026-official-baseball-rules.pdf"
+        }
+      ]
+    },
+    {
+      "id": "mlb-2026-intentional-drop",
+      "title": "Intentionally dropped fair fly or line drive",
+      "text": "With first occupied and fewer than two outs, an infielder deliberately dropping a touched fair fly or liner makes the batter out, the ball dead, and runners return. Letting it fall untouched differs. An infield fly instead remains live.",
+      "keywords": [
+        "intentional drop",
+        "line drive",
+        "drop untouched",
+        "double play"
+      ],
+      "sources": [
+        {
+          "title": "MLB 2026 · 5.09(a)(12); Infield Fly definition · general baseball fallback",
+          "url": "https://mktg.mlbstatic.com/mlb/official-information/2026-official-baseball-rules.pdf"
+        }
+      ]
+    },
+    {
+      "id": "mlb-2026-third-out-runs",
+      "title": "Run scoring when the third out is a force",
+      "text": "No run counts on a play whose third out is a force or the batter being retired before first, regardless of plate-touch timing. A non-force tag can be a timing play; retouch appeals are not automatically forces.",
+      "keywords": [
+        "third out",
+        "force out",
+        "run count",
+        "crosses home",
+        "timing play"
+      ],
+      "sources": [
+        {
+          "title": "MLB 2026 · 5.08(a) · general baseball fallback",
+          "url": "https://mktg.mlbstatic.com/mlb/official-information/2026-official-baseball-rules.pdf"
+        }
+      ]
+    },
+    {
       "id": "mlb-2026-boundary-double",
       "title": "Fair batted ball bounces over the fence: automatic double",
       "text": "If a fair batted ball hits the ground and then bounces over the outfield fence, it is an automatic double, commonly called a ground-rule double. The ball is dead. The batter gets second base, and each runner gets two bases from their position at the time of the pitch: a runner on first goes to third; runners on second or third score. A ball clearing the fence without first touching the ground is a different play. USSSA/event modifications and park ground rules take priority; this is the general MLB baseball fallback.",

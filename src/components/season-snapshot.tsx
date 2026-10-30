@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useRef, useState } from 'react';
+import { useAccountPreference } from '@/hooks/use-account-preference';
+import { useState } from 'react';
 import { Pressable, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Section, palette, ui } from './app-ui';
@@ -11,6 +11,7 @@ import type { Board } from '@/lib/coaching/board';
 import { statsSource, seasonKey, formatStat } from '@/lib/coaching/stat-data';
 import { snapshotMetrics, SNAPSHOT_DEFAULTS } from '@/lib/coaching/snapshot-metrics';
 const SNAPSHOT_KEYS=snapshotMetrics({}).map(choice=>choice.key);
+function validateMetrics(value:unknown){if(!Array.isArray(value))return null;const valid=[...new Set(value.filter((k):k is string=>typeof k==='string'&&SNAPSHOT_KEYS.includes(k)))].slice(0,6);return valid.length?valid:null;}
 type Props={board:Board|null;loading?:boolean;link?:boolean};
 export function SeasonSnapshot(props:Props){const {session}=useAuth(),{active}=useTeams();const storageKey=`snapshot-metrics:${session?.user.id}:${active?.id}`;return <Snapshot key={storageKey} {...props} storageKey={storageKey}/>;}
 function Snapshot({board,loading=false,link=true,storageKey}:Props&{storageKey:string}) {
@@ -18,13 +19,12 @@ function Snapshot({board,loading=false,link=true,storageKey}:Props&{storageKey:s
  const landscape=width>=900&&height>=600&&width>height;
  const hasData=Object.values(source?.stats??{}).some(s=>Object.keys(s).length);
  const choices=snapshotMetrics(source?.stats??{},source?.eraInnings);
- const [selected,setSelected]=useState(SNAPSHOT_DEFAULTS),[draft,setDraft]=useState(SNAPSHOT_DEFAULTS),[open,setOpen]=useState(false),[error,setError]=useState('');
- const touched=useRef(false),writes=useRef(Promise.resolve());
- useEffect(()=>{let alive=true;AsyncStorage.getItem(storageKey).then(v=>{if(!alive||touched.current||!v)return;const saved:unknown=JSON.parse(v);if(Array.isArray(saved)){const valid=[...new Set(saved.filter((k):k is string=>typeof k==='string'&&SNAPSHOT_KEYS.includes(k)))].slice(0,6);if(valid.length)setSelected(valid);}}).catch(()=>{if(alive)setError('Could not load your saved stat selection.');});return()=>{alive=false;};},[storageKey]); // choices are the same fixed catalog for every season.
- function save(){if(!draft.length||draft.length>6)return;touched.current=true;setSelected(draft);setOpen(false);writes.current=writes.current.then(()=>AsyncStorage.setItem(storageKey,JSON.stringify(draft))).catch(()=>setError('Stats updated, but this device could not save your preference.'));}
+ const preference=useAccountPreference(storageKey,SNAPSHOT_DEFAULTS,validateMetrics),selected=preference.value,error=preference.error;
+ const [draft,setDraft]=useState(SNAPSHOT_DEFAULTS),[open,setOpen]=useState(false);
+ function save(){if(!draft.length||draft.length>6)return;preference.save(draft);setOpen(false);}
  const metrics=selected.flatMap(key=>choices.find(c=>c.key===key)??[]);
  return <Section title="Season snapshot"><View style={s.card}>
- <View style={s.header}><View><Text style={s.eyebrow}>{board?seasonKey(board):'YOUR'} SEASON{source?.gamesPlayed!==undefined?` · ${source.gamesPlayed}${source.gamesPlayedExact?'':'+'} ${source.gamesPlayed===1?'GAME':'GAMES'}`:''}</Text><DisplayText style={s.heading}>TEAM TOTALS</DisplayText></View><Pressable accessibilityRole="button" accessibilityLabel="Filter team totals" onPress={()=>{touched.current=true;setDraft(selected);setOpen(true);}} style={s.filter}><Text style={s.filterText}>FILTER · {selected.length}/6</Text></Pressable></View>
+ <View style={s.header}><View><Text style={s.eyebrow}>{board?seasonKey(board):'YOUR'} SEASON{source?.gamesPlayed!==undefined?` · ${source.gamesPlayed}${source.gamesPlayedExact?'':'+'} ${source.gamesPlayed===1?'GAME':'GAMES'}`:''}</Text><DisplayText style={s.heading}>TEAM TOTALS</DisplayText></View><Pressable accessibilityRole="button" accessibilityLabel="Filter team totals" onPress={()=>{setDraft(selected);setOpen(true);}} style={s.filter}><Text style={s.filterText}>FILTER · {selected.length}/6</Text></Pressable></View>
  <View style={s.body}>{loading?<Text style={s.note}>Loading team stats…</Text>:hasData?<>
  {landscape?<View key="landscape-stat-strip" style={s.statStrip}>{metrics.map((m,i)=><View key={m.key} style={[s.stripMetric,i>0&&s.statDivider]}><Text style={[s.label,{minHeight:28,textAlign:'center'}]}>{m.label.toUpperCase()}</Text><DisplayText style={[s.value,{fontSize:34,textAlign:'center'}]}>{formatStat(m.value,m.key)}</DisplayText></View>)}</View>:<View key="portrait-stat-grid" style={s.metrics}>{metrics.map(m=><View key={m.key} style={[s.metric,{flexBasis:width>=700?'30%':'45%'}]}><Text style={s.label}>{m.label.toUpperCase()}</Text><DisplayText style={s.value}>{formatStat(m.value,m.key)}</DisplayText></View>)}</View>}
 

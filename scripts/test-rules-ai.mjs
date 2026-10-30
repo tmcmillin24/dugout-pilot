@@ -51,3 +51,10 @@ for(const season of ['2026','2027'])for(let age=4;age<=18;age++){const scoped=re
 assert.ok(referencesFor({...context,sport:'fastpitch',age:'16U'}).some(ref=>ref.id==='usssa-fastpitch-2026-16U-bats'));
 assert.ok(!referencesFor({...context,sport:'fastpitch'}).some(ref=>ref.id.startsWith('mlb-')));
 console.log('PASS: age-specific bat/pitching coverage for every baseball division 4U–18U in 2026/2027; fastpitch references remain separate.');
+for(const id of ['mlb-2026-wild-throw','mlb-2026-juggled-catch','mlb-2026-intentional-drop','mlb-2026-third-out-runs']){
+ assert.ok(referencesFor(context).some(ref=>ref.id===id));
+ assert.ok(!referencesFor({...context,sport:'fastpitch'}).some(ref=>ref.id===id));
+ const parsed=extractAnswer(provider({kind:'reference',answer:'General MLB baseball fallback applies to this play.',sourceIds:[id]}),referencesFor(context));
+ assert.equal(parsed.kind,'reference');assert.equal(parsed.mlbFallback,true);assert.ok(parsed.citations[0].url.includes('2026-official-baseball-rules.pdf'));
+}
+console.log('PASS reviewed overthrow, juggled-catch, intentional-drop and third-out reference coverage and citations; baseball-only isolation.');
