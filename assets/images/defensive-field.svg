@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 460" fill="none">
   <!-- Foul territory, warning track and alternating outfield mowing bands. -->
-  <path d="M210 398 12 196Q210-80 408 196Z" fill="#286471"/>
-  <path d="M210 385 22 194Q210-58 398 194Z" fill="#0D4A5B"/>
-  <path d="M210 385 49 220Q210-1 371 220Z" fill="#125567"/>
-  <path d="M210 385 78 249Q210 60 342 249Z" fill="#0D4A5B"/>
-  <path d="M210 385 106 276Q210 128 314 276Z" fill="#125567"/>
-  <path d="M22 194Q210-58 398 194" stroke="#79A2A7" stroke-width="2"/>
-  <!-- Infield dirt surrounds the grass diamond. -->
-  <path d="M210 385 92 278Q89 221 145 178Q210 128 275 178Q331 221 328 278Z" fill="#AE8058"/>
+  <path d="M210 398 12 200Q210-76 408 200Z" fill="#286471"/>
+  <path d="M210 385 22 197Q210-58 398 197Z" fill="#0D4A5B"/>
+  <path d="M210 385 49 224Q210 7 371 224Z" fill="#125567"/>
+  <path d="M210 385 78 253Q210 54 342 253Z" fill="#0D4A5B"/>
+  <path d="M210 385 106 281Q210 132 314 281Z" fill="#125567"/>
+  <path d="M22 197Q210-58 398 197" stroke="#79A2A7" stroke-width="2"/>
+  <!-- Dirt is a concentric field fan: straight foul-line sides, one symmetric arc. -->
+  <path d="M210 385 78 253Q210 54 342 253Z" fill="#AE8058"/>
   <path d="M210 370 118 278 210 186 302 278Z" fill="#125567"/>
   <!-- Foul lines and base paths. -->
-  <path d="M210 385 22 194M210 385 398 194" stroke="#D4E5E5" stroke-width="1.5" opacity=".8"/>
+  <path d="M210 385 22 197M210 385 398 197" stroke="#D4E5E5" stroke-width="1.5" opacity=".8"/>
   <path d="M210 385 105 280 210 175 315 280Z" stroke="#F4E9D7" stroke-width="2"/>
   <circle cx="210" cy="280" r="19" fill="#AE8058"/>
   <path d="M203 280H217" stroke="white" stroke-width="3"/>
