@@ -4,7 +4,7 @@ import { BattingDisplay } from '@/components/batting-display';
 import { ResponsiveColumns } from '@/components/responsive-columns';
 import { formatPlayerName } from '@/lib/coaching/player-display';
 import { useRef, useState, type ComponentRef } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { Button, Panel, Section, StatusMessage, ui } from '@/components/app-ui';
 import { Choice, CoachingScreen, Field, Sheet, c } from '@/components/coaching-ui';
 import { router } from 'expo-router';
@@ -26,13 +26,15 @@ export default function LineupsScreen() {
 function LineupBoard({ board,scroll }: { board: Board;scroll:BattingScroll }) {
   const { commit, writable } = useCoaching();
   const [mode, setMode] = useState<Mode>('defense');
+  const {width}=useWindowDimensions();
+  const tabletActions=Platform.OS==='ios'&&Platform.isPad&&width>=600;
   const game = board.games.find(g => g.id === board.activeGameId) ?? board.games[0];
   if (!game) return <><Text style={ui.body}>No games yet. Add a game to build its lineup.</Text><Button disabled={!writable} onPress={()=>{const next=newGame(1,nextGameNumber(board.games));void commit(b=>({...b,games:[...b.games,next],activeGameId:next.id}));}}>ADD GAME</Button><Button secondary onPress={()=>router.push('/roster')}>MANAGE ROSTER</Button></>;
   const update = (change: (g: Game) => Game) => commit(b => ({ ...b, games: b.games.map(g => g.id === game.id ? change(g) : g) }));
   return <>
     <GameCard board={board} game={game}/>
     <View style={{width:'100%',flexDirection:'row',gap:8}}>{([{value:'defense',label:'DEFENSE'},{value:'batting',label:'BATTING'},{value:'pitching',label:'PITCHING'}] as const).map(item=><Pressable key={item.value} accessibilityRole="tab" accessibilityState={{selected:mode===item.value}} onPress={()=>setMode(item.value)} style={[c.chip,{flex:1,minWidth:0,minHeight:52,paddingHorizontal:4,alignItems:'center',justifyContent:'center'},mode===item.value&&c.selected]}><Text style={[c.chipText,{textAlign:'center'},mode===item.value&&c.selectedText]}>{item.label}</Text></Pressable>)}</View>
-    <Button secondary onPress={() => router.push('/roster')}>MANAGE ROSTER</Button>
+    <View key="lineup-actions" style={{flexDirection:tabletActions?'row':'column',gap:12,alignItems:'stretch'}}><View style={tabletActions?{flex:1,minWidth:0}:undefined}><Button secondary onPress={() => router.push('/roster')}>MANAGE ROSTER</Button></View>{mode==='defense'&&!!board.players.length&&<View style={tabletActions?{flex:1,minWidth:0}:undefined}><SavedDefenses board={board} game={game} update={update}/></View>}</View>
     {!board.players.length ? <><Text style={ui.body}>Add your players to build a lineup.</Text><Button onPress={() => router.push('/roster')}>OPEN ROSTER</Button></> : <><View key="defense-panel" collapsable={false} pointerEvents={mode==='defense'?'auto':'none'} accessibilityElementsHidden={mode!=='defense'} importantForAccessibility={mode==='defense'?'auto':'no-hide-descendants'} style={{display:mode==='defense'?'flex':'none',gap:22}}><Defense board={board} game={game} update={update}/></View>{mode==='batting'&&<View key="batting-panel" collapsable={false} style={c.group}><Batting board={board} game={game} update={update} scroll={scroll}/></View>}{mode==='pitching'&&<View key="pitching-panel" collapsable={false} style={c.group}><Pitching board={board} game={game} update={update}/></View>}</>}
   </>;
 }
@@ -49,7 +51,7 @@ function Defense({ board, game, update }: GameProps) {
   const recorded = game.defenseInnings?.[inningNumber];
   const bench = board.players.filter(p => !Object.values(game.positions).includes(p.id));
   return <>
-    <SavedDefenses board={board} game={game} update={update} /><Choice label="Defensive lineup" value={defensiveMode(game, board.defensiveLineups)} options={[{ value: 'manual', label: 'Custom defense' }, ...board.defensiveLineups.map(l => ({ value: l.id, label: `${l.name} · P: ${playerName(board, l.positions.P)}` }))]} disabled={!writable} onChange={id => { const lineup = board.defensiveLineups.find(l => l.id === id); if (lineup) void update(g => applyDefensiveLineup(g, lineup, board.players)); else void update(g => ({ ...g, defensiveLineupId: 'manual' })); }} />
+    <Choice label="Defensive lineup" value={defensiveMode(game, board.defensiveLineups)} options={[{ value: 'manual', label: 'Custom defense' }, ...board.defensiveLineups.map(l => ({ value: l.id, label: `${l.name} · P: ${playerName(board, l.positions.P)}` }))]} disabled={!writable} onChange={id => { const lineup = board.defensiveLineups.find(l => l.id === id); if (lineup) void update(g => applyDefensiveLineup(g, lineup, board.players)); else void update(g => ({ ...g, defensiveLineupId: 'manual' })); }} />
     <ResponsiveColumns stretch><View style={[c.group,{flexGrow:1,justifyContent:'space-between'}]}>
       <DefensiveDiamond board={board} positions={game.positions} disabled={!writable} onPosition={setPosition} />
       <View style={c.row}><View style={c.grow}><Choice label="Save defense to slot" value={slot} options={board.defensiveLineups.map(l => ({ value: l.id, label: l.name }))} onChange={setSlot} disabled={!writable} /></View><Button secondary style={{minHeight:76}} disabled={!writable} onPress={() => { void commit(b => ({ ...b, defensiveLineups: b.defensiveLineups.map(l => l.id === slot ? { ...l, positions: { ...game.positions } } : l) })); }}>SAVE</Button></View>

@@ -20,7 +20,7 @@ const changed=[...imported.players.map(p=>({...p,positions:['C']}))];const prese
 assert.equal(csv.matchPlayer('C Smith','25',imported.players).playerId,imported.players[0].id);assert.equal(csv.matchPlayer('C Smith','',imported.players).playerId,csv.REVIEW_PLAYER);assert.equal(csv.matchPlayer('Stranger Person','25',imported.players).playerId,csv.NEW_PLAYER);
 assert.throws(()=>csv.applyStatsImport(seed,{...request,mode:'game',gameId:seed.games[0].id},()=>`created-${++serial}`),/multiple games/);
 const gameRows=matched.rows.map(r=>({...r,stats:{...r.stats,batting:{...r.stats.batting,GP:1},pitching:{...r.stats.pitching,GP:1}}}));
-const gameImported=csv.applyStatsImport(imported,{...request,rows:gameRows,mode:'game',gameId:imported.games[0].id,fingerprint:'game'},()=>`created-${++serial}`);assert.equal(data.statsSource(gameImported).stats[imported.players[0].id].batting.H,4,'season snapshot must not double-count a game');
+const gameImported=csv.applyStatsImport(imported,{...request,rows:gameRows,mode:'game',gameId:imported.games[0].id,fingerprint:'game',contribution:'included'},()=>`created-${++serial}`);assert.equal(data.statsSource(gameImported).stats[imported.players[0].id].batting.H,4,'season snapshot must not double-count a game');
 const ag=data.aggregateStats([{batting:{AB:2,H:1},pitching:{IP:1.2}},{batting:{AB:8,H:1},pitching:{IP:2.2}}]);assert.equal(ag.batting.AVG,.2);assert.equal(ag.pitching.IP,4.1);assert.equal(ag.pitching.ERA,undefined);assert.equal(data.inningsOuts(1.3),null);
 const ids=imported.players.map(p=>p.id);const suggested=elite.suggestBattingOrder(imported,ids);assert.equal(new Set(suggested.map(p=>p.id)).size,ids.length);assert.equal(elite.suggestBattingOrder(imported,ids,{[ids[1]]:0})[0].id,ids[1]);assert.throws(()=>elite.suggestBattingOrder(imported,ids,{[ids[0]]:0,[ids[1]]:0}),/conflict/);
 const game={...imported.games[0],date:'2026-11-03'};const prior={...game,id:'prior',date:'2026-11-02',pitchers:{[ids[0]]:{innings:'3.1',pitches:50}}};const rules={...imported,rulesContext:{sport:'baseball',age:'11U',season:'2026',organization:'usssa'},games:[prior,game]};assert.match(elite.pitchingRestriction(rules,game,ids[0]),/^Rest required/);assert.match(elite.pitchingRestriction({...rules,rulesContext:{...rules.rulesContext,sport:'fastpitch'}},game,ids[0]),/Coach must verify/);
@@ -45,3 +45,44 @@ assert.throws(()=>csv.applyStatsImport({...gameImported,games:[...gameImported.g
 assert.throws(()=>csv.applyStatsImport(imported,{...request,fingerprint:'duplicate-row',rows:[matched.rows[0],matched.rows[0]]},()=>`duplicate-${++serial}`),/Two rows/);
 assert.equal(elite.rankPitchers({...imported,players:imported.players.map(p=>({...p,positions:['C']}))},game,ids).length,0);
 console.log('PASS JSON persistence, reversed names, invalid rates, cross-game duplicates, duplicate matches and pitcher-position filtering.');
+
+// A baseline plus a new game; updating that game recalculates rather than accumulating twice.
+const added=csv.applyStatsImport(imported,{...request,mode:'game',rows:gameRows,gameId:imported.games[0].id,fingerprint:'added-game',contribution:'add',eraInnings:6},()=>`roll-${++serial}`);
+assert.equal(data.statsSource(added).stats[ids[0]].batting.H,8);
+const correctedRows=gameRows.map((r,i)=>i? r:{...r,stats:{...r.stats,batting:{...r.stats.batting,H:1}}});
+const corrected=csv.applyStatsImport(added,{...request,mode:'game',rows:correctedRows,gameId:imported.games[0].id,fingerprint:'corrected-game',contribution:'add',eraInnings:6},()=>`roll-${++serial}`);
+assert.equal(data.statsSource(corrected).stats[ids[0]].batting.H,5);
+const reset=csv.applyStatsImport(corrected,{...request,rows:matched.rows,fingerprint:'updated-season',eraInnings:6},()=>`roll-${++serial}`);
+assert.equal(data.statsSource(reset).stats[ids[0]].batting.H,4);
+assert.equal(reset.games[0].importFingerprint,'corrected-game');assert.equal(reset.games[0].statsContribution,'included');
+const pitchStats={p1:{pitching:{IP:1.2,ER:1,ERA:3.6}},p2:{pitching:{IP:2.1,ER:3,ERA:7.714}}};
+assert.equal(data.inferEraInnings(pitchStats),6);assert.equal(data.teamSummary(pitchStats,6).era,6);
+assert.equal(data.aggregateStats(Object.values(pitchStats),6).pitching.IP,4);
+assert.equal(data.teamSummary({p:{pitching:{IP:0,ER:0}}},6).era,undefined);
+assert.equal(data.teamSummary({p:{pitching:{IP:1}}},6).era,undefined);
+assert.equal(data.formatStat(0,'ERA'),'0.00');assert.equal(data.formatStat(1.2,'WHIP'),'1.20');
+if(real&&existsSync(real)){const realRows=csv.parseDetailedImport(readFileSync(real,'utf8'),[]).rows;const stats=Object.fromEntries(realRows.map(r=>[r.id,r.stats]));assert.equal(data.inferEraInnings(stats),6);assert.equal(data.teamSummary(stats,6).era.toFixed(2),'16.41');}
+console.log('PASS season + new game, corrected-game replacement, fresh season reset, history retained, weighted team ERA, zero/missing innings, real CSV ERA 16.41.');
+const changeCoverage=csv.applyStatsImport(gameImported,{...request,rows:gameRows,mode:'game',gameId:gameImported.games[0].id,fingerprint:'game',contribution:'add'},()=>`coverage-${++serial}`);
+assert.equal(data.statsSource(changeCoverage).stats[ids[0]].batting.H,8);
+const revertCoverage=csv.applyStatsImport(changeCoverage,{...request,rows:gameRows,mode:'game',gameId:gameImported.games[0].id,fingerprint:'game',contribution:'included'},()=>`coverage-${++serial}`);
+assert.equal(data.statsSource(revertCoverage).stats[ids[0]].batting.H,4);
+assert.equal(data.suggestedContribution({...imported,games:[{...imported.games[0],date:'2026-10-29'}]},imported.games[0].id,'2026'),'included');
+assert.equal(data.suggestedContribution({...imported,games:[{...imported.games[0],date:'2026-11-03'}]},imported.games[0].id,'2026'),'add');
+const futureGame={...reset.games[0],id:'future',date:'2026-11-03',stats:{},importLabel:'',importFingerprint:undefined,statsContribution:undefined};
+const afterReset=csv.applyStatsImport({...reset,games:[...reset.games,futureGame]},{...request,rows:gameRows,mode:'game',gameId:'future',fingerprint:'future-file',contribution:'add'},()=>`new-${++serial}`);
+assert.equal(data.statsSource(afterReset).stats[ids[0]].batting.H,8);
+console.log('PASS historical coverage review, unchanged-file metadata changes and new games after a season reset.');
+const counted={...imported,seasonImports:imported.seasonImports.map(s=>({...s,gamesPlayed:3}))};
+assert.equal(data.statsSource(counted).gamesPlayed,3);assert.equal(data.statsSource(counted).gamesPlayedExact,true);
+const countAdded=csv.applyStatsImport(counted,{...request,mode:'game',rows:gameRows,gameId:counted.games[0].id,fingerprint:'count-game',contribution:'add'},()=>`count-${++serial}`);
+assert.equal(data.statsSource(countAdded).gamesPlayed,4);
+const countCorrected=csv.applyStatsImport(countAdded,{...request,mode:'game',rows:correctedRows,gameId:counted.games[0].id,fingerprint:'count-corrected',contribution:'add'},()=>`count-${++serial}`);
+assert.equal(data.statsSource(countCorrected).gamesPlayed,4);
+const countReset=csv.applyStatsImport(countCorrected,{...request,rows:matched.rows,gamesPlayed:4,fingerprint:'count-season'},()=>`count-${++serial}`);
+assert.equal(data.statsSource(countReset).gamesPlayed,4);assert.equal(data.statsSource(countReset).additions.length,0);
+const oldCount={...countAdded,seasonImports:countAdded.seasonImports.map(s=>({...s,gamesPlayed:undefined}))};
+const countHydrated=csv.applyStatsImport(oldCount,{...request,rows:matched.rows,gamesPlayed:3},()=>`count-${++serial}`);
+assert.equal(data.statsSource(countHydrated).gamesPlayed,4);assert.equal(data.statsSource(countHydrated).additions.length,1);
+if(real&&existsSync(real))assert.equal(csv.parseDetailedImport(readFileSync(real,'utf8'),[]).gamesPlayed,3);
+console.log('PASS exact CSV team GP, +1 per added game, no increment for corrections, season reset and legacy metadata hydration without absorbing additions.');
