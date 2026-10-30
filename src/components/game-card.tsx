@@ -1,6 +1,6 @@
 import { DateField } from './date-field';
 import { displayDate, parseCalendarDate } from '@/lib/coaching/calendar';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button, Icon, MenuRow, Panel, StatusMessage, palette, ui } from './app-ui';
 import { Field, Sheet, c } from './coaching-ui';
@@ -10,11 +10,11 @@ import { TimeField } from './time-field';
 import { timeLabel } from '@/lib/coaching/practice-time';
 import { newGame, type Board, type Game } from '@/lib/coaching/board';
 import { nextGameNumber, removeGame } from '@/lib/coaching/game-management';
-export function GameCard({board,game}:{board:Board;game:Game}) {
+export function GameCard({board,game,headerAction}:{board:Board;game:Game;headerAction?:ReactNode}) {
   const {commit,writable,busy}=useCoaching();const [picker,setPicker]=useState(false);const [menu,setMenu]=useState(false);const [mode,setMode]=useState<'actions'|'edit'|'add'|'delete'>('actions');const [draft,setDraft]=useState<Game|null>(null);
   function add(){setDraft({...newGame(game.day,nextGameNumber(board.games),game),opponent:''});setMode('add');}
   return <>
-    <View style={s.card}><View style={s.top}><Text style={s.kicker}>GAME</Text><Pressable accessibilityRole="button" accessibilityLabel="Game options: edit, add, or delete" onPress={()=>{setMode('actions');setMenu(true);}} style={s.more}><Icon name="more" color={palette.ink} size={24}/></Pressable></View><Pressable accessibilityRole="button" accessibilityLabel={`Choose game. ${game.label} versus ${game.opponent}`} disabled={!writable} onPress={()=>setPicker(true)} style={s.selection}><View style={ui.flex}><Text style={s.meta}>DAY {game.day} · {game.label}</Text><DisplayText style={s.opponent}>{game.opponent}</DisplayText><Text style={s.time}>{[game.date&&displayDate(game.date),(/^([01]\d|2[0-3]):[0-5]\d$/.test(game.time)?timeLabel(game.time):game.time)].filter(Boolean).join(' · ')||'Date / time not set'}</Text></View><Text style={s.chevron}>▾</Text></Pressable></View>
+    <View style={s.card}><View style={s.top}><Text style={s.kicker}>GAME</Text>{headerAction}<Pressable accessibilityRole="button" accessibilityLabel="Game options: edit, add, or delete" onPress={()=>{setMode('actions');setMenu(true);}} style={s.more}><Icon name="more" color={palette.ink} size={24}/></Pressable></View><Pressable accessibilityRole="button" accessibilityLabel={`Choose game. ${game.label} versus ${game.opponent}`} disabled={!writable} onPress={()=>setPicker(true)} style={s.selection}><View style={ui.flex}><Text style={s.meta}>DAY {game.day} · {game.label}</Text><DisplayText style={s.opponent}>{game.opponent}</DisplayText><Text style={s.time}>{[game.date&&displayDate(game.date),(/^([01]\d|2[0-3]):[0-5]\d$/.test(game.time)?timeLabel(game.time):game.time)].filter(Boolean).join(' · ')||'Date / time not set'}</Text></View><Text style={s.chevron}>▾</Text></Pressable></View>
     <Sheet title="Choose game" open={picker} onClose={()=>setPicker(false)}>{board.games.map(item=><Pressable key={item.id} accessibilityRole="button" disabled={!writable} onPress={()=>{void commit(b=>({...b,activeGameId:item.id})).then(ok=>{if(ok)setPicker(false);});}} style={[c.option,item.id===game.id&&{backgroundColor:palette.badgeSurface}]}><Text style={ui.rowTitle}>{item.label} · {item.opponent}</Text><Text style={c.small}>Day {item.day} · {[item.date&&displayDate(item.date),item.time].filter(Boolean).join(' · ')||'Time not set'}</Text></Pressable>)}</Sheet>
     <Sheet title={mode==='delete'?'Delete game?':mode==='edit'?'Edit game':mode==='add'?'Add game':'Game options'} open={menu} onClose={()=>{if(!busy)setMenu(false);}}>
       {mode==='actions'?<Panel><MenuRow icon="settings" title="Edit game" onPress={()=>setMode('edit')}/><MenuRow icon="plus" title="Add next game" onPress={()=>{if(writable)add();}}/><MenuRow icon="trash" title="Delete game" onPress={()=>setMode('delete')} last/></Panel>:mode==='edit'?<GameDetails key={game.id} game={game} close={()=>setMenu(false)}/>:mode==='add'&&draft?<GameDetails key={draft.id} game={draft} creating close={()=>setMenu(false)}/>:<>
