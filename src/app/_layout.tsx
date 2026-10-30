@@ -5,7 +5,7 @@ import { Stack, ThemeProvider, DefaultTheme } from 'expo-router';
 import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { Pressable, Text, View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { AppStatusBar } from '@/components/app-status-bar';
 import { RulesAssistantProvider } from '@/providers/rules-assistant-provider';
 import { RulesChat } from '@/components/rules-chat';
 import { CoachingProvider } from '@/providers/coaching-provider';
@@ -37,7 +37,7 @@ function AuthGate() {
     </View>
   );
   if (!session) return <AuthScreen />;
-  return <TeamProvider><CoachingProvider><RulesAssistantProvider><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F1F3F5' } }}>
+  return <TeamProvider><CoachingProvider><RulesAssistantProvider><Stack screenOptions={{ headerShown: false, statusBarStyle: 'dark', contentStyle: { backgroundColor: '#F1F3F5' } }}>
     <Stack.Screen name="(tabs)" />
     <Stack.Screen name="team-create" options={{ presentation: 'modal' }} />
     <Stack.Screen name="team-join" options={{ presentation: 'modal' }} />
@@ -55,5 +55,5 @@ function AuthGate() {
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({ DugoutDisplay: require('@expo-google-fonts/barlow-condensed/800ExtraBold/BarlowCondensed_800ExtraBold.ttf'), DugoutDisplayItalic: require('@expo-google-fonts/barlow-condensed/800ExtraBold_Italic/BarlowCondensed_800ExtraBold_Italic.ttf') });
   if (!fontsLoaded && !fontError) return <BrandLoading />;
-  return <GestureHandlerRootView style={{ flex: 1 }}><SafeAreaProvider><ThemeProvider value={DefaultTheme}><SportsTypeProvider ready={fontsLoaded}><StatusBar style="dark" /><AuthProvider><AuthGate /></AuthProvider></SportsTypeProvider></ThemeProvider></SafeAreaProvider></GestureHandlerRootView>;
+  return <GestureHandlerRootView style={{ flex: 1 }}><SafeAreaProvider><ThemeProvider value={DefaultTheme}><SportsTypeProvider ready={fontsLoaded}><AppStatusBar /><AuthProvider><AuthGate /></AuthProvider></SportsTypeProvider></ThemeProvider></SafeAreaProvider></GestureHandlerRootView>;
 }
