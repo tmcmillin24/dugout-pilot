@@ -40,7 +40,7 @@ The native iOS launch storyboard and React loader share `config/launch-layout.js
 
 ## Shared-control uniformity
 
-Defense opts into stretched columns. Field Innings grows its native scroll viewport to use the available column height, and the left column anchors Confirm This Outing at its bottom. The phone layout remains stacked. The save-slot button matches the adjacent 76pt selector.
+Defense opts into stretched columns. Bench and Field Innings retain their original scroll viewport size (300pt maximum). The right column puts any extra height into the gap between those sections, aligning the bottom of Field Innings with Confirm This Outing. The phone layout remains stacked. The save-slot button matches the adjacent 76pt selector.
 
 Date, duration, time, priorities, attendance and equipment selectors use the shared 76pt minimum card height, 14pt padding, white surface and value typography. Compact dates use the same caret and calendar sheet. Practice session grids use a 12pt control gap; multiple priorities display a compact summary while retaining their complete accessibility label. Practice action buttons and mode tabs use 52pt minimum heights, with shared action typography and corner treatment.
 
