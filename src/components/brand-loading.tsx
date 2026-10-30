@@ -8,5 +8,6 @@ export function BrandLoading() {
 }
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
-  logo: { width: '85%', maxWidth: 480, aspectRatio: 672 / 172 },
+  // Match expo-splash-screen imageWidth so the native-to-React handoff never zooms.
+  logo: { width: 300, maxWidth: '100%', aspectRatio: 672 / 172 },
 });

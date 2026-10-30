@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+const config=JSON.parse(readFileSync(new URL('../app.json',import.meta.url),'utf8')).expo;
+const splash=config.plugins.find(plugin=>Array.isArray(plugin)&&plugin[0]==='expo-splash-screen')[1];
+const jsx=(type,props)=>({type,props});
+const brand={};
+vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/components/brand-loading.tsx',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports:brand,require:name=>name==='react-native'?{View:'View',StyleSheet:{create:x=>x}}:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='expo-image'?{Image:'Image'}:name});
+const loadingTree=brand.BrandLoading();const image=loadingTree.props.children;
+assert.equal(image.props.style.width,splash.imageWidth,'React loading logo must match the native splash width');
+assert.equal(loadingTree.props.style.backgroundColor,splash.backgroundColor);
+assert.equal(image.props.contentFit,splash.resizeMode);
+for(const width of [393,744,834,1032,1133,1194,1376])assert.equal(Math.min(width,image.props.style.width),300);
+let loading=true,hides=0;const exports={};const effect=fn=>fn();
+const source=readFileSync(new URL('../src/app/_layout.tsx',import.meta.url),'utf8').replace('function AuthGate()', 'export function AuthGate()');
+vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports,require:name=>{
+ if(name==='react')return{useEffect:effect};
+ if(name==='react/jsx-runtime')return{jsx,jsxs:jsx};
+ if(name==='expo-splash-screen')return{preventAutoHideAsync:async()=>{},hideAsync:async()=>{hides++;}};
+ if(name.includes('auth-provider'))return{useAuth:()=>({session:null,loading,error:'',retry(){}})};
+ if(name.includes('/lib/supabase'))return{supabaseConfigured:true};
+ return{};
+}});
+exports.AuthGate();assert.equal(hides,0,'Do not expose the intermediate loader before auth restoration finishes');
+loading=false;exports.AuthGate();assert.equal(hides,1,'Release splash for a ready signed-out screen');
+console.log('PASS: native/React launch image size, fit and background match; startup waits for auth readiness. Native cold launch still needs device verification.');

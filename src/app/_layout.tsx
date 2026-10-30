@@ -20,7 +20,9 @@ void SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function AuthGate() {
   const { session, loading, error, retry } = useAuth();
-  useEffect(() => { void SplashScreen.hideAsync().catch(() => {}); }, []);
+  useEffect(() => {
+    if (!loading) void SplashScreen.hideAsync().catch(() => {});
+  }, [loading]);
   if (!supabaseConfigured) return <View style={{ flex: 1, backgroundColor: '#F1F3F5', justifyContent: 'center', padding: 28 }}>
     <Text style={{ color: '#082E4B', fontSize: 22, marginBottom: 16 }}>Connect Dugout Pilot</Text>
     <Text style={{ color: '#dce5ef', lineHeight: 24 }}>Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in your local .env file, then restart Expo.</Text>
