@@ -1,0 +1,4 @@
+# The handler verifies bearer tokens against Supabase Auth and checks membership/access.
+# This supports projects using asymmetric signing keys.
+[functions.rules-assistant]
+verify_jwt = false

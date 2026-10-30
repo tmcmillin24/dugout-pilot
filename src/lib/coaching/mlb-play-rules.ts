@@ -1,0 +1,10 @@
+import type { LocalReference } from './local-rules';
+const url='https://mktg.mlbstatic.com/mlb/official-information/2026-official-baseball-rules.pdf';
+function ref(id:string,title:string,text:string,rule:string,keywords:string[]):LocalReference{return {id:`mlb-2026-${id}`,title,text,keywords,sources:[{title:`MLB 2026 · ${rule} · general baseball fallback`,url}]};}
+// Reviewed paraphrases, not a redistributed rulebook. USSSA/event exceptions take priority.
+export const mlbPlayReferences:LocalReference[]=[
+ ref('wild-throw','Wild throw into dead territory','A throw out of play generally awards two bases. For an infielder’s first play, use pitch-time positions, unless every runner, including the batter, advanced a base before release; then use release-time positions. Other throws use release-time positions. The ball is dead.','5.06(b)(4)(G)',['overthrow','wild throw','dugout','stands','two bases']),
+ ref('juggled-catch','Retouch timing on a juggled catch','After a legal catch, runners may advance from their bases from the first fielder’s initial touch, even if control was secured later. Leaving before that touch permits a retouch appeal.','Definitions: Catch',['juggle','bobble','tag up','first touch','retouch']),
+ ref('intentional-drop','Intentionally dropped fair fly or line drive','With first occupied and fewer than two outs, an infielder deliberately dropping a touched fair fly or liner makes the batter out, the ball dead, and runners return. Letting it fall untouched differs. An infield fly instead remains live.','5.09(a)(12); Infield Fly definition',['intentional drop','line drive','drop untouched','double play']),
+ ref('third-out-runs','Run scoring when the third out is a force','No run counts on a play whose third out is a force or the batter being retired before first, regardless of plate-touch timing. A non-force tag can be a timing play; retouch appeals are not automatically forces.','5.08(a)',['third out','force out','run count','crosses home','timing play']),
+];

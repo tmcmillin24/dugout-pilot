@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+const jsx=(type,props)=>({type,props}),tick=()=>new Promise(resolve=>setTimeout(resolve,0));
+let server={board:{name:'Team',players:[],games:[],defensiveLineups:[],statsSeason:'2026'},revision:1};
+function boardDevice(){const states=[],effects=[],timers=[],listeners=[];let event;const channel={on(_type,_filter,callback){event=callback;return this;},subscribe(){return this;}};const exports={};const source=readFileSync(new URL('../src/providers/coaching-provider.tsx',import.meta.url),'utf8').replace('function TeamCoaching(', 'export function TeamCoaching(');
+vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports,setInterval:fn=>{timers.push(fn);return 1;},clearInterval(){},require:name=>name==='react'?{createContext:()=>({Provider:'Provider'}),useCallback:fn=>fn,useState:initial=>[initial,value=>states.push(value)],useRef:value=>({current:value}),useEffect:fn=>effects.push(fn)}:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='react-native'?{AppState:{currentState:'active',addEventListener:(_name,fn)=>{listeners.push(fn);return{remove(){}};}}}:name.includes('/supabase')?{supabase:{from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:structuredClone(server)})})})}),rpc:async(_name,args)=>{if(args.p_revision!==server.revision)return{error:{code:'40001',message:'Concurrent update'}};server={board:args.p_board,revision:server.revision+1};return{data:server.revision};},channel:()=>channel,removeChannel:async()=>{}}}:name.includes('/teams')?{teamError:error=>error.message}:name.includes('/board')?{normalizeBoard:b=>b,defaultBoard:()=>({})}:{}},{filename:'coaching-provider.tsx'});
+const tree=exports.TeamCoaching({teamId:'team',teamName:'Team',access:true,children:null}),cleanup=effects.map(fn=>fn());return {states,timers,listeners,event:()=>event(),commit:tree.props.value.commit,cleanup:()=>cleanup.forEach(fn=>fn?.())};}
+const phone=boardDevice(),ipad=boardDevice();await tick();
+assert.equal(await phone.commit(b=>({...b,statsSeason:'2027'})),true);ipad.event();await tick();assert.ok(ipad.states.some(s=>s?.statsSeason==='2027'),'realtime refreshes the other device');
+server={board:{...server.board,statsSeason:'2028'},revision:server.revision+1};ipad.listeners[0]('active');await tick();assert.ok(ipad.states.some(s=>s?.statsSeason==='2028'),'foreground refreshes stale stats');
+server={board:{...server.board,statsSeason:'2029'},revision:server.revision+1};phone.timers[0]();await tick();assert.ok(phone.states.some(s=>s?.statsSeason==='2029'),'polling works without Realtime publication');
+server={board:{...server.board,statsSeason:'2030'},revision:server.revision+1};assert.equal(await phone.commit(b=>({...b,statsSeason:'BAD'})),false);await tick();assert.equal(server.board.statsSeason,'2030');assert.ok(phone.states.some(s=>s?.statsSeason==='2030'),'conflict refreshes latest without overwriting');phone.cleanup();ipad.cleanup();
+const core={};vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/account-preference-sync.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:core});
+let remote=['AVG'],online=true,writes=0;
+const adapter={load:async()=>[...remote],write:async value=>{if(!online)throw new Error('Offline');remote=[...value];writes++;}};
+const validate=value=>Array.isArray(value)?value:null;
+const a=core.createPreferenceSync(['AVG'],validate,adapter),b=core.createPreferenceSync(['AVG'],validate,adapter);
+await a.refresh();await b.refresh();a.save(['AVG','RBI']);await tick();await b.refresh();assert.equal(b.getSnapshot().value.join(','),'AVG,RBI','RBI selection reaches the other device');
+b.save(['R','E']);await tick();await a.refresh();assert.equal(a.getSnapshot().value.join(','),'R,E','sync works in both directions');
+online=false;a.save(['H','BB']);await tick();assert.equal(a.getSnapshot().status,'offline');assert.equal(a.getSnapshot().value.join(','),'H,BB');online=true;await a.refresh();await b.refresh();assert.equal(b.getSnapshot().value.join(','),'H,BB','offline changes retry');
+let resolveRead;const slow=core.createPreferenceSync(['AVG'],validate,{load:()=>new Promise(resolve=>{resolveRead=resolve;}),write:adapter.write});const reading=slow.refresh();slow.save(['RBI']);resolveRead(['E']);await reading;await tick();assert.equal(slow.getSnapshot().value.join(','),'RBI','stale read cannot replace a newer local selection');
+const missing=core.createPreferenceSync(['AVG'],validate,{load:async()=>{throw {code:'PGRST205'};},write:adapter.write});await missing.refresh();assert.match(missing.getSnapshot().error,/SQL setup/);
+assert.match(readFileSync(new URL('../src/app/account.tsx',import.meta.url),'utf8'),/signOut\(\{ scope: 'local' \}\)/);
+console.log('PASS two-device team data refresh/conflicts plus database filter sync in both directions, offline retries, stale-read protection and explicit missing-SQL errors.');
