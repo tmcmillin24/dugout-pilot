@@ -57,3 +57,10 @@ export function practicePriorities(board:Board){const stats=statsSource(board).s
  return ideas;
 }
 export function playerReport(player:Player,stat:Stat|undefined){const p=batterProfile(stat);return [`${player.name}${player.number?' #'+player.number:''}`,`Imported batting sample: ${p.pa} PA${p.small?' — small sample':''}.`,p.obp!==undefined?`On-base percentage: ${p.obp.toFixed(3)}.`:'On-base data unavailable.',p.contact!==undefined?`PA without a strikeout: ${(p.contact*100).toFixed(1)}%.`:'Strikeout-avoidance data unavailable.',p.contact!==undefined&&p.contact<.75?'Practice focus: contact and two-strike approaches.':'Practice focus: maintain a balanced hitting and fielding routine.','Descriptive report from imported stats; no opponent, competition-level or injury adjustment.'].join('\n');}
+
+/** Keep the strongest remaining candidate for the finishing role after selecting a starter. */
+export function suggestPitchingPlan(board:Board,game:Game,available:string[]):string[]{
+ const eligible=rankPitchers(board,game,available).filter(r=>Number.isFinite(r.score)&&!/^(Rest required|Recorded innings|Already used|Set the game date)/.test(r.restriction)).map(r=>r.player.id);
+ if(eligible.length<=2)return eligible;
+ return [eligible[0],...eligible.slice(2),eligible[1]];
+}

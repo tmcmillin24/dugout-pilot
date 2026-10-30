@@ -9,7 +9,6 @@ import { DisplayText } from '@/components/sports-type';
 import { useCoaching } from '@/providers/coaching-provider';
 import { nextTeamEvent } from '@/lib/coaching/team-stats';
 import { timeLabel } from '@/lib/coaching/practice-time';
-import { displayDate } from '@/lib/coaching/calendar';
 import { SeasonSnapshot } from '@/components/season-snapshot';
 import { useTeams } from '@/providers/team-provider';
 
@@ -21,7 +20,8 @@ export default function HomeScreen() {
   const [heroWidth, setHeroWidth] = useState(0);
   return <Screen title="Clubhouse" hideTitle onRefresh={async () => { await refresh(); await coaching.reload(); }}>
     <StatusMessage text={error || coaching.error} error />
-    {active && upcoming && <View style={s.nextEvent}><View style={s.nextMarker}/><View style={{flex:1,gap:4}}><Text style={s.nextLabel}>NEXT {upcoming.kind.toUpperCase()} · {displayDate(upcoming.date)}{upcoming.time ? ` · ${/^([01]\d|2[0-3]):[0-5]\d$/.test(upcoming.time) ? timeLabel(upcoming.time) : upcoming.time}` : ''}</Text><Text style={ui.rowTitle}>{upcoming.title}</Text></View></View>}
+    {active && upcoming && <Pressable accessibilityRole="button" accessibilityLabel={`Open next ${upcoming.kind}: ${upcoming.title}`} onPress={()=>router.navigate(upcoming.kind==='game'?'/lineups':'/practice')} style={({pressed})=>[s.nextEvent,pressed&&ui.dim]}><View style={s.nextDate}><Text style={s.nextMonth}>{new Date(upcoming.date+'T12:00:00').toLocaleDateString('en-US',{month:'short'}).toUpperCase()}</Text><DisplayText style={s.nextDay}>{new Date(upcoming.date+'T12:00:00').getDate()}</DisplayText></View><View style={{flex:1,gap:5}}><Text style={s.nextLabel}>NEXT {upcoming.kind.toUpperCase()}{upcoming.time ? ` · ${/^([01]\d|2[0-3]):[0-5]\d$/.test(upcoming.time) ? timeLabel(upcoming.time) : upcoming.time}` : ''}</Text><Text style={ui.rowTitle}>{upcoming.title}</Text></View><Icon name="arrow" color={palette.muted} size={18}/></Pressable>}
+
     {loading ? <Loading /> : active ? <View>
       <View onLayout={event => setHeroWidth(event.nativeEvent.layout.width)} style={[s.hero, heroWidth >= 700 && { minHeight: 280, padding: 28 }]}> 
         <Image source={require('@/assets/images/defensive-field.svg')} contentFit="contain" transition={0} accessible={false} style={[s.field, heroWidth >= 700 && { width: 420, height: 460, right: -30, bottom: -95 }]} pointerEvents="none" />
@@ -42,7 +42,7 @@ export default function HomeScreen() {
   </Screen>;
 }
 const s = StyleSheet.create({
-  nextEvent: {flexDirection:'row',alignItems:'center',gap:14,padding:16,borderRadius:8,backgroundColor:palette.panel,borderWidth:1,borderColor:palette.line}, nextMarker:{width:4,height:36,borderRadius:2,backgroundColor:palette.accent}, nextLabel:{fontSize:10,fontWeight:'800',letterSpacing:1,color:palette.muted},
+  nextEvent: {flexDirection:'row',alignItems:'center',gap:14,padding:14,borderRadius:12,backgroundColor:palette.panel,borderWidth:1,borderColor:palette.line,boxShadow:'0px 3px 8px rgba(0,35,55,0.06)'},nextDate:{width:58,minHeight:62,borderRadius:8,backgroundColor:'#EAF0F4',alignItems:'center',justifyContent:'center',gap:2},nextMonth:{fontSize:9,fontWeight:'800',letterSpacing:1,color:palette.accent},nextDay:{fontSize:29,lineHeight:32,color:palette.ink}, nextLabel:{fontSize:10,fontWeight:'800',letterSpacing:1,color:palette.muted},
   hero: { backgroundColor: palette.navy, borderRadius: 4, borderBottomWidth: 4, borderBottomColor: palette.accent, padding: 22, minHeight: 240, overflow: 'hidden', justifyContent: 'space-between', gap: 20 }, field: { position: 'absolute', right: -60, bottom: -24, width: 300, height: 329, opacity: 0.65 }, heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }, heroKicker: { color: '#ADC3D2', fontSize: 10, fontWeight: '800', letterSpacing: 2 }, heroIdentity: { flexDirection: 'row', alignItems: 'center', gap: 16 }, teamTitle: { color: palette.white, fontSize: 40, lineHeight: 43, letterSpacing: 0.3, flex: 1 }, heroCta: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 14, paddingVertical: 10, minHeight: 44 }, heroCtaLabel: { color: palette.white, fontSize: 11, fontWeight: '800', letterSpacing: 1 },
   empty: { gap: 20, backgroundColor: palette.navy, padding: 24, borderBottomWidth: 4, borderBottomColor: palette.accent }, emptyTitle: { color: palette.white, fontSize: 38, lineHeight: 41 }, emptyCopy: { color: '#C5D4DE', fontSize: 14, lineHeight: 22 },
 });

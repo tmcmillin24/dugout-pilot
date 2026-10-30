@@ -95,3 +95,20 @@ assert.equal(elite.hasEliteAccess({access_status:'trial',subscription_tier:'stan
 assert.equal(elite.hasEliteAccess({access_status:'trial',subscription_tier:'elite',test_access:false,trial_ends_at:'2000-01-01'}),false);
 assert.equal(elite.hasEliteAccess({access_status:'active',subscription_tier:'standard',test_access:true}),true);
 console.log('PASS Standard/unknown active accounts blocked; Elite active, valid Elite trial and admin test entitlements allowed; expired/suspended blocked.');
+
+const snapshot=load('src/lib/coaching/snapshot-metrics.ts');
+const snapshotRows={a:{batting:{AB:10,H:3,TB:5,BB:3,HBP:1,SF:0,R:2,RBI:2,HR:0,SB:1},pitching:{IP:1.2,ER:2,H:2,BB:1,SO:3},fielding:{E:1}},b:{batting:{AB:10,H:5,TB:9,BB:1,HBP:0,SF:0,R:4,RBI:3,HR:1,SB:2},pitching:{IP:2.1,ER:1,H:3,BB:2,SO:4},fielding:{E:0}}};
+const snapshotChoices=snapshot.snapshotMetrics(snapshotRows,6),snapshotValues=Object.fromEntries(snapshotChoices.map(m=>[m.key,m.value]));
+assert.equal(snapshotChoices.length,15);assert.equal(new Set(snapshotChoices.map(m=>m.key)).size,15);assert.equal(snapshot.SNAPSHOT_DEFAULTS.length,6);
+assert.equal(snapshotValues.AVG,.4);assert.equal(snapshotValues.OBP,.52);assert.equal(snapshotValues.SLG,.7);assert.equal(snapshotValues.OPS,1.22);assert.equal(snapshotValues.ERA,4.5);assert.equal(snapshotValues.WHIP,2);assert.equal(snapshotValues.IP,4);assert.equal(snapshotValues.SO,7);assert.equal(snapshotValues.BB,4);assert.equal(snapshotValues.RBI,5);assert.equal(snapshotValues.E,1);
+const planned={...seed,games:[{...seed.games[0],pitchingPlan:['starter','relief','closer']}]};assert.equal(model.normalizeBoard(JSON.parse(JSON.stringify(planned))).games[0].pitchingPlan.join(','),'starter,relief,closer');
+console.log('PASS 15 unique snapshot options, six defaults, weighted team rates, batting/pitching namespaces, baseball innings and saved pitching-plan persistence.');
+const planIds=['one','two','three','four'];
+const staffBoard={...seed,statsSeason:'2026',rulesContext:{sport:'baseball',age:'11U',season:'2026'},players:planIds.map(id=>({id,name:id,positions:['P']})),games:[{...seed.games[0],date:'2026-11-03'}],seasonImports:[{...imported.seasonImports[0],season:'2026',stats:Object.fromEntries(planIds.map((id,i)=>[id,{pitching:{IP:3,SO:9-i*2,BB:1,WHIP:1}}]))}]};
+assert.equal(elite.suggestPitchingPlan(staffBoard,staffBoard.games[0],planIds).join(','),'one,three,four,two');
+assert.equal(elite.suggestPitchingPlan(staffBoard,staffBoard.games[0],['two','four']).join(','),'two,four');
+assert.equal(elite.suggestPitchingPlan(staffBoard,staffBoard.games[0],['one']).join(','),'one');
+assert.equal(elite.suggestPitchingPlan(staffBoard,staffBoard.games[0],[]).length,0);
+staffBoard.games.push({...seed.games[0],id:'previous',date:'2026-11-02',pitchers:{one:{innings:'4',pitches:50}}});
+assert.equal(elite.suggestPitchingPlan(staffBoard,staffBoard.games[0],planIds).includes('one'),false);
+console.log('PASS generated staff reserves strongest remaining closer, honors availability, handles one/two pitchers and excludes recorded rest violations.');
