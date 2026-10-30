@@ -10,13 +10,12 @@ import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-na
 import { Button, Panel, Section, StatusMessage, ui } from '@/components/app-ui';
 import { Choice, CoachingScreen, Field, Sheet, c } from '@/components/coaching-ui';
 import { router } from 'expo-router';
-import { GameCard } from '@/components/game-card';
-import { nextGameNumber } from '@/lib/coaching/game-management';
+import { AddGameButton, GameCard } from '@/components/game-card';
 import { DraggableBattingOrder, type BattingScroll } from '@/components/draggable-batting-order';
 import { DefensiveDiamond } from '@/components/defensive-diamond';
 import { SavedDefenses } from '@/components/saved-defenses';
 import { useCoaching } from '@/providers/coaching-provider';
-import { POSITIONS, applyDefensiveLineup, assignPosition, dayFieldInnings, defensiveMode, fieldInnings, newGame, playerName, playersForPosition, recordFieldInning, type Board, type Game } from '@/lib/coaching/board';
+import { POSITIONS, applyDefensiveLineup, assignPosition, dayFieldInnings, defensiveMode, fieldInnings, playerName, playersForPosition, recordFieldInning, type Board, type Game } from '@/lib/coaching/board';
 
 type Mode = 'defense' | 'batting' | 'pitching';
 export default function LineupsScreen() {
@@ -30,7 +29,7 @@ function LineupBoard({ board,scroll }: { board: Board;scroll:BattingScroll }) {
   const [mode, setMode] = useState<Mode>('defense');
   const {width}=useWindowDimensions();
   const game = board.games.find(g => g.id === board.activeGameId) ?? board.games[0];
-  if (!game) return <><Text style={ui.body}>No games yet. Add a game to build its lineup.</Text><Button disabled={!writable} onPress={()=>{const next=newGame(1,nextGameNumber(board.games));void commit(b=>({...b,games:[...b.games,next],activeGameId:next.id}));}}>ADD GAME</Button><Button secondary onPress={()=>router.push('/roster')}>MANAGE ROSTER</Button></>;
+  if (!game) return <><Text style={ui.body}>No games yet. Add a game to build its lineup.</Text><AddGameButton board={board}/><Button secondary onPress={()=>router.push('/roster')}>MANAGE ROSTER</Button></>;
   const update = (change: (g: Game) => Game) => commit(b => ({ ...b, games: b.games.map(g => g.id === game.id ? change(g) : g) }));
   return <>
     <GameCard board={board} game={game}/>
