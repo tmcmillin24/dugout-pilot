@@ -7,7 +7,7 @@ export function ResponsiveColumns({ children, minimum = 350 }: { children: React
   const [width, setWidth] = useState(0);
   const items = Children.toArray(children);
   const { wide, columnWidth } = columnLayout(width, items.length, 22, minimum);
-  return <View onLayout={event => setWidth(event.nativeEvent.layout.width)} style={{ width: '100%', minWidth: 0, flexDirection: wide ? 'row' : 'column', alignItems: 'flex-start', gap: 22 }}>
+  return <View onLayout={event => { const next = event.nativeEvent.layout.width; if (next > 0) setWidth(next); }} style={{ width: '100%', minWidth: 0, flexDirection: wide ? 'row' : 'column', alignItems: 'flex-start', gap: 22 }}>
     {items.map((child, index) => <View key={index} style={{ width: width ? columnWidth : '100%', flexGrow: 0, flexShrink: 1, minWidth: 0, maxWidth: '100%', gap: 22 }}>{child}</View>)}
   </View>;
 }

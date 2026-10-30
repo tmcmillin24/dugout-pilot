@@ -14,3 +14,5 @@ console.log('PASS: actual column styles stay within their parent across resize; 
 // Session setup has three equal fields per row at tablet widths.
 for(const width of [696,770,968,1069,1116]){const result=geometry.columnLayout(width,3,22,210);assert.equal(result.wide,true);assert.equal(result.columnWidth*3+44,width);assert.ok(result.columnWidth>=210);}
 assert.equal(geometry.columnLayout(357,3,22,210).wide,false);
+
+const beforeHidden=measured;const hiddenTree=exports.ResponsiveColumns({children:['field','bench']});hiddenTree.props.onLayout({nativeEvent:{layout:{width:0}}});assert.equal(measured,beforeHidden,'Hidden panels must retain their last real width');
