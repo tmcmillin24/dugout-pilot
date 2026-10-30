@@ -4,7 +4,8 @@ import vm from 'node:vm';
 import ts from 'typescript';
 function load(file,deps={}) {const exports={};vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports,require:name=>deps[name]});return exports;}
 const calendar=load('src/lib/coaching/calendar.ts');
-const exports=load('src/lib/coaching/team-stats.ts',{'./calendar':calendar});
+const schedule=load('src/lib/coaching/game-schedule.ts',{'./calendar':calendar});
+const exports=load('src/lib/coaching/team-stats.ts',{'./calendar':calendar,'./game-schedule':schedule});
 const now=new Date(2026,9,30,12);
 
 const {battingTotals,importedGames,nextTeamEvent}=exports;
@@ -29,3 +30,22 @@ assert.equal(nextTeamEvent({...legacy,games:[{...legacy.games[0],date:'9/3/2026'
 assert.equal(calendar.parseCalendarDate('2/29/2027'),null);
 assert.equal(calendar.dateKey(calendar.parseCalendarDate('2/29/2028')),'2028-02-29');
 console.log('PASS: real calendar parser handles legacy November 3, canonical dates, leap days and invalid/past dates.');
+
+const oldTimeBoard={games:[{...legacy.games[0],date:undefined,time:'11/3/2026'}],practicePlans:[]};
+assert.equal(nextTeamEvent(oldTimeBoard,now).date,'2026-11-03');
+assert.equal(nextTeamEvent(oldTimeBoard,now).time,'');
+assert.equal(schedule.gameSchedule({time:'11/3/2026 5:00 PM'}).time,'5:00 PM');
+assert.equal(schedule.gameSchedule({time:'17:00'}).date,'');
+assert.equal(schedule.gameSchedule({date:'2026-11-04',time:'17:00'}).date,'2026-11-04');
+assert.equal(schedule.gameSchedule({time:'2/30/2027'}).date,'');
+assert.equal(nextTeamEvent({...oldTimeBoard,games:[{...oldTimeBoard.games[0],status:'final'}]},now),null);
+console.log('PASS: original date-in-time records appear on Home, clocks are not guessed as dates, and final games stay excluded.');
+const boardModule=load('src/lib/coaching/board.ts',{'./game-schedule':schedule,'./player-display':{formatPlayerName:x=>x},'expo-crypto':{randomUUID:()=> 'test'}});
+const original={...oldTimeBoard,players:[],activeGameId:'nov3',defensiveLineups:[]};
+const normalized=boardModule.normalizeBoard(original);
+assert.equal(normalized.games[0].date,'2026-11-03');
+assert.equal(normalized.games[0].time,'');
+assert.equal(original.games[0].time,'11/3/2026');
+assert.equal(normalized.games[0].id,original.games[0].id);
+assert.equal(boardModule.normalizeBoard(normalized).games[0].date,'2026-11-03');
+console.log('PASS: board loading upgrades legacy schedules without mutating saved input or changing game identity.');

@@ -1,3 +1,4 @@
+import { gameSchedule } from './game-schedule';
 import { formatPlayerName } from './player-display';
 import type { RulesContext } from './rules-context';
 import type { PracticePlan } from './practice';
@@ -15,7 +16,7 @@ export function playerName(board:Board,id:string) { const name = board.players.f
 export function pitchTotals(board:Board, excludeGameId?:string) { const totals:Record<string,{pitches:number;innings:number;games:number}>={}; for(const g of board.games) { if(g.id===excludeGameId) continue; for(const [id,log] of Object.entries(g.pitchers)) { const t=totals[id] ||= {pitches:0,innings:0,games:0}; t.pitches+=Number(log.pitches)||0; const [whole, outs]=String(log.innings||'0').split('.').map(Number); t.innings+=(whole||0)+Math.min(2,outs||0)/3; if(log.pitches || log.innings) t.games++; } } return totals; }
 
 export function createDefensiveLineups(positions:Record<string,string>={}):DefensiveLineup[] { return Array.from({length:10},(_,i)=>({id:`defense-${i+1}`,name:`Lineup ${i+1}`,positions:{...positions}})); }
-export function normalizeBoard(board:Board):Board { const seed=board.games.find(g=>g.id===board.activeGameId)?.positions||{};const defaults=createDefensiveLineups(seed);return {...board,defensiveLineups:defaults.map((slot,i)=>({...slot,...board.defensiveLineups?.[i],id:slot.id,positions:{...(board.defensiveLineups?.[i]?.positions||slot.positions)}}))}; }
+export function normalizeBoard(board:Board):Board { const seed=board.games.find(g=>g.id===board.activeGameId)?.positions||{};const defaults=createDefensiveLineups(seed);return {...board,games:board.games.map(game=>({...game,...gameSchedule(game)})),defensiveLineups:defaults.map((slot,i)=>({...slot,...board.defensiveLineups?.[i],id:slot.id,positions:{...(board.defensiveLineups?.[i]?.positions||slot.positions)}}))}; }
 export function assignPosition(positions:Record<string,string>,pos:string,id:string):Record<string,string> { const next={...positions};for(const key of Object.keys(next))if(next[key]===id&&id)delete next[key];if(id)next[pos]=id;else delete next[pos];return next; }
 export function applyDefensiveLineup(game:Game,lineup:DefensiveLineup,players:Player[]):Game { return {...game,positions:Object.fromEntries(Object.entries(lineup.positions).filter(([pos,id])=>POSITIONS.includes(pos as Position)&&players.some(p=>p.id===id))),defensiveLineupId:lineup.id}; }
 export function defensiveMode(game:Game,lineups:DefensiveLineup[]):string { const saved=lineups.find(l=>l.id===game.defensiveLineupId);return saved&&POSITIONS.every(pos=>(saved.positions[pos]||'')===(game.positions[pos]||''))?saved.id:'manual'; }
