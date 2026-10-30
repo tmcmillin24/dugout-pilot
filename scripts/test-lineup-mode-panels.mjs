@@ -17,9 +17,9 @@ console.log('PASS: Defense retains a distinct native container across mode chang
 
 mode='defense';
 for(const width of [600,744,834,1024,1194,1366]){viewport=width;const actions=find(exports.LineupBoard({board:{players:[{id:'p'}],games:[{id:'g'}],activeGameId:'g'},scroll:{}}),'lineup-actions');assert.equal(actions.props.style.flexDirection,'row');assert.equal(actions.props.children[0].props.style.flex,1);assert.equal(actions.props.children[1].props.style.flex,1);}
-viewport=390;assert.equal(find(exports.LineupBoard({board:{players:[{id:'p'}],games:[{id:'g'}],activeGameId:'g'},scroll:{}}),'lineup-actions').props.style.flexDirection,'column');
-isPad=false;viewport=834;assert.equal(find(exports.LineupBoard({board:{players:[{id:'p'}],games:[{id:'g'}],activeGameId:'g'},scroll:{}}),'lineup-actions').props.style.flexDirection,'column');
-console.log('PASS iPad actions share equal widths at mini/11/13 portrait and landscape widths; phone actions remain stacked.');
+viewport=390;assert.equal(find(exports.LineupBoard({board:{players:[{id:'p'}],games:[{id:'g'}],activeGameId:'g'},scroll:{}}),'lineup-actions').props.style.flexDirection,'row');
+isPad=false;viewport=834;assert.equal(find(exports.LineupBoard({board:{players:[{id:'p'}],games:[{id:'g'}],activeGameId:'g'},scroll:{}}),'lineup-actions').props.style.flexDirection,'row');
+console.log('PASS iPad actions share equal widths at mini/11/13 portrait and landscape widths; phone actions also share one row.');
 function actionCells(node){if(!node||typeof node!=='object')return [];if(node.type==='View'&&node.props?.style?.flex===1&&node.props.style.minWidth===0)return [node];return [node.props?.children].flat(Infinity).flatMap(actionCells);}
-for(const width of [320,390,744,834,1194,1366]){viewport=width;isPad=width>=600;for(mode of ['batting','pitching']){const actions=find(exports.LineupBoard({board:{players:[{id:'p'}],games:[{id:'g'}],activeGameId:'g'},scroll:{}}),'lineup-actions');assert.equal(actions.props.style.flexDirection,'row');const cells=actionCells(actions);assert.equal(cells.length,mode==='batting'?3:2);for(const cell of cells)assert.equal(cell.props.style.flex,1);}}
-console.log('PASS Batting has three equal-width actions and Pitching two on phone and tablet widths.');
+for(const width of [320,390,744,834,1194,1366]){viewport=width;isPad=width>=600;for(mode of ['batting','pitching']){const actions=find(exports.LineupBoard({board:{players:[{id:'p'}],games:[{id:'g'}],activeGameId:'g'},scroll:{}}),'lineup-actions');assert.equal(actions.props.style.flexDirection,'row');const cells=actionCells(actions);assert.equal(cells.length,2);for(const cell of cells)assert.equal(cell.props.style.flex,1);}}
+console.log('PASS Batting and Pitching each have two equal-width actions on phone and tablet widths.');
