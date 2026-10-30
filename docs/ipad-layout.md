@@ -31,3 +31,9 @@ Coach’s Corner uses three full-width menu rows to match Team Tools. Practice s
 Bench and Field innings both include player counts. Overflowing lists show a persistent position rail and scrolling hint. Batting pickup uses a 160ms hold. Dugout Display fills the current window, highlights At Bat in orange and On Deck in blue, and keeps the screen awake only while open. Batter Finished saves the current player as the game’s last batter; the selector corrects or resets that position. Save failure leaves the saved position unchanged. The display adapts to one, two or three order columns and supports normal window rotation.
 
 Validation: `node scripts/test-batting-display.mjs`, `node scripts/test-tablet-layout.mjs`, TypeScript, scoped ESLint and iOS bundle export. Native device rendering, touch latency and auto-lock still require device verification.
+
+## Responsive launch logo
+
+The native iOS launch storyboard and React loader share `config/launch-layout.json`: phone width 300pt; regular iPad windows use 65% of the shorter dimension, capped at 640pt. This gives approximately 542pt on the 11-inch and 640pt on the 13-inch, with no orientation-dependent zoom. Compact windows keep the phone sizing. Native assets are generated at 640pt before display scaling.
+
+`with-responsive-launch` must precede `expo-splash-screen` in the plugin list so Expo builds the image first and our mod then adds constraints. Native changes require prebuild/rebuild; a Metro reload cannot update the installed launch storyboard. No generated native files are maintained manually. SDK introspection and the launch-handoff test verify the mod order, generated constraints, phone/mini/11/13 sizing, rotation, idempotence and auth readiness. Xcode compilation and cold-launch visuals need device verification.

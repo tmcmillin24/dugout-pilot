@@ -27,12 +27,13 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/with-responsive-launch",
       [
         "expo-splash-screen",
         {
           "backgroundColor": "#FFFFFF",
           "image": "./assets/images/dugout-launch.png",
-          "imageWidth": 300,
+          "imageWidth": 640,
           "resizeMode": "contain",
           "android": {
             "backgroundColor": "#FFFFFF",
