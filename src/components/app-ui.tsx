@@ -10,6 +10,7 @@ import type { Team } from '@/lib/teams';
 
 export const palette = { canvas: '#F1F3F5', panel: '#FFFFFF', raised: '#E8EDF1', line: '#D8DFE5', ink: '#082E4B', muted: '#637182', accent: '#F45C1B', badgeSurface: '#FFF0E8', error: '#B3261E', cardInk: '#082E4B', cardMuted: '#637182', cardLine: '#E4E8EC', cardTint: '#FFF0E8', navy: '#082E4B', white: '#FFFFFF' };
 const icons = {
+  openWindow: { ios: 'arrow.up.right.square', android: 'open_in_new', web: 'open_in_new' },
   eye: { ios: 'eye', android: 'visibility', web: 'visibility' },
   eyeOff: { ios: 'eye.slash', android: 'visibility_off', web: 'visibility_off' },
   home: { ios: 'house', android: 'home', web: 'home' },
@@ -37,7 +38,7 @@ export type IconName = keyof typeof icons;
 export function Icon({ name, color = palette.muted, size = 22 }: { name: IconName; color?: ComponentProps<typeof SymbolView>['tintColor']; size?: number }) {
   return <SymbolView name={icons[name]} tintColor={color} size={size} style={{ width: size, height: size }} />;
 }
-export function Screen({ title, subtitle, children, back = false, onRefresh, trailing, hideTitle = false, scrollRef, scrollEnabled = true, onScroll }: { title: string; eyebrow?: string; subtitle?: string; children: ReactNode; back?: boolean; onRefresh?: () => Promise<void>; trailing?: ReactNode; hideTitle?: boolean; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>; scrollEnabled?: boolean; onScroll?: ScrollViewProps['onScroll'] }) {
+export function Screen({ title, subtitle, children, back = false, onRefresh, trailing, titleAction, hideTitle = false, scrollRef, scrollEnabled = true, onScroll }: { title: string; eyebrow?: string; subtitle?: string; children: ReactNode; back?: boolean; onRefresh?: () => Promise<void>; trailing?: ReactNode; titleAction?:ReactNode; hideTitle?: boolean; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>; scrollEnabled?: boolean; onScroll?: ScrollViewProps['onScroll'] }) {
   const { width } = useWindowDimensions();
   const tablet = width >= 768;
   const roomy = width >= 600;
@@ -53,7 +54,7 @@ export function Screen({ title, subtitle, children, back = false, onRefresh, tra
     </View>
     <KeyboardAvoidingView style={ui.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView ref={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} scrollEventThrottle={16} style={{ backgroundColor: palette.canvas }} contentContainerStyle={[ui.content, roomy && { maxWidth: 1180, paddingHorizontal: tablet ? 32 : 24, paddingTop: tablet ? 28 : 24, paddingBottom: 40, gap: 24 }]} keyboardShouldPersistTaps="handled" refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} tintColor={palette.accent} onRefresh={() => { setRefreshing(true); void onRefresh().finally(() => setRefreshing(false)); }} /> : undefined}>
-        {!hideTitle && <View style={ui.intro}><DisplayText accessibilityRole="header" style={ui.title}>{title.toUpperCase()}</DisplayText>{subtitle && <Text style={ui.subtitle}>{subtitle}</Text>}</View>}
+        {!hideTitle && <View style={ui.intro}>{titleAction?<View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:10}}><DisplayText accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={[ui.title,{flex:1,minWidth:0}]}>{title.toUpperCase()}</DisplayText><View style={{flexShrink:0}}>{titleAction}</View></View>:<DisplayText accessibilityRole="header" style={ui.title}>{title.toUpperCase()}</DisplayText>}{subtitle && <Text style={ui.subtitle}>{subtitle}</Text>}</View>}
         {children}
       </ScrollView>
     </KeyboardAvoidingView>

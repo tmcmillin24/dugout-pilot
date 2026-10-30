@@ -8,10 +8,10 @@ import { DisplayText } from './sports-type';
 import { useTeams } from '@/providers/team-provider';
 import { useCoaching } from '@/providers/coaching-provider';
 
-export function CoachingScreen({ title, children, back = false, scrollRef, scrollEnabled, onScroll }: { title: string; children: ReactNode; back?: boolean } & Pick<ComponentProps<typeof Screen>, 'scrollRef'|'scrollEnabled'|'onScroll'>) {
+export function CoachingScreen({ title, children, back = false, scrollRef, scrollEnabled, onScroll, titleAction }: { title: string; children: ReactNode; back?: boolean } & Pick<ComponentProps<typeof Screen>, 'scrollRef'|'scrollEnabled'|'onScroll'|'titleAction'>) {
   const { active, loading: teamsLoading } = useTeams();
   const { board, loading, busy, error, notice, reload, writable } = useCoaching();
-  return <Screen title={title} back={back} scrollRef={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} subtitle={active?.name} onRefresh={reload}>
+  return <Screen title={title} titleAction={titleAction} back={back} scrollRef={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} subtitle={active?.name} onRefresh={reload}>
     <StatusMessage text={error} error /><StatusMessage text={busy ? 'Saving…' : notice} />
     {teamsLoading || loading ? <Loading /> : !active ? <><Text style={ui.body}>Choose or create a team to get started.</Text><Button onPress={() => router.navigate('/teams')}>OPEN TEAMS</Button></> : !board ? <Button secondary onPress={() => { void reload(); }}>RETRY</Button> : <>
       {!writable && !busy && <Text style={ui.body}>View your saved plans. Active team access is required to make changes.</Text>}
