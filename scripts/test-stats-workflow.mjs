@@ -86,3 +86,12 @@ const countHydrated=csv.applyStatsImport(oldCount,{...request,rows:matched.rows,
 assert.equal(data.statsSource(countHydrated).gamesPlayed,4);assert.equal(data.statsSource(countHydrated).additions.length,1);
 if(real&&existsSync(real))assert.equal(csv.parseDetailedImport(readFileSync(real,'utf8'),[]).gamesPlayed,3);
 console.log('PASS exact CSV team GP, +1 per added game, no increment for corrections, season reset and legacy metadata hydration without absorbing additions.');
+assert.equal(elite.hasEliteAccess({access_status:'active',subscription_tier:'standard',test_access:false}),false);
+assert.equal(elite.hasEliteAccess({access_status:'active',test_access:false}),false);
+assert.equal(elite.hasEliteAccess({access_status:'active',subscription_tier:'elite',test_access:false}),true);
+assert.equal(elite.hasEliteAccess({access_status:'expired',subscription_tier:'elite',test_access:false}),false);
+assert.equal(elite.hasEliteAccess({access_status:'suspended',subscription_tier:'elite',test_access:false}),false);
+assert.equal(elite.hasEliteAccess({access_status:'trial',subscription_tier:'standard',test_access:false,trial_ends_at:'2099-01-01'}),true);
+assert.equal(elite.hasEliteAccess({access_status:'trial',subscription_tier:'elite',test_access:false,trial_ends_at:'2000-01-01'}),false);
+assert.equal(elite.hasEliteAccess({access_status:'active',subscription_tier:'standard',test_access:true}),true);
+console.log('PASS Standard/unknown active accounts blocked; Elite active, valid Elite trial and admin test entitlements allowed; expired/suspended blocked.');

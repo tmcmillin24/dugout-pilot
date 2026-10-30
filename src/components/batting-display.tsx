@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useKeepAwake } from 'expo-keep-awake';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,10 +10,10 @@ import { formatPlayerName } from '@/lib/coaching/player-display';
 import { nextBatterIndex } from '@/lib/coaching/batting-display';
 import type { Board, Game } from '@/lib/coaching/board';
 
-type Props = { board: Board; game: Game; writable: boolean; update: (change: (game: Game) => Game) => Promise<boolean> };
-export function BattingDisplay({board,game,writable,update}:Props) {
+type Props = { renderTrigger?:(open:()=>void,disabled:boolean)=>ReactNode; board: Board; game: Game; writable: boolean; update: (change: (game: Game) => Game) => Promise<boolean> };
+export function BattingDisplay({board,game,writable,update,renderTrigger}:Props) {
   const [open,setOpen]=useState(false);
-  return <><Button secondary disabled={!game.lineup.length} onPress={()=>setOpen(true)}>DUGOUT DISPLAY</Button><OverlayModal open={open} onClose={()=>setOpen(false)}>{open&&<Display board={board} game={game} writable={writable} update={update} onClose={()=>setOpen(false)}/>}</OverlayModal></>;
+  return <>{renderTrigger?renderTrigger(()=>setOpen(true),!game.lineup.length):<Button secondary disabled={!game.lineup.length} onPress={()=>setOpen(true)}>DUGOUT DISPLAY</Button>}<OverlayModal open={open} onClose={()=>setOpen(false)}>{open&&<Display board={board} game={game} writable={writable} update={update} onClose={()=>setOpen(false)}/>}</OverlayModal></>;
 }
 function Display({board,game,writable,update,onClose}:Props&{onClose:()=>void}) {
   useKeepAwake();
