@@ -3,8 +3,8 @@ import { Platform, Pressable, Text, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
 import { CryptoDigestAlgorithm, digestStringAsync, randomUUID } from 'expo-crypto';
-import { Button, Panel, Section, StatusMessage, ui } from '@/components/app-ui';
-import { Chips, Choice, CoachingScreen, Field, Sheet, c } from '@/components/coaching-ui';
+import { Button, Panel, Section, StatusMessage, palette, ui } from '@/components/app-ui';
+import { Choice, CoachingScreen, Field, Sheet, c } from '@/components/coaching-ui';
 import { useCoaching } from '@/providers/coaching-provider';
 import { useTeams } from '@/providers/team-provider';
 import { openInAppBrowser } from '@/lib/in-app-browser';
@@ -41,14 +41,15 @@ function ImportWorkspace(){
  const count=preview?.rows.filter(r=>r.playerId&&r.playerId!==REVIEW_PLAYER).length??0;
  const current=mode==='season'?board.seasonImports?.find(s=>s.season===season):board.games.find(g=>g.id===gameId);
  return <>
- <Chips values={[{value:'season',label:'SEASON CSV'},{value:'game',label:'GAME CSV'}]} selected={mode} onSelect={setMode}/>
- <Panel><View style={{padding:18,gap:16}}><Field label="Season year" value={season} onChange={setSeason} numeric/>
+ <View style={{backgroundColor:palette.navy,borderRadius:10,padding:20,gap:8,borderBottomWidth:3,borderBottomColor:palette.accent}}><Text style={{color:palette.accent,fontSize:11,fontWeight:'800',letterSpacing:1}}>YOUR NUMBERS. YOUR ADVANTAGE.</Text><Text style={{color:'white',fontSize:23,fontWeight:'800'}}>Bring your stats to the dugout.</Text><Text style={{color:'#BCD0DC',fontSize:13,lineHeight:19}}>Choose a CSV, review your players, then save.</Text></View>
+ <View style={{flexDirection:'row',gap:8}}>{(['season','game'] as const).map(value=><Pressable key={value} accessibilityRole="tab" accessibilityState={{selected:mode===value}} onPress={()=>setMode(value)} style={{flex:1,minWidth:0,height:52,alignItems:'center',justifyContent:'center',borderRadius:8,borderWidth:1,borderColor:mode===value?palette.navy:palette.line,backgroundColor:mode===value?palette.navy:palette.panel}}><Text style={{fontSize:12,fontWeight:'800',color:mode===value?'white':palette.ink}}>{value==='season'?'SEASON CSV':'GAME CSV'}</Text></Pressable>)}</View>
+ <Panel><View style={{padding:18,gap:16,borderTopWidth:3,borderTopColor:palette.accent}}><Field label="Season year" value={season} onChange={setSeason} numeric/>
  {mode==='game'&&<Choice label="Game" value={gameId} options={board.games.map(g=>({value:g.id,label:`${g.label} · ${g.opponent}`}))} onChange={setGameId}/>}
- <Text style={ui.body}>{mode==='season'?'Create or match your roster and replace this season’s stats snapshot. Individual game history stays intact.':'Import one game’s stats. New games add to season totals. Re-importing updates that game without adding it twice.'}</Text>
+ <Text style={[ui.body,{minHeight:66}]}>{mode==='season'?'Create or match your roster and replace this season’s stats snapshot. Individual game history stays intact.':'Import one game’s stats. New games add to season totals. Re-importing updates that game without adding it twice.'}</Text>
  <Button disabled={!writable||picking||!/^20\d{2}$/.test(season)||(mode==='game'&&!board.games.some(g=>g.id===gameId))} onPress={()=>{void chooseFile();}}>{picking?'READING CSV…':'CHOOSE CSV FILE'}</Button>
  <Button secondary onPress={()=>{void openInAppBrowser('https://web.gc.com/').catch(()=>setError('Could not open GameChanger.'));}}>OPEN GAMECHANGER</Button>
  </View></Panel><StatusMessage text={error} error/><StatusMessage text={notice}/>
- <Section title="Export once. Review. Import."><Panel><View style={c.item}><Text style={ui.body}>In GameChanger, open your team’s Stats → Export Stats. For a game import, filter to just that game first. Save the CSV to Files.</Text><Text style={c.small}>Fresh team? New players and jersey numbers are created from the reviewed rows. Existing names, numbers, and positions are preserved unless you explicitly add position history.</Text></View></Panel></Section>
+ <Section title="Before you import"><Panel><View style={c.item}><Text style={ui.body}>In GameChanger, open your team’s Stats → Export Stats. For a game import, filter to just that game first. Save the CSV to Files.</Text><Text style={c.small}>Fresh team? New players and jersey numbers are created from the reviewed rows. Existing names, numbers, and positions are preserved unless you explicitly add position history.</Text></View></Panel></Section>
  {current&&<Section title="Current import"><Panel><View style={c.item}><Text style={ui.rowTitle}>{mode==='season'?current.label:board.games.find(g=>g.id===gameId)?.importLabel||'No CSV imported into this game'}</Text><Text style={c.small}>{Object.keys(current.stats).length} player records · {season}</Text></View></Panel></Section>}
  <Text style={c.small}>Independent CSV import. Dugout Pilot is not affiliated with or endorsed by GameChanger. No live sync.</Text>
  <Sheet title={`Review ${mode} import`} open={!!preview} onClose={()=>{if(!busy&&!lock.current)setPreview(null);}}>{preview&&<View pointerEvents={busy?'none':'auto'} style={c.group}>

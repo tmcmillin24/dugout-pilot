@@ -1,4 +1,4 @@
-import { useState, type ReactNode, type ComponentProps } from 'react';
+import { useState, type ReactNode, type ComponentProps, type ComponentRef, type RefObject } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { OverlayModal } from './overlay-modal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,10 +25,10 @@ export function Chips<T extends string>({ values, selected, onSelect, disabled =
 export function Field({ label, value, onChange, numeric = false, multiline = false }: { label: string; value: string; onChange: (text: string) => void; numeric?: boolean; multiline?: boolean }) {
   return <View style={c.stack}><Text style={ui.label}>{label}</Text><TextInput accessibilityLabel={label} value={value} onChangeText={onChange} keyboardType={numeric ? 'number-pad' : 'default'} multiline={multiline} maxLength={multiline ? 2000 : 120} style={[ui.input, multiline && { minHeight: 90 }]} /></View>;
 }
-export function Sheet({ title, open, onClose, children }: { title: string; open: boolean; onClose: () => void; children: ReactNode }) {
+export function Sheet({ title, open, onClose, children, scrollRef, scrollEnabled, onScroll }: { title: string; open: boolean; onClose: () => void; children: ReactNode; scrollRef?:RefObject<ComponentRef<typeof ScrollView>|null>; scrollEnabled?:boolean; onScroll?:ComponentProps<typeof ScrollView>['onScroll'] }) {
   const { error, busy } = useCoaching();
   const insets = useSafeAreaInsets();
-  return <OverlayModal open={open} onClose={onClose}><KeyboardAvoidingView style={[c.scrim, { paddingTop: Math.max(20, insets.top), paddingBottom: Math.max(20, insets.bottom), paddingLeft: Math.max(20, insets.left), paddingRight: Math.max(20, insets.right) }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><View accessibilityViewIsModal style={c.sheet}><View style={c.sheetHead}><DisplayText accessibilityRole="header" style={c.sheetTitle}>{title.toUpperCase()}</DisplayText><Pressable accessibilityRole="button" onPress={onClose} style={c.close}><Text style={c.closeText}>Close</Text></Pressable></View><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={c.sheetBody}><StatusMessage text={error} error /><StatusMessage text={busy ? 'Saving…' : ''} />{children}</ScrollView></View></KeyboardAvoidingView></OverlayModal>;
+  return <OverlayModal open={open} onClose={onClose}><KeyboardAvoidingView style={[c.scrim, { paddingTop: Math.max(20, insets.top), paddingBottom: Math.max(20, insets.bottom), paddingLeft: Math.max(20, insets.left), paddingRight: Math.max(20, insets.right) }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><View accessibilityViewIsModal style={c.sheet}><View style={c.sheetHead}><DisplayText accessibilityRole="header" style={c.sheetTitle}>{title.toUpperCase()}</DisplayText><Pressable accessibilityRole="button" onPress={onClose} style={c.close}><Text style={c.closeText}>Close</Text></Pressable></View><ScrollView ref={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} scrollEventThrottle={16} keyboardShouldPersistTaps="handled" contentContainerStyle={c.sheetBody}><StatusMessage text={error} error /><StatusMessage text={busy ? 'Saving…' : ''} />{children}</ScrollView></View></KeyboardAvoidingView></OverlayModal>;
 }
 export function Choice({ label, value, options, onChange, disabled, fill = false }: { label: string; value: string; options: { value: string; label: string }[]; onChange: (value: string) => void; disabled?: boolean; fill?: boolean }) {
   const [open, setOpen] = useState(false);
