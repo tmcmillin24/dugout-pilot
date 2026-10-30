@@ -17,5 +17,5 @@ export function battingTotals(stats: Stat[]) {
 export function nextTeamEvent(board: Board, now=new Date()) {
   const today=dateKey(now);
   const events=[...board.games.filter(g=>g.status!=='final'&&g.date).map(g=>({id:g.id,date:g.date!,time:g.time,kind:'game' as const,title:`${g.label} · ${g.opponent}`})),...(board.practicePlans??[]).map(p=>({id:p.id,date:p.date,time:p.settings.start??'',kind:'practice' as const,title:`Practice · ${p.settings.focus}`}))];
-  return events.filter(e=>parseCalendarDate(e.date)&&e.date>=today).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time))[0]??null;
+  return events.flatMap(e=>{const parsed=parseCalendarDate(e.date);return parsed?[{...e,date:dateKey(parsed)}]:[];}).filter(e=>e.date>=today).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time))[0]??null;
 }
