@@ -22,7 +22,7 @@ export function CoachingScreen({ title, children, back = false, scrollRef, scrol
   </Screen>;
 }
 export function Chips<T extends string>({ values, selected, onSelect, disabled = false }: { values: { value: T; label: string }[]; selected: T; onSelect: (value: T) => void; disabled?: boolean }) {
-  return <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={c.chips}>{values.map(item => <Pressable key={item.value} accessibilityRole="button" accessibilityState={{ selected: selected === item.value, disabled }} disabled={disabled} onPress={() => onSelect(item.value)} style={[c.chip, selected === item.value && c.selected, disabled && ui.dim]}><Text style={[c.chipText, selected === item.value && c.selectedText]}>{item.label}</Text></Pressable>)}</ScrollView>;
+  return <ScrollView horizontal style={{flexGrow:0,flexShrink:0}} showsHorizontalScrollIndicator={false} contentContainerStyle={c.chips}>{values.map(item => <Pressable key={item.value} accessibilityRole="button" accessibilityState={{ selected: selected === item.value, disabled }} disabled={disabled} onPress={() => onSelect(item.value)} style={[c.chip, selected === item.value && c.selected, disabled && ui.dim]}><Text style={[c.chipText, selected === item.value && c.selectedText]}>{item.label}</Text></Pressable>)}</ScrollView>;
 }
 export function Field({ label, value, onChange, numeric = false, multiline = false }: { label: string; value: string; onChange: (text: string) => void; numeric?: boolean; multiline?: boolean }) {
   return <View style={c.stack}><Text style={ui.label}>{label}</Text><TextInput accessibilityLabel={label} value={value} onChangeText={onChange} keyboardType={numeric ? 'number-pad' : 'default'} multiline={multiline} maxLength={multiline ? 2000 : 120} style={[ui.input, multiline && { minHeight: 90 }]} /></View>;
@@ -44,3 +44,4 @@ export const c = StyleSheet.create({
   number: { width: 48, flexShrink: 0, fontVariant: ['tabular-nums'], color: palette.accent, fontSize: 23, fontWeight: '800' }, item: { padding: 15, borderBottomColor: palette.line, borderBottomWidth: 1, gap: 7 }, small: { fontSize: 12, lineHeight: 18, color: palette.muted },
   headline: { fontSize: 27, color: palette.ink }, danger: { color: palette.error, fontWeight: '700' }, compact: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 });
+

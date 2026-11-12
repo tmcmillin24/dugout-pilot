@@ -68,8 +68,8 @@ export function Panel({ children, style,accent }: { children: ReactNode; style?:
 export function Button({ children, onPress, secondary = false, disabled = false, style }: { children: ReactNode; onPress: () => void; secondary?: boolean; disabled?: boolean; style?: StyleProp<ViewStyle> }) {
   return <Pressable accessibilityRole="button" accessibilityState={{disabled}} onPress={onPress} disabled={disabled} style={({ pressed }) => [ui.button, secondary && ui.secondary, style, (pressed || disabled) && ui.dim]}><Text style={[ui.buttonText, secondary && ui.secondaryText]}>{children}</Text></Pressable>;
 }
-export function MenuRow({ icon, title, description, onPress, last = false, end }: { icon: IconName; title: string; description?: string; onPress?: () => void; last?: boolean; end?: ReactNode }) {
-  const content = <><View style={ui.iconTile}><Icon name={icon} color={palette.ink} /></View><View style={ui.rowCopy}><Text style={ui.rowTitle}>{title}</Text>{description && <Text style={ui.rowDescription}>{description}</Text>}</View>{end ?? (onPress ? <View style={{width:28,height:28,borderRadius:14,backgroundColor:'#F1F5F7',alignItems:'center',justifyContent:'center'}}><Icon name="arrow" color={palette.cardMuted} size={13} /></View> : null)}</>;
+export function MenuRow({ title, description, onPress, last = false, end }: { icon: IconName; title: string; description?: string; onPress?: () => void; last?: boolean; end?: ReactNode }) {
+  const content = <><View style={ui.rowCopy}><DisplayText style={[ui.rowTitle,{fontSize:22,lineHeight:25}]}>{title.toUpperCase()}</DisplayText>{description && <Text style={ui.rowDescription}>{description}</Text>}</View>{end ?? (onPress ? <Text style={{color:palette.cardMuted,fontSize:20}}>›</Text> : null)}</>;
   return onPress ? <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [ui.menuRow, !last && ui.divider, pressed && ui.dim]}>{content}</Pressable> : <View style={[ui.menuRow, !last && ui.divider]}>{content}</View>;
 }
 export function AccessBadge({ team }: { team: Team }) {
@@ -85,7 +85,7 @@ export const ui = StyleSheet.create({
   wordmark: { color: palette.ink, fontWeight: '900', fontSize: 13, letterSpacing: 1.3 }, wordmarkAccent: { color: palette.accent },
   eyebrow: { color: palette.muted, fontSize: 11, letterSpacing: 2.4, fontWeight: '800' }, intro: { gap: 6 }, title: { color: palette.ink, fontSize: 34, fontWeight: '800', letterSpacing: 0.2 }, subtitle: { color: palette.muted, fontSize: 15, lineHeight: 23, maxWidth: 480 },
   section: { gap: 12, width: '100%', minWidth: 0 }, sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 }, sectionMarker: { width: 3, height: 17, backgroundColor: palette.accent }, sectionTitle: { flexShrink: 1, color: palette.ink, fontSize: 23, fontWeight: '800', letterSpacing: 0.2 },
-  panel: { borderColor: '#D1DEE6', borderWidth: 1, borderRadius: 10, backgroundColor: palette.panel, overflow: 'hidden',boxShadow:'0px 3px 10px rgba(8,46,75,0.07)' },
+  panel: { borderColor: '#D1DEE6', borderWidth: 1, borderRadius: 8, backgroundColor: palette.panel, overflow: 'hidden',boxShadow:'0px 2px 6px rgba(8,46,75,0.04)' },
   menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, minHeight: 67 }, divider: { borderBottomWidth: 1, borderBottomColor: palette.cardLine }, iconTile: { width: 40, height: 40, borderRadius: 12, backgroundColor: '#EDF3F6', alignItems: 'center', justifyContent: 'center' },
   rowCopy: { flex: 1, minWidth: 0, gap: 5 }, rowTitle: { color: palette.cardInk, fontSize: 16, fontWeight: '700' }, rowDescription: { color: palette.cardMuted, fontSize: 13, lineHeight: 19 },
   button: { backgroundColor: palette.accent, minHeight: 52, padding: 15, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }, buttonText: { fontSize: 15, fontWeight: '800', color: palette.ink, textAlign: 'center' }, secondary: { backgroundColor: palette.raised, borderWidth: 1, borderColor: palette.line }, secondaryText: { color: palette.ink }, dim: { opacity: 0.65 },
@@ -95,3 +95,4 @@ export const ui = StyleSheet.create({
   body: { color: palette.cardMuted, fontSize: 15, lineHeight: 23 }, heading: { color: palette.cardInk, fontSize: 21, fontWeight: '700', letterSpacing: -0.4 },
   inset: { padding: 22, gap: 16 }, input: { backgroundColor: palette.raised, borderColor: palette.line, borderWidth: 1, color: palette.ink, fontSize: 16, padding: 16, borderRadius: 5, minHeight: 54 }, label: { color: palette.ink, fontSize: 13, fontWeight: '600' },
 });
+
