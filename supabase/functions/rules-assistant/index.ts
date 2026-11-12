@@ -55,7 +55,7 @@ export function createRulesHandler(deps: Deps) {
       const user=await auth.json();if(!uuid.test(user.id??''))return json({error:'Sign in to use Ask AI.'},401);
       const membership=await deps.fetch(`${base}/rest/v1/team_memberships?team_id=eq.${teamId}&user_id=eq.${user.id}&select=role`,{headers,signal:AbortSignal.timeout(10000)});
       if(!membership.ok)return json({error:'Could not verify team access.'},503);
-      if(!(await membership.json()).length)return json({error:'You no longer have access to this team.'},403);
+      if(!(await membership.json()).length)return json({error:'Your account is not a member of this team. Ask the team owner for an invitation.',code:'membership_required'},403);
       const key=deps.env('GEMINI_API_KEY');if(!key)return json({error:'Ask AI is not connected yet. Saved rules are available offline.',code:'not_configured'},503);
       const [teamResponse,boardResponse]=await Promise.all([
         deps.fetch(`${base}/rest/v1/teams?id=eq.${teamId}&select=activation_status,test_access,trial_ends_at`,{headers,signal:AbortSignal.timeout(10000)}),
@@ -63,20 +63,24 @@ export function createRulesHandler(deps: Deps) {
       ]);
       if(!teamResponse.ok||!boardResponse.ok)return json({error:'Could not load your team rules.'},503);
       const team=(await teamResponse.json())[0];const now=(deps.now??(()=>new Date()))();
-      if(!team||!(team.test_access||team.activation_status==='active'||team.activation_status==='trial'&&Date.parse(team.trial_ends_at)>now.getTime()))return json({error:'Active team access is required for Ask AI. Saved rules remain available.'},403);
+      if(!team)return json({error:'This team is unavailable. Choose another team or ask the owner to check access.',code:'membership_required'},403);
+      if(!team.test_access && team.activation_status!=='active') {
+        if(team.activation_status==='trial' && !(Date.parse(team.trial_ends_at)>now.getTime()))return json({error:'This team’s free trial has ended. Activate team access to use online Ask Dugout. FAQs remain available.',code:'trial_expired'},403);
+        if(team.activation_status!=='trial')return json({error:team.activation_status==='suspended'?'This team’s access is suspended. Contact the team owner.':'This team has not been activated. Ask the team owner to activate access.',code:'team_inactive'},403);
+      }
       const board=(await boardResponse.json())[0]?.board??{};
       const legacy=board.rulesProfile==='usssa-11u-2026';const saved=board.rulesContext??{};
       const context: RuleContext={sport:['baseball','fastpitch','slowpitch'].includes(saved.sport)?saved.sport:'baseball',organization:'usssa',age:typeof saved.age==='string'?saved.age.slice(0,20):legacy?'11U':'',season:typeof saved.season==='string'?saved.season.slice(0,8):legacy?'2026':''};
       const notes=typeof board.eventRules==='string'?board.eventRules:'';
       const budget=await deps.fetch(`${base}/rest/v1/rpc/consume_rules_ai_budget`,{method:'POST',headers:{apikey:admin,...(admin.startsWith('sb_secret_')?{}:{Authorization:`Bearer ${admin}`}),'Content-Type':'application/json'},body:JSON.stringify({p_team_id:teamId,p_user_id:user.id}),signal:AbortSignal.timeout(10000)});
-      if(!budget.ok){const failure=await budget.json().catch(()=>({}));if(failure.code==='P0001'&&String(failure.message).includes('limit'))return json({error:'Ask AI has reached its usage limit. Use Saved Rules or try again later.'},429);if(failure.code==='42501')return json({error:'Team access is required.'},403);return json({error:'Ask AI setup is incomplete. Saved rules are still available.',code:'not_configured'},503);}
+      if(!budget.ok){const failure=await budget.json().catch(()=>({}));if(failure.code==='P0001'&&String(failure.message).includes('limit'))return json({error:'Ask Dugout’s app usage limit has been reached for this account or team. Try again later; FAQs remain available.',code:'app_usage_limit'},429);if(failure.code==='42501')return json({error:'Team access changed while answering. Refresh your team and check its access status.',code:'team_inactive'},403);return json({error:'Ask AI setup is incomplete. Saved rules are still available.',code:'not_configured'},503);}
       const references=referencesFor(context);
       if(!references.length)return json({answer:'There is no reviewed reference pack for this sport yet. I cannot verify a ruling from the available material.',citations:[],kind:'unverified',mode:'ai'});
       const response=await deps.fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,{
         method:'POST',headers:{'x-goog-api-key':key,'Content-Type':'application/json'},
         body:JSON.stringify({systemInstruction:{parts:[{text:instructions(context)}]},contents:[{role:'user',parts:[{text:JSON.stringify({question:question.trim(),history,eventNotes:notes.slice(0,2000),references})}]}],generationConfig:{maxOutputTokens:2400,responseMimeType:'application/json',responseJsonSchema:{type:'object',properties:{kind:{type:'string',enum:['reference','clarification','unverified']},answer:{type:'string'},sourceIds:{type:'array',items:{type:'string'}}},required:['kind','answer','sourceIds'],additionalProperties:false}}}),signal:AbortSignal.timeout(45000)});
       // Exactly one provider attempt: no search, paid-provider fallback, or automatic retry.
-      if(response.status===429)return json({error:'The free Gemini allowance is currently exhausted. Using offline references.',code:'quota_exhausted'},429);
+      if(response.status===429)return json({error:'Gemini’s request limit has been reached. This may be a temporary rate limit or its daily allowance. Try again later; offline references remain available.',code:'quota_exhausted'},429);
       if(!response.ok)throw new Error('provider_unavailable');
       return json(extractAnswer(await response.json(),references));
     }catch{return json({error:'The AI service could not finish this lookup. Use Saved Rules or retry when connected.'},502);}

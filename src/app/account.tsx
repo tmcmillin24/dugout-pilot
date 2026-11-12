@@ -1,3 +1,4 @@
+import { TierTesting } from '@/components/tier-testing';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
@@ -31,6 +32,7 @@ export default function AccountScreen() {
       <MenuRow icon="shield" title="Team access" description={active ? `${active.name} · ${active.test_access ? 'Elite test access' : active.access_status === 'trial' ? 'Elite trial' : `${active.subscription_tier==='elite'?'Elite':'Standard'} · ${active.access_status}`}${active.trial_ends_at && active.access_status === 'trial' ? ` · Ends ${new Date(active.trial_ends_at).toLocaleDateString()}` : ''}` : 'Select a team to view access'} last />
     </Panel></Section>
     {admin && <Section title="Administration"><Panel><MenuRow icon="shield" title="Super Admin" description="Test access overrides for development teams" onPress={() => router.push('/admin')} last /></Panel></Section>}
+    {session?.user.email?.toLowerCase() === 'tristan.mcmillin@yahoo.com' && !!session.user.email_confirmed_at && <TierTesting />}
     <StatusMessage text={error} error />
     <Button secondary disabled={busy} onPress={confirmSignOut}>{busy ? 'Signing out…' : 'Sign out'}</Button>
     <Text style={s.footer}>DUGOUT PILOT · VERSION 1.0</Text>

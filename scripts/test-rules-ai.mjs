@@ -58,3 +58,9 @@ for(const id of ['mlb-2026-wild-throw','mlb-2026-juggled-catch','mlb-2026-intent
  assert.equal(parsed.kind,'reference');assert.equal(parsed.mlbFallback,true);assert.ok(parsed.citations[0].url.includes('2026-official-baseball-rules.pdf'));
 }
 console.log('PASS reviewed overthrow, juggled-catch, intentional-drop and third-out reference coverage and citations; baseball-only isolation.');
+
+for (const [options, code] of [[{member:false},'membership_required'],[{expired:true},'trial_expired'],[{limited:true},'app_usage_limit'],[{quota:true},'quota_exhausted']]) {
+ const caseHarness=harness(options); const response=await caseHarness.handler(req());
+ assert.equal((await response.json()).code,code);
+}
+console.log('PASS distinct membership, expired trial, app usage and Gemini quota error codes');
