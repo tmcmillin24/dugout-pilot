@@ -1,6 +1,6 @@
 module.exports = ({ config }) => {
   const preview = process.env.APP_VARIANT === 'preview';
-  if (preview) {
+  if (preview && process.env.EAS_BUILD === 'true') {
     const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
     const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     if (url !== 'https://rlxscbutvxvsijgtcrbq.supabase.co' || !key) {
