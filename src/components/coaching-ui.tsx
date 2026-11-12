@@ -1,6 +1,6 @@
 import { EmptyState } from './empty-state';
 import { SyncStatus } from './sync-status';
-import { useState, type ReactNode, type ComponentProps, type ComponentRef, type RefObject } from 'react';
+import { Children, useState, type ReactNode, type ComponentProps, type ComponentRef, type RefObject } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { OverlayModal } from './overlay-modal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,6 +24,10 @@ export function CoachingScreen({ title, children, back = false, scrollRef, scrol
 export function Chips<T extends string>({ values, selected, onSelect, disabled = false }: { values: { value: T; label: string }[]; selected: T; onSelect: (value: T) => void; disabled?: boolean }) {
   return <ScrollView horizontal style={{flexGrow:0,flexShrink:0}} showsHorizontalScrollIndicator={false} contentContainerStyle={c.chips}>{values.map(item => <Pressable key={item.value} accessibilityRole="button" accessibilityState={{ selected: selected === item.value, disabled }} disabled={disabled} onPress={() => onSelect(item.value)} style={[c.chip, selected === item.value && c.selected, disabled && ui.dim]}><Text style={[c.chipText, selected === item.value && c.selectedText]}>{item.label}</Text></Pressable>)}</ScrollView>;
 }
+/** Align input baselines even when one label wraps. Choice fill also equalizes card heights. */
+export function FieldRow({children}:{children:ReactNode}){
+ return <View style={{flexDirection:'row',alignItems:'stretch',gap:12}}>{Children.toArray(children).map((child,index)=><View key={index} style={{flex:1,flexBasis:0,minWidth:0,justifyContent:'flex-end'}}>{child}</View>)}</View>;
+}
 export function Field({ label, value, onChange, numeric = false, multiline = false }: { label: string; value: string; onChange: (text: string) => void; numeric?: boolean; multiline?: boolean }) {
   return <View style={c.stack}><Text style={ui.label}>{label}</Text><TextInput accessibilityLabel={label} value={value} onChangeText={onChange} keyboardType={numeric ? 'number-pad' : 'default'} multiline={multiline} maxLength={multiline ? 2000 : 120} style={[ui.input, multiline && { minHeight: 90 }]} /></View>;
 }
@@ -44,4 +48,5 @@ export const c = StyleSheet.create({
   number: { width: 48, flexShrink: 0, fontVariant: ['tabular-nums'], color: palette.accent, fontSize: 23, fontWeight: '800' }, item: { padding: 15, borderBottomColor: palette.line, borderBottomWidth: 1, gap: 7 }, small: { fontSize: 12, lineHeight: 18, color: palette.muted },
   headline: { fontSize: 27, color: palette.ink }, danger: { color: palette.error, fontWeight: '700' }, compact: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 });
+
 

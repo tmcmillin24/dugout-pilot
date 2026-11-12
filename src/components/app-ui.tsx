@@ -61,8 +61,9 @@ export function Screen({ title, subtitle, children, back = false, onRefresh, tra
     </KeyboardAvoidingView>
   </SafeAreaView>;
 }
+export function SectionHeading({title}:{title:string}){return <View style={ui.sectionHeader}><View style={ui.sectionMarker}/><DisplayText accessibilityRole="header" style={ui.sectionTitle}>{title.toUpperCase()}</DisplayText></View>;}
 export function Section({ title, children, style }: { title: string; children: ReactNode; style?: StyleProp<ViewStyle> }) {
-  return <View style={[ui.section,style]}><View style={ui.sectionHeader}><View style={ui.sectionMarker} /><DisplayText accessibilityRole="header" style={ui.sectionTitle}>{title.toUpperCase()}</DisplayText></View>{children}</View>;
+  return <View style={[ui.section,style]}><SectionHeading title={title}/>{children}</View>;
 }
 export function Panel({ children, style,accent }: { children: ReactNode; style?: StyleProp<ViewStyle>;accent?:'navy'|'orange' }) { return <View style={[ui.panel,accent&&{borderTopWidth:3,borderTopColor:accent==='navy'?palette.navy:palette.accent},style]}>{children}</View>; }
 export function Button({ children, onPress, secondary = false, disabled = false, style }: { children: ReactNode; onPress: () => void; secondary?: boolean; disabled?: boolean; style?: StyleProp<ViewStyle> }) {
@@ -84,7 +85,7 @@ export const ui = StyleSheet.create({
   masthead: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 24 }, trailing: { marginLeft: 'auto' }, diamond: { width: 11, height: 11, borderColor: palette.accent, borderWidth: 2, transform: [{ rotate: '45deg' }], borderRadius: 2 },
   wordmark: { color: palette.ink, fontWeight: '900', fontSize: 13, letterSpacing: 1.3 }, wordmarkAccent: { color: palette.accent },
   eyebrow: { color: palette.muted, fontSize: 11, letterSpacing: 2.4, fontWeight: '800' }, intro: { gap: 6 }, title: { color: palette.ink, fontSize: 34, fontWeight: '800', letterSpacing: 0.2 }, subtitle: { color: palette.muted, fontSize: 15, lineHeight: 23, maxWidth: 480 },
-  section: { gap: 12, width: '100%', minWidth: 0 }, sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 }, sectionMarker: { width: 3, height: 17, backgroundColor: palette.accent }, sectionTitle: { flexShrink: 1, color: palette.ink, fontSize: 23, fontWeight: '800', letterSpacing: 0.2 },
+  section: { gap: 12, width: '100%', minWidth: 0 }, sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 }, sectionMarker: { width: 3, height: 17, backgroundColor: palette.accent }, sectionTitle: { flexShrink: 1, color: palette.ink, fontSize: 23, lineHeight:28, fontWeight: '800', letterSpacing: 0.2 },
   panel: { borderColor: '#D1DEE6', borderWidth: 1, borderRadius: 8, backgroundColor: palette.panel, overflow: 'hidden',boxShadow:'0px 2px 6px rgba(8,46,75,0.04)' },
   menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, minHeight: 67 }, divider: { borderBottomWidth: 1, borderBottomColor: palette.cardLine }, iconTile: { width: 40, height: 40, borderRadius: 12, backgroundColor: '#EDF3F6', alignItems: 'center', justifyContent: 'center' },
   rowCopy: { flex: 1, minWidth: 0, gap: 5 }, rowTitle: { color: palette.cardInk, fontSize: 16, fontWeight: '700' }, rowDescription: { color: palette.cardMuted, fontSize: 13, lineHeight: 19 },
@@ -93,6 +94,7 @@ export const ui = StyleSheet.create({
   message: { color: palette.ink, fontSize: 14, lineHeight: 21 }, error: { color: palette.error }, loading: { padding: 32 },
   back: { flexDirection: 'row', gap: 6, alignItems: 'center', alignSelf: 'flex-start', minHeight: 44 }, backText: { color: palette.ink, fontSize: 15 },
   body: { color: palette.cardMuted, fontSize: 15, lineHeight: 23 }, heading: { color: palette.cardInk, fontSize: 21, fontWeight: '700', letterSpacing: -0.4 },
-  inset: { padding: 22, gap: 16 }, input: { backgroundColor: palette.raised, borderColor: palette.line, borderWidth: 1, color: palette.ink, fontSize: 16, padding: 16, borderRadius: 5, minHeight: 54 }, label: { color: palette.ink, fontSize: 13, fontWeight: '600' },
+  inset: { padding: 22, gap: 16 }, input: { backgroundColor: palette.raised, borderColor: palette.line, borderWidth: 1, color: palette.ink, fontSize: 16, padding: 16, borderRadius: 5, minHeight: 54 }, label: { color: palette.ink, fontSize: 13, lineHeight:18, fontWeight: '600' },
 });
+
 
