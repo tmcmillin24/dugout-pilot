@@ -3,11 +3,8 @@ import { statsSource, statValue, inningsOuts } from './stat-data';
 import { gameSchedule } from './game-schedule';
 import { parseCalendarDate, dateKey } from './calendar';
 import type { Team } from '../teams';
-export function hasEliteAccess(team:Team|null):boolean {
- if(!team)return false;
- const eliteTrial=team.access_status==='trial'&&!!team.trial_ends_at&&Date.parse(team.trial_ends_at)>Date.now();
- return eliteTrial||(team.access_status==='active'&&(team.subscription_tier==='elite'||team.test_access));
-}
+import { hasPlan } from '../team-plans';
+export function hasEliteAccess(team:Team|null):boolean { return hasPlan(team,'elite'); }
 function number(stat:Stat|undefined,group:'batting'|'pitching'|'fielding',key:string){return statValue(stat,group,key);}
 export function batterProfile(stat:Stat|undefined){
  const ab=number(stat,'batting','AB'),h=number(stat,'batting','H'),bb=number(stat,'batting','BB'),hbp=number(stat,'batting','HBP'),sf=number(stat,'batting','SF');

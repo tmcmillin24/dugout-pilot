@@ -5,7 +5,7 @@ export type Team = {
   logo_path?: string | null;
   logo_url?: string | null;
   name: string;
-  subscription_tier?: 'standard' | 'elite';
+  subscription_tier?: 'starter' | 'pro' | 'standard' | 'elite';
   test_access: boolean;
   trial_ends_at: string | null;
   access_status: 'pending' | 'trial' | 'active' | 'suspended' | 'expired';
@@ -19,10 +19,10 @@ export async function listTeams(): Promise<Team[]> {
   const { data, error } = await supabase.rpc('list_my_teams');
   if (error) throw error;
   const tierResult = await supabase.from('teams').select('id,subscription_tier');
-  const tiers = new Map<string,'standard'|'elite'>(tierResult.error ? [] : (tierResult.data ?? []).map(t=>[t.id,t.subscription_tier==='elite'?'elite':'standard']));
+  const tiers = new Map<string,NonNullable<Team['subscription_tier']>>(tierResult.error ? [] : (tierResult.data ?? []).map(t=>[t.id,['starter','pro','elite','standard'].includes(t.subscription_tier)?t.subscription_tier:'starter']));
   const { data: { session } } = await supabase.auth.getSession();
   return (await Promise.all(((data ?? []) as Team[]).map(async row => {
-    const team:Team={...row,subscription_tier:tiers.get(row.id)??'standard'};
+    const team:Team={...row,subscription_tier:tiers.get(row.id)??'starter'};
     if (!team.logo_path || !session) return team;
     const key = `${session.user.id}:${team.logo_path}`;
     const cached = signedLogos.get(key);

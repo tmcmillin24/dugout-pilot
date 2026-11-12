@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+const exports={};vm.runInNewContext(ts.transpileModule(readFileSync('src/lib/team-plans.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports,Date});
+const {teamPlan,hasPlan,defenseLimit}=exports;
+const active=tier=>({subscription_tier:tier,access_status:'active',test_access:false});
+for(const [tier,expected] of [['starter','starter'],['pro','pro'],['elite','elite'],['standard','pro'],['unknown',null]])assert.equal(teamPlan(active(tier)),expected);
+assert.equal(hasPlan(active('starter'),'pro'),false);assert.equal(defenseLimit(active('starter')),3);
+assert.equal(hasPlan(active('pro'),'elite'),false);assert.equal(defenseLimit(active('pro')),10);
+assert.equal(hasPlan(active('elite'),'pro'),true);
+assert.equal(teamPlan({...active('elite'),access_status:'trial',trial_ends_at:'2099-01-01'}),'pro');
+for(const status of ['pending','suspended','expired'])assert.equal(teamPlan({...active('elite'),access_status:status}),null);
+assert.equal(teamPlan({...active('elite'),access_status:'trial',trial_ends_at:'2000-01-01'}),null);
+assert.equal(teamPlan(null),null);assert.equal(hasPlan(null,'starter'),false);
+assert.equal(teamPlan({...active('starter'),test_access:true}),'elite');
+assert.equal(teamPlan({...active('starter'),test_access:true,access_status:'suspended'}),null);
+console.log('PASS plan hierarchy, legacy mapping, Pro-only trial, expiration, suspension, test override and 3/10 saved defense limits.');

@@ -1,3 +1,5 @@
+import { PlanGate } from '@/components/plan-access';
+import { hasPlan } from '@/lib/team-plans';
 import { useRef, useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
@@ -12,9 +14,10 @@ import { applyStatsImport, parseDetailedImport, NEW_PLAYER, REVIEW_PLAYER, type 
 import { POSITIONS } from '@/lib/coaching/board';
 import { seasonKey, inferEraInnings, suggestedContribution } from '@/lib/coaching/stat-data';
 import { Toggle } from '@/components/practice-planner-controls';
-export default function ImportsScreen(){const {active}=useTeams();return <CoachingScreen title="Imports"><ImportWorkspace key={active?.id}/></CoachingScreen>;}
+export default function ImportsScreen(){const {active}=useTeams();return <CoachingScreen title="Imports"><PlanGate plan="elite" title="Season and game CSV imports"><ImportWorkspace key={active?.id}/></PlanGate></CoachingScreen>;}
 function ImportWorkspace(){
  const {board,commit,writable,busy}=useCoaching();
+ const {active}=useTeams();
  const [mode,setMode]=useState<'season'|'game'>('season');
  const [season,setSeason]=useState(()=>board?seasonKey(board):String(new Date().getFullYear()));
  const [gameId,setGameId]=useState(board?.activeGameId??'');
@@ -24,7 +27,7 @@ function ImportWorkspace(){
  const lock=useRef(false);
  if(!board)return null;
  function changeRow(id:string,change:Partial<ImportRow>){setPreview(p=>p?{...p,rows:p.rows.map(r=>r.id===id?{...r,...change}:r)}:p);setConfirmed(false);}
- async function chooseFile(){if(lock.current)return;lock.current=true;setPicking(true);setError('');setNotice('');try{
+ async function chooseFile(){if(!hasPlan(active,'elite')||lock.current)return;lock.current=true;setPicking(true);setError('');setNotice('');try{
   const result=await DocumentPicker.getDocumentAsync({type:['text/csv','text/comma-separated-values','application/csv','application/vnd.ms-excel','text/plain'],copyToCacheDirectory:true,multiple:false,base64:false});
   if(result.canceled)return;const asset=result.assets[0];if((asset.size??0)>1000000)throw new Error('Choose a CSV under 1 MB.');if(!/\.csv$/i.test(asset.name))throw new Error('Choose a CSV, not a PDF or Excel workbook.');
   const text=Platform.OS==='web'&&asset.file?await asset.file.text():await new File(asset.uri).text();
@@ -33,7 +36,7 @@ function ImportWorkspace(){
   setEraInnings(inferEraInnings(Object.fromEntries(parsed.rows.map(r=>[r.id,r.stats])))??6);setContribution(suggestedContribution(board!,gameId,season));
   setPreview({...parsed,name:asset.name,fingerprint});setConfirmed(false);setMergePositions(false);
  }catch(e){setError(e instanceof Error?e.message:'Could not read this file.');}finally{setPicking(false);lock.current=false;}}
- async function apply(){if(!preview||!confirmed||lock.current)return;lock.current=true;setError('');try{
+ async function apply(){if(!hasPlan(active,'elite')||!preview||!confirmed||lock.current)return;lock.current=true;setError('');try{
   const request={mode,season,gameId,label:preview.name,fingerprint:preview.fingerprint,importedAt:new Date().toISOString(),rows:preview.rows,columns:preview.columns,mergePositions,contribution,eraInnings,gamesPlayed:preview.gamesPlayed};
   const old=board?.seasonImports?.find(s=>s.season===season);const metadataOnly=mode==='season'&&old?.fingerprint===preview.fingerprint&&old.gamesPlayed===undefined&&preview.gamesPlayed!==undefined;
   const ok=await commit(b=>applyStatsImport(b,request,randomUUID));if(ok){setPreview(null);setNotice(metadataOnly?'Games played updated; existing stats and game additions kept.':`${mode==='season'?'Season':'Game'} stats saved. Roster updated.`);}else setError('Import was not saved. Check the team message, then try again.');

@@ -1,3 +1,4 @@
+import { PlanGate } from '@/components/plan-access';
 import { StatsPracticeFocus } from '@/components/stats-practice-focus';
 import { ResponsiveColumns } from '@/components/responsive-columns';
 import { drillGuideChoices } from '@/lib/coaching/drill-guide';
@@ -27,7 +28,7 @@ type Draft = { date: string; settings: PracticeSettings; useRoster: boolean; att
 const initial: Draft = { date: '', settings: defaultPracticeSettings, useRoster: false, mode: 'builder', phase: 0, deadline: null, seconds: 0 };
 export default function PracticeScreen() {
   const { active } = useTeams(); const { session } = useAuth(); const { board } = useCoaching();
-  return <CoachingScreen title="Practice">{active && board && <PracticeWorkspace key={`${session?.user.id}:${active.id}`} storageKey={`dugout:practice:${session?.user.id}:${active.id}`} />}</CoachingScreen>;
+  return <CoachingScreen title="Practice">{active && board && <PlanGate plan="pro" title="Practice planner"><PracticeWorkspace key={`${session?.user.id}:${active.id}`} storageKey={`dugout:practice:${session?.user.id}:${active.id}`} /></PlanGate>}</CoachingScreen>;
 }
 function PracticeWorkspace({ storageKey }: { storageKey: string }) {
   const { board, writable, commit } = useCoaching(); const { active } = useTeams();

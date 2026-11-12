@@ -91,10 +91,10 @@ assert.equal(elite.hasEliteAccess({access_status:'active',test_access:false}),fa
 assert.equal(elite.hasEliteAccess({access_status:'active',subscription_tier:'elite',test_access:false}),true);
 assert.equal(elite.hasEliteAccess({access_status:'expired',subscription_tier:'elite',test_access:false}),false);
 assert.equal(elite.hasEliteAccess({access_status:'suspended',subscription_tier:'elite',test_access:false}),false);
-assert.equal(elite.hasEliteAccess({access_status:'trial',subscription_tier:'standard',test_access:false,trial_ends_at:'2099-01-01'}),true);
+assert.equal(elite.hasEliteAccess({access_status:'trial',subscription_tier:'standard',test_access:false,trial_ends_at:'2099-01-01'}),false);
 assert.equal(elite.hasEliteAccess({access_status:'trial',subscription_tier:'elite',test_access:false,trial_ends_at:'2000-01-01'}),false);
 assert.equal(elite.hasEliteAccess({access_status:'active',subscription_tier:'standard',test_access:true}),true);
-console.log('PASS Standard/unknown active accounts blocked; Elite active, valid Elite trial and admin test entitlements allowed; expired/suspended blocked.');
+console.log('PASS Standard/unknown active accounts blocked; Elite active and admin test entitlements allowed; Pro trials exclude Elite; expired/suspended blocked.');
 
 const snapshot=load('src/lib/coaching/snapshot-metrics.ts');
 const snapshotRows={a:{batting:{AB:10,H:3,TB:5,BB:3,HBP:1,SF:0,R:2,RBI:2,HR:0,SB:1},pitching:{IP:1.2,ER:2,H:2,BB:1,SO:3},fielding:{E:1}},b:{batting:{AB:10,H:5,TB:9,BB:1,HBP:0,SF:0,R:4,RBI:3,HR:1,SB:2},pitching:{IP:2.1,ER:1,H:3,BB:2,SO:4},fielding:{E:0}}};

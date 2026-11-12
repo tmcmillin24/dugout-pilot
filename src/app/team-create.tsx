@@ -20,7 +20,7 @@ export default function CreateTeamScreen() {
   }
   return <Screen title="Create a team" back>
     <View style={{ gap: 12 }}><Text style={ui.label}>Team name</Text><TextInput accessibilityLabel="Team name" style={ui.input} value={name} onChangeText={setName} editable={!busy} maxLength={80} placeholder="Your team name" placeholderTextColor={palette.muted} autoFocus returnKeyType="done" onSubmitEditing={submit} /></View>
-    <Panel><View style={ui.inset}><Icon name="shield" color={palette.accent} /><Text style={ui.heading}>14-day Elite trial</Text><Text style={ui.body}>Starts automatically. No approval needed.</Text></View></Panel>
+    <Panel><View style={ui.inset}><Icon name="shield" color={palette.accent} /><Text style={ui.heading}>14-day Pro trial</Text><Text style={ui.body}>Starts automatically. No approval needed.</Text></View></Panel>
     <StatusMessage text={error} error /><Button disabled={busy} onPress={() => { void submit(); }}>{busy ? 'Creating team…' : 'Create team'}</Button>
   </Screen>;
 }

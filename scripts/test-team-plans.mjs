@@ -1,0 +1,62 @@
+import { PGlite } from '@electric-sql/pglite';
+import { readFileSync } from 'node:fs';
+import assert from 'node:assert/strict';
+const db=new PGlite();
+const owner='11111111-1111-4111-8111-111111111111', outsider='22222222-2222-4222-8222-222222222222', coach='33333333-3333-4333-8333-333333333333';
+const team='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', other='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+await db.exec(`create role anon; create role authenticated; create schema auth;
+create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+grant usage on schema auth to authenticated,anon; grant execute on function auth.uid() to authenticated,anon;
+create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text references storage.buckets(id),name text,metadata jsonb,unique(bucket_id,name));
+alter table storage.objects enable row level security;
+grant usage on schema storage to authenticated,anon;
+grant select,insert,update,delete on storage.objects to authenticated; grant select on storage.objects to anon;`);
+for(const [id,email] of [[owner,'Tristan.mcmillin@yahoo.com'],[outsider,'other@example.test'],[coach,'coach@example.test']]) await db.query('insert into auth.users values($1,$2,now())',[id,email]);
+for(const name of ['202610280001_teams.sql','202610280002_coaches_and_trials.sql','202610280003_team_logos.sql','202610280004_delete_teams.sql','202610280005_coaching.sql']) await db.exec(readFileSync(new URL(`../supabase/migrations/${name}`,import.meta.url),'utf8'));
+async function as(id,role='authenticated'){await db.exec(`reset role; set role ${role}; set request.jwt.claim.sub='${id}';`);}
+const create=(name,id)=>db.query('select public.create_team($1,$2)',[name,id]);
+
+
+
+await db.exec(readFileSync(new URL('../supabase/migrations/202611120001_tier_testing.sql',import.meta.url),'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migrations/202611120004_three_team_plans.sql',import.meta.url),'utf8'));
+await as(owner);await create('Plans',team);
+await db.exec('reset role');await db.query("insert into public.team_memberships values($1,$2,'coach',now())",[team,coach]);
+await as(coach);await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[team]),/verified testing administrator/);
+await as(outsider);await assert.rejects(db.query("select public.set_testing_tier($1,'starter')",[team]),/verified testing administrator/);
+await as('', 'anon');await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[team]));
+await as(owner);await db.query("select public.set_testing_tier($1,'starter')",[team]);
+await assert.rejects(db.query("select public.set_testing_tier($1,'invalid')",[team]));
+await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[other]),/belong/);
+let revision=0;
+let board={name:'Plans',players:[],games:[{id:'g',positions:{},pitchers:{},stats:{},importLabel:''}],defensiveLineups:Array.from({length:10},(_,i)=>({id:`defense-${i+1}`,name:`Lineup ${i+1}`,positions:{}})),practicePlans:[]};
+const save=value=>db.query('select public.save_team_board($1,$2,$3) revision',[team,revision,JSON.stringify(value)]);
+async function persist(value){revision=(await save(value)).rows[0].revision;board=value;}
+await persist(board);
+await persist({...board,players:[{id:'p',name:'Coach player'}]});
+let next=structuredClone(board);next.defensiveLineups[0].positions.P='p';await persist(next);
+next=structuredClone(board);next.defensiveLineups[3].positions.P='p';await assert.rejects(save(next),/Pro/);
+await assert.rejects(save({...board,practicePlans:[{id:'practice'}]}),/Pro/);
+next=structuredClone(board);next.games[0].pitchers.p={innings:'1',pitches:12};await assert.rejects(save(next),/Pro/);
+next=structuredClone(board);next.games[0].defenseInnings={'1':{P:'p'}};await assert.rejects(save(next),/Pro/);
+await as(owner);await db.query("select public.set_testing_tier($1,'pro')",[team]);
+await persist({...board,practicePlans:[{id:'practice'}]});
+next=structuredClone(board);next.defensiveLineups[9].positions.P='p';next.games[0].pitchers.p={innings:'1',pitches:12};await persist(next);
+await assert.rejects(save({...board,seasonImports:[{season:'2026'}]}),/Elite/);
+next=structuredClone(board);next.games[0].stats={p:{batting:{H:1}}};await assert.rejects(save(next),/Elite/);
+next=structuredClone(board);next.games[0].pitchingPlan=['p'];await assert.rejects(save(next),/Elite/);
+await db.query("select public.set_testing_tier($1,'elite')",[team]);
+next=structuredClone(board);next.seasonImports=[{season:'2026'}];next.games[0].stats={p:{batting:{H:1}}};next.games[0].pitchingPlan=['p'];await persist(next);
+await db.query("select public.set_testing_tier($1,'starter')",[team]);
+await persist({...board,name:'Data preserved on downgrade'});
+assert.equal(board.seasonImports.length,1);assert.equal(board.practicePlans.length,1);
+await as(coach);await persist({...board,eventRules:'Coaches share team access'});
+await db.exec('reset role');await db.query("update public.teams set activation_status='trial',trial_started_at=now(),trial_ends_at=now()+interval '14 days' where id=$1",[team]);
+await as(owner);next=structuredClone(board);next.games[0].pitchers.p.pitches=24;await persist(next);
+next=structuredClone(board);next.games[0].pitchingPlan=['p','p2'];await assert.rejects(save(next),/Elite/);
+await db.exec('reset role');await db.query('update auth.users set email_confirmed_at=null where id=$1',[owner]);
+await as(owner);await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[team]),/verified testing administrator/);
+console.log('PASS: owner-only confirmed-email tier switching, non-admin/anonymous denial, Starter/Pro/Elite write gates, shared coach access and downgrade data preservation.');
+await db.close();
