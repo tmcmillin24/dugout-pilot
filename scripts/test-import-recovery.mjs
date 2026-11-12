@@ -5,7 +5,7 @@ const db=new PGlite();
 const owner='11111111-1111-4111-8111-111111111111', outsider='22222222-2222-4222-8222-222222222222', coach='33333333-3333-4333-8333-333333333333';
 const team='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 await db.exec(`create role anon; create role authenticated; create schema auth;
-create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
+create table auth.users(id uuid primary key,email varchar(255),email_confirmed_at timestamptz);
 create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
 grant usage on schema auth to authenticated,anon; grant execute on function auth.uid() to authenticated,anon;
 create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
@@ -24,6 +24,7 @@ await db.exec(readFileSync(new URL('../supabase/migrations/202611120001_tier_tes
 await db.exec(readFileSync(new URL('../supabase/migrations/202611120004_three_team_plans.sql',import.meta.url),'utf8'));
 
 await db.exec(readFileSync(new URL('../supabase/migrations/202611120005_import_recovery.sql',import.meta.url),'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migrations/202611120006_import_history_actor_type.sql',import.meta.url),'utf8'));
 await as(owner);await create('Recovery',team);await db.query("select public.set_testing_tier($1,'elite')",[team]);
 await db.exec('reset role');await db.query("insert into public.team_memberships values($1,$2,'coach',now())",[team,coach]);
 await as(owner);
@@ -33,7 +34,7 @@ async function save(next){revision=(await db.query('select public.save_team_boar
 const history=async()=> (await db.query('select * from public.list_team_import_history($1)',[team])).rows;
 await save(board);assert.equal((await history()).length,0);
 await save({...board,seasonImports:[{id:'s',season:'2026',label:'Season One.csv',stats:{p:{batting:{H:2}}}}]});
-let rows=await history();assert.equal(rows.length,1);assert.equal(rows[0].label,'Season One.csv');assert.equal(rows[0].summary,'Season 2026 totals updated');assert.equal(rows[0].player_count,1);
+let rows=await history();assert.equal(rows.length,1);assert.equal(rows[0].actor,'You');await as(coach);assert.equal((await history())[0].actor,'Tristan.mcmillin@yahoo.com');await as(owner);assert.equal(rows[0].label,'Season One.csv');assert.equal(rows[0].summary,'Season 2026 totals updated');assert.equal(rows[0].player_count,1);
 await save({...board,seasonImports:[{id:'s',season:'2026',label:'Season Two.csv',stats:{p:{batting:{H:9}}}}]});
 rows=await history();const backup=rows[0];assert.equal(rows.length,2);assert.equal(backup.label,'Season Two.csv');
 let next=structuredClone(board);next.games[0].lineup=[];next.games[0].pitchers={p:{innings:'2',pitches:24}};next.games[0].positions={P:'p',C:'p2'};next.players.push({id:'p2',name:'New Player'});await save(next);assert.equal((await history()).length,2);
@@ -59,3 +60,4 @@ for(let i=0;i<32;i++){await save({...board,seasonImports:[{id:'s',season:'2026',
 rows=await history();assert.equal(rows.length,30);assert.equal(rows.filter(r=>r.recoverable).length,5);await assert.rejects(db.query('select public.restore_team_import($1,$2,$3)',[team,backup.id,revision]),/no longer/);
 console.log('PASS import audit capture, accurate filename/actor/count, no history for lineup edits, cross-team and anonymous isolation, Elite restore, revision conflicts, data-preserving restore and bounded retention.');
 await db.close();
+
