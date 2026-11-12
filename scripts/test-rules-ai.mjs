@@ -8,7 +8,7 @@ function load(path) {
  const exports={};
  vm.runInNewContext(ts.transpileModule(readFileSync(path,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText,{exports,Request,Response,URL,AbortSignal,Date,JSON,TextEncoder,TextDecoder,setTimeout,crypto:webcrypto,require:name=>load(new URL(name,path))});return exports;
 }
-const {createRulesHandler,referencesFor,rulebooksFor,extractAnswer}=load(new URL('../supabase/functions/rules-assistant/index.ts',import.meta.url));
+const {createRulesHandler,referencesFor,rulebooksFor,extractAnswer,failureCode}=load(new URL('../supabase/functions/rules-assistant/index.ts',import.meta.url));
 const {downloadPDF}=load(new URL('../supabase/functions/rules-assistant/documents.ts',import.meta.url));
 const team='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',user='11111111-1111-4111-8111-111111111111';
 const context={sport:'baseball',age:'11U',season:'2026',organization:'usssa'};
@@ -107,3 +107,11 @@ for(const providerStatus of [400,401,403,429]){const h=harness({providerStatus})
 console.log('PASS recover transient 503 with one delayed retry; cap persistent outages; no retries for quota/auth/invalid requests; no document reupload on retry.');
 
 const longBackoff=harness({failure:true,longBackoff:true});await longBackoff.handler(req());assert.equal(longBackoff.calls.filter(c=>c.url.includes(':generateContent')).length,1);assert.equal(longBackoff.waits.length,0);
+
+assert.equal(failureCode({name:'TimeoutError',message:'SECRET'}),'request_timeout');
+assert.equal(failureCode({name:'SyntaxError',message:'SECRET'}),'response_json');
+assert.equal(failureCode({name:'TypeError',message:'SECRET'}),'network_or_response_type');
+assert.equal(failureCode(new Error('SECRET')),'unexpected');
+assert.equal(failureCode(new Error('invalid_json')),'invalid_json');
+assert.throws(()=>extractAnswer({candidates:[{finishReason:'STOP',content:{parts:[{text:'{broken'}]}}]},[]),/invalid_json/);
+console.log('PASS safe diagnostics distinguish timeout, JSON, response type and validation without exposing raw errors.');
