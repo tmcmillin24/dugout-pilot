@@ -3,7 +3,7 @@ import { loadDocuments, digest as hash, officialURL, DocumentError } from './doc
 import library from './references.json' with { type: 'json' };
 // Server-only. Never import this module into the mobile application.
 type Env = (name: string) => string | undefined;
-type Deps = { env: Env; fetch: typeof fetch; now?: () => Date };
+type Deps = { env: Env; fetch: typeof fetch; now?: () => Date; sleep?: (ms:number) => Promise<void> };
 type RuleContext = { sport: 'baseball'|'fastpitch'|'slowpitch'; organization: 'usssa'; age: string; season: string };
 type Citation = { start: number; end: number; url: string; title: string };
 type Reference={id:string;title:string;text:string;sources:{title:string;url:string}[]};
@@ -51,6 +51,26 @@ function instructions(context:RuleContext) {
 }
 const CACHE_REVISION='direct-pdf-v2';
 const SIX_HOURS=6*60*60*1000;
+export async function generateWithRetry(deps:Deps,key:string,body:string):Promise<Response> {
+ const deadline=Date.now()+60000;
+ for(let attempt=0;;attempt++) {
+  const remaining=deadline-Date.now();
+  if(remaining<=0)throw new Error('generation_deadline');
+  const response=await deps.fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,{
+   method:'POST',headers:{'x-goog-api-key':key,'Content-Type':'application/json'},body,
+   signal:AbortSignal.timeout(Math.min(45000,remaining)),
+  });
+  // Retry one explicit transient failure only. Never retry quota, auth or invalid requests.
+  if(![502,503,504].includes(response.status)||attempt===1)return response;
+  const retryAfter=response.headers.get('retry-after');
+  const requested=retryAfter?(Number.isFinite(Number(retryAfter))?Number(retryAfter)*1000:Date.parse(retryAfter)-Date.now()):0;
+  if(Number.isFinite(requested)&&requested>2000)return response;
+  const wait=Math.max(750+Math.random()*250,Number.isFinite(requested)?requested:0);
+  if(deadline-Date.now()<=wait+1000)return response;
+  await response.body?.cancel();
+  await (deps.sleep??(ms=>new Promise(resolve=>setTimeout(resolve,ms))))(wait);
+ }
+}
 export function createRulesHandler(deps: Deps) {
   return async (request: Request): Promise<Response> => {
     if(request.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
@@ -126,23 +146,20 @@ export function createRulesHandler(deps: Deps) {
       const budget=await deps.fetch(`${base}/rest/v1/rpc/consume_rules_ai_budget`,{method:'POST',headers:{apikey:admin,...(admin.startsWith('sb_secret_')?{}:{Authorization:`Bearer ${admin}`}),'Content-Type':'application/json'},body:JSON.stringify({p_team_id:teamId,p_user_id:user.id}),signal:AbortSignal.timeout(10000)});
       if(!budget.ok){const failure=await budget.json().catch(()=>({}));if(failure.code==='P0001'&&String(failure.message).includes('limit'))return json({error:'Ask Dugout’s app usage limit has been reached for this account or team. Try again later; FAQs remain available.',code:'app_usage_limit'},429);if(failure.code==='42501')return json({error:'Team access changed while answering. Refresh your team and check its access status.',code:'team_inactive'},403);return json({error:'Ask AI setup is incomplete. Saved rules are still available.',code:'not_configured'},503);}
       // The PDFs are attached explicitly; Gemini never needs to fetch their URLs.
-      const lookup=await deps.fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,{
-        method:'POST',headers:{'x-goog-api-key':key,'Content-Type':'application/json'},
-        body:JSON.stringify({
-          systemInstruction:{parts:[{text:instructions(context)+' FULL DOCUMENT ANSWERING: Read the attached PDF files. Each file is preceded by its server-owned source ID and edition. Find the relevant definitions, exceptions and penalties in the files; the full text is available, not just a topic list. USSSA overrides MLB in baseball. MLB is never a softball source. Answer simple general questions directly. Ask for missing scenario details only when they change the ruling. Cite exact rule numbers and PDF page number (count the first PDF page as 1)s in ruleCitations. If a rule is ambiguous say why; do not invent a restriction. Do not reproduce long passages. Never return a merely related topic as an answer.'}]},
+      const lookup=await generateWithRetry(deps,key,JSON.stringify({
+          systemInstruction:{parts:[{text:instructions(context)+' FULL DOCUMENT ANSWERING: Read the attached PDF files. Each file is preceded by its server-owned source ID and edition. Find the relevant definitions, exceptions and penalties in the files; the full text is available, not just a topic list. USSSA overrides MLB in baseball. MLB is never a softball source. Answer simple general questions directly. Ask for missing scenario details only when they change the ruling. Cite exact rule numbers and PDF page numbers (count the first PDF page as 1) in ruleCitations. If a rule is ambiguous say why; do not invent a restriction. Do not reproduce long passages. Never return a merely related topic as an answer.'}]},
           contents:[{role:'user',parts:[
             {text:JSON.stringify({question:question.trim(),history,eventNotes:notes.slice(0,2000),rulebooks:books})},
             ...documents.flatMap(doc=>[{text:`OFFICIAL SOURCE ${doc.book.id}: ${doc.book.title}`},{fileData:{mimeType:'application/pdf',fileUri:doc.uri}}]),
           ]}],
           generationConfig:{maxOutputTokens:3200,responseMimeType:'application/json',responseJsonSchema:{type:'object',properties:{kind:{type:'string',enum:['reference','clarification','unverified']},answer:{type:'string'},sourceIds:{type:'array',items:{type:'string'}},ruleCitations:{type:'array',items:{type:'object',properties:{sourceId:{type:'string'},rule:{type:'string'},page:{type:'integer'}},required:['sourceId','rule','page'],additionalProperties:false}}},required:['kind','answer','sourceIds','ruleCitations'],additionalProperties:false}},
-        }),signal:AbortSignal.timeout(45000),
-      });
+        }));
       if(lookup.status===429)return json({error:'Gemini reached its request or token limit while checking the full official rulebook. Try again later; FAQs remain available.',code:'quota_exhausted'},429);
       if(!lookup.ok){
         console.warn('rules-assistant',JSON.stringify({stage:'generation',httpStatus:lookup.status}));
         if(lookup.status===401||lookup.status===403)return json({error:'Gemini rejected the server API credentials or document permissions. The app administrator needs to check the Gemini configuration.',code:'provider_auth'},503);
         if(lookup.status===400)return json({error:'Gemini rejected the attached-rulebook request. No ruling was generated. The app administrator needs to inspect the function logs.',code:'provider_request'},503);
-        return json({error:'Gemini is temporarily unavailable. No ruling was generated. Try again later.',code:'lookup_unavailable'},503);
+        return json({error:'Gemini is still temporarily unavailable. Your question was not answered. Try again in a moment.',code:'lookup_unavailable'},503);
       }
       const lookupData=await lookup.json();
       const verified=extractAnswer(lookupData,books);

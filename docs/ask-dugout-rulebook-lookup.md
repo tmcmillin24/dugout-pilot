@@ -4,7 +4,7 @@
 
 The old route asked Gemini URL Context to fetch PDF links and treated missing URL-retrieval metadata as a lookup failure. The mobile client then substituted an offline answer, potentially based on an unrelated saved-topic match. Mocked URL metadata did not validate the real retrieval path.
 
-The replacement downloads the actual official PDFs in the Edge Function, checks their PDF signature/size/redirect hosts, uploads the files through Gemini Files, verifies ACTIVE state, and attaches the file handles to one Gemini 3.5 Flash-Lite generateContent request. URL Context and Google Search are not used. No question-specific answer was added.
+The replacement downloads the actual official PDFs in the Edge Function, checks their PDF signature/size/redirect hosts, uploads the files through Gemini Files, verifies ACTIVE state, and attaches the file handles to one Gemini 3.5 Flash-Lite generateContent request, with at most one delayed retry for HTTP 502/503/504 and a 60-second generation deadline. URL Context and Google Search are not used. No question-specific answer was added.
 
 Online service failures remain errors. Offline answers are used only by the offline route or the explicit no-team case, with their limited coverage identified. Connected status is not represented as proof an answer succeeded.
 
@@ -42,8 +42,10 @@ Active use rechecks sources every six hours. `{"action":"refresh_sources"}` is a
 ## Validation
 
 - `NODE_USE_ENV_PROXY=1 node scripts/check-rulebook-downloads.mjs` downloads all five official PDFs through the exact server downloader, reports sizes and SHA-256, and makes no Gemini request. On hosts not using a proxy the env setting is unnecessary.
-- `node scripts/test-rules-ai.mjs` verifies direct PDF attachment, upload reuse/renewal, changed sources, missing-cache operation, role checks, sport/edition isolation, one model-generation call, rule/page citation requirements, and rejected forged sources. The Gemini/Supabase APIs are mocked in this suite.
+- `node scripts/test-rules-ai.mjs` verifies direct PDF attachment, upload reuse/renewal, changed sources, missing-cache operation, role checks, sport/edition isolation, one normal model-generation call and bounded transient-error retries, rule/page citation requirements, and rejected forged sources. The Gemini/Supabase APIs are mocked in this suite.
 - `node scripts/test-local-ai-and-batting.mjs` includes online failure/cancellation, official-link validation, and offline routing regressions.
 - All five official PDFs were downloaded live in this workspace and checked with pdftotext. Gemini uploads/generation cannot be exercised here without the project's server API key; deployment is not live-verified by these tests.
 
 After deployment, validate varied questions and follow-ups against actual cited rules in each sport. Include balls/strikes, foul bunts with two strikes, uncaught third strikes, obstruction/interference, overthrow awards, appeal/timing plays, pitcher rest, fastpitch DP/FLEX, and slowpitch counts. Repeat a question in a new conversation to check answer reuse. Do not label the system universally correct based on mocks or one successful answer.
+
+Transient provider errors are retried once after jittered backoff (750 ms to 2 seconds, honoring Retry-After when it fits; longer requested waits skip the automatic retry). Quota/auth/invalid requests are never retried. A retry may use another provider request; the model and paid-fallback policy do not change. Persistent outages remain explicit errors.
