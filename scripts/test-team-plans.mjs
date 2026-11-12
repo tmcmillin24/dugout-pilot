@@ -3,9 +3,10 @@ import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 const db=new PGlite();
 const owner='11111111-1111-4111-8111-111111111111', outsider='22222222-2222-4222-8222-222222222222', coach='33333333-3333-4333-8333-333333333333';
+const tester='44444444-4444-4444-8444-444444444444';
 const team='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', other='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 await db.exec(`create role anon; create role authenticated; create schema auth;
-create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
+create table auth.users(id uuid primary key,email varchar(255),email_confirmed_at timestamptz);
 create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
 grant usage on schema auth to authenticated,anon; grant execute on function auth.uid() to authenticated,anon;
 create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
@@ -13,7 +14,7 @@ create table storage.objects(id uuid primary key default gen_random_uuid(),bucke
 alter table storage.objects enable row level security;
 grant usage on schema storage to authenticated,anon;
 grant select,insert,update,delete on storage.objects to authenticated; grant select on storage.objects to anon;`);
-for(const [id,email] of [[owner,'Tristan.mcmillin@yahoo.com'],[outsider,'other@example.test'],[coach,'coach@example.test']]) await db.query('insert into auth.users values($1,$2,now())',[id,email]);
+for(const [id,email] of [[owner,'Tristan.mcmillin@yahoo.com'],[outsider,'other@example.test'],[coach,'coach@example.test'],[tester,'brilestodd@gmail.com']]) await db.query('insert into auth.users values($1,$2,now())',[id,email]);
 for(const name of ['202610280001_teams.sql','202610280002_coaches_and_trials.sql','202610280003_team_logos.sql','202610280004_delete_teams.sql','202610280005_coaching.sql']) await db.exec(readFileSync(new URL(`../supabase/migrations/${name}`,import.meta.url),'utf8'));
 async function as(id,role='authenticated'){await db.exec(`reset role; set role ${role}; set request.jwt.claim.sub='${id}';`);}
 const create=(name,id)=>db.query('select public.create_team($1,$2)',[name,id]);
@@ -22,8 +23,16 @@ const create=(name,id)=>db.query('select public.create_team($1,$2)',[name,id]);
 
 await db.exec(readFileSync(new URL('../supabase/migrations/202611120001_tier_testing.sql',import.meta.url),'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migrations/202611120004_three_team_plans.sql',import.meta.url),'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migrations/202611120007_tier_testing_accounts.sql',import.meta.url),'utf8'));
 await as(owner);await create('Plans',team);
 await db.exec('reset role');await db.query("insert into public.team_memberships values($1,$2,'coach',now())",[team,coach]);
+await db.exec('reset role');await db.query("insert into public.team_memberships values($1,$2,'coach',now())",[team,tester]);
+await as(tester);
+for(const tier of ['starter','pro','elite']){await db.query('select public.set_testing_tier($1,$2)',[team,tier]);const row=(await db.query('select subscription_tier,test_access from public.teams where id=$1',[team])).rows[0];assert.equal(row.subscription_tier,tier);assert.equal(row.test_access,false);}
+await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[other]),/belong/);
+await db.exec('reset role');await db.query('update auth.users set email_confirmed_at=null where id=$1',[tester]);
+await as(tester);await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[team]),/verified testing administrator/);
+await db.exec('reset role');await db.query('update auth.users set email_confirmed_at=now() where id=$1',[tester]);
 await as(coach);await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[team]),/verified testing administrator/);
 await as(outsider);await assert.rejects(db.query("select public.set_testing_tier($1,'starter')",[team]),/verified testing administrator/);
 await as('', 'anon');await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[team]));
@@ -58,5 +67,6 @@ await as(owner);next=structuredClone(board);next.games[0].pitchers.p.pitches=24;
 next=structuredClone(board);next.games[0].pitchingPlan=['p','p2'];await assert.rejects(save(next),/Elite/);
 await db.exec('reset role');await db.query('update auth.users set email_confirmed_at=null where id=$1',[owner]);
 await as(owner);await assert.rejects(db.query("select public.set_testing_tier($1,'elite')",[team]),/verified testing administrator/);
-console.log('PASS: owner-only confirmed-email tier switching, non-admin/anonymous denial, Starter/Pro/Elite write gates, shared coach access and downgrade data preservation.');
+console.log('PASS: two allowlisted confirmed-email tier testers, non-admin/anonymous denial, Starter/Pro/Elite write gates, shared coach access and downgrade data preservation.');
 await db.close();
+

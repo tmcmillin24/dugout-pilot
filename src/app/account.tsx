@@ -33,7 +33,7 @@ export default function AccountScreen() {
       <MenuRow icon="shield" title="Team access" description={active ? `${active.name} · ${active.test_access ? 'Elite test access' : active.access_status === 'trial' ? 'Pro trial' : `${active.subscription_tier==='elite'?'Elite':active.subscription_tier==='starter'?'Starter':'Pro'} · ${active.access_status}`}${active.trial_ends_at && active.access_status === 'trial' ? ` · Ends ${new Date(active.trial_ends_at).toLocaleDateString()}` : ''}` : 'Select a team to view access'} last />
     </Panel></Section>
     {admin && <Section title="Administration"><Panel><MenuRow icon="shield" title="Super Admin" description="Test access overrides for development teams" onPress={() => router.push('/admin')} last /></Panel></Section>}
-    {session?.user.email?.toLowerCase() === 'tristan.mcmillin@yahoo.com' && !!session.user.email_confirmed_at && <TierTesting />}
+    {['tristan.mcmillin@yahoo.com','brilestodd@gmail.com'].includes(session?.user.email?.toLowerCase()??'') && !!session?.user.email_confirmed_at && <TierTesting />}
     <Section title="Team plans"><PlanComparison/></Section>
     <StatusMessage text={error} error />
     <Button secondary disabled={busy} onPress={confirmSignOut}>{busy ? 'Signing out…' : 'Sign out'}</Button>
@@ -41,3 +41,4 @@ export default function AccountScreen() {
   </Screen>;
 }
 const s = StyleSheet.create({ profile: { flexDirection: 'row', gap: 16, alignItems: 'center', padding: 20 }, avatar: { width: 54, height: 54, borderRadius: 18, backgroundColor: palette.cardTint, justifyContent: 'center', alignItems: 'center' }, email: { color: palette.cardInk, fontSize: 16, fontWeight: '600' }, caption: { color: palette.cardMuted, fontSize: 12, marginTop: 8, lineHeight: 19 }, footer: { textAlign: 'center', color: palette.muted, letterSpacing: 1.4, fontSize: 10 } });
+
