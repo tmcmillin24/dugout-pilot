@@ -64,7 +64,7 @@ const {answerDugout}=load('../src/lib/coaching/ask-dugout.ts');
 const baseRoute={...options,history:[],teamId:'team',connected:true,localAvailable:false,online:async()=>({answer:'Verified online answer',reference:'USSSA',url:null,kind:'reference'}),generate:async()=>{throw Error('Should not generate');}};
 assert.equal((await answerDugout(baseRoute)).route,'online');
 let onlineCalls=0;const offlineRoute=await answerDugout({...baseRoute,question:reported,connected:false,online:async()=>{onlineCalls++;throw Error('Must not call online');}});assert.equal(onlineCalls,0);assert.equal(offlineRoute.route,'offline');assert.match(offlineRoute.answer,/automatic double/);
-const failedOnline=await answerDugout({...baseRoute,question:reported,online:async()=>{throw Error('Service unavailable');}});assert.equal(failedOnline.route,'offline');assert.equal(failedOnline.notice,'Service unavailable');
+await assert.rejects(answerDugout({...baseRoute,question:reported,online:async()=>{throw Error('Service unavailable');}}),/Service unavailable/);
 const denied=new Error('Sign in again');denied.noFallback=true;await assert.rejects(answerDugout({...baseRoute,online:async()=>{throw denied;}}));
 const stop=new AbortController();const interrupted=answerDugout({...baseRoute,signal:stop.signal,online:async()=>{stop.abort();throw Error('Request lost');}});await assert.rejects(interrupted);
 const runner=await answerDugout({...baseRoute,connected:false,question:'There is a runner on first when that happens. Where does he go?',history:[{question:reported,answer:offlineRoute.answer}]});assert.match(runner.answer,/third base/);

@@ -1,43 +1,49 @@
-# Ask Dugout full-rulebook lookup
+# Ask Dugout: direct official document pipeline
 
-The online assistant now makes one Gemini 3.5 Flash-Lite request with URL Context. It reads the server-selected official PDFs, rather than treating the small summary library as complete. No Google Search tool or automatic paid-provider fallback is enabled.
+## Failure addressed
 
-## Sources and scope
+The old route asked Gemini URL Context to fetch PDF links and treated missing URL-retrieval metadata as a lookup failure. The mobile client then substituted an offline answer, potentially based on an unrelated saved-topic match. Mocked URL metadata did not validate the real retrieval path.
 
-- Baseball: USSSA 2026/2027 national rules, with MLB 2026 explicitly labeled as baseball fallback. USSSA overrides MLB.
-- Fastpitch: USSSA 18th edition (December 2025), mapped to the 2026 profile.
-- Slowpitch: USSSA 2026 rulebook.
-- Unknown softball seasons fail explicitly; an old book is never silently labeled as a new edition.
-- New official URLs/editions must be reviewed and added to the server-owned catalog. Source monitoring detects changes at existing URLs; it does not automatically adopt arbitrary new documents.
+The replacement downloads the actual official PDFs in the Edge Function, checks their PDF signature/size/redirect hosts, uploads the files through Gemini Files, verifies ACTIVE state, and attaches the file handles to one Gemini 3.5 Flash-Lite generateContent request. URL Context and Google Search are not used. No question-specific answer was added.
 
-Only successfully retrieved catalog URLs may be cited. Failure to load a USSSA baseball book blocks a supposedly complete USSSA ruling based solely on MLB. No guarantees are made about every question or model interpretation; event-specific exceptions and incomplete scenarios can require clarification.
+Online service failures remain errors. Offline answers are used only by the offline route or the explicit no-team case, with their limited coverage identified. Connected status is not represented as proof an answer succeeded.
 
-## Cache
+## Sources
 
-Apply `202611120002_rules_answer_cache.sql` in the Dugout Pilot database. Both tables are service-only; authenticated app clients cannot write/read cached answers directly.
+- Baseball: USSSA 2026 or 2027 national rules, plus explicitly labeled MLB 2026 fallback. USSSA takes precedence.
+- Fastpitch: USSSA 18th edition (December 2025), mapped to 2026.
+- Slowpitch: USSSA 2026.
+- Every age division uses its sport's full book. Age/format-specific exceptions must be read from that book.
+- Unknown seasons require a supported profile, rather than silently substituting an edition. New official URLs/editions must be reviewed in the catalog; changed bytes at known URLs are detected automatically. No automated new-edition adoption is claimed.
+- Rule/page citations are required and displayed with server-owned URLs. They improve traceability but cannot mathematically guarantee a model's rule interpretation.
 
-Source PDFs are checked using SHA-256, with fingerprints cached for six hours. Files are downloaded transiently for hashing, not persisted in the database or distributed in the app. Failed checks disable answer-cache reuse. Answer keys include user, team, sport/division/season, conversation, event notes, source fingerprints, and cache revision. Only cited full-book answers are stored, for six hours. Clarifications, errors and unverified answers are not cached. A repeated identical question in the same context can avoid a Gemini request; differently worded questions are not semantically merged.
+## Document and answer caching
 
-When sources change, the fingerprint changes and previous answers are no longer reused. Old rows expire and are cleaned during subsequent successful cache writes. `RULES_CACHE_VERSION` can invalidate all answers administratively.
+Apply `202611120003_rules_document_files.sql` in project `rlxscbutvxvsijgtcrbq`. It is idempotent and includes prior cache-table setup.
 
-Full rulebook retrieval can use significantly more input tokens than summary-only requests. One request still counts once toward request quotas, but token quotas also apply. URL Context availability on the actual project's free tier and live answer quality must be verified after deployment.
+Only the service role can access the two cache tables. Official PDFs are not stored in the app or as database text. Google Files temporarily stores uploaded documents (48-hour expiry); metadata and hashes are stored server-side. Files are checked for ACTIVE state and expiry before use, renewed when unavailable, and tied to the Gemini key fingerprint to handle key changes safely.
 
-## Optional scheduled refresh
+Official source bytes are rechecked after six hours, or on an authorized forced refresh. Changed hashes cause document renewal and answer-cache invalidation. Unchanged books reuse their uploaded files. Failed checks stop the online answer; they do not bless stale documents.
 
-On-demand refresh works without Cron. For checks while nobody is using the app, create a Supabase Cron HTTP POST job every six hours:
+Cited answers are cached for six hours, keyed by user, team, sport/age/season, question, dialogue, event notes, source hashes and implementation revision. Failures, clarifications, and unverified outputs are not cached. Different wording is not semantically merged. Source/version checks run before cache hits. Source cache failure allows fresh direct document processing; missing tables lose caching rather than disable the whole service.
 
-- URL: `https://rlxscbutvxvsijgtcrbq.supabase.co/functions/v1/rules-assistant`
-- Body: `{"action":"refresh_sources"}`
-- Headers: Content-Type application/json and Authorization Bearer with this project's service-role JWT, stored in Supabase Vault. Never put that key in app config, git, or the chat.
+Files reuse saves downloads/uploads, not the input tokens needed to process the books. Full-book requests still consume Gemini token allowance. Quota errors are shown explicitly; no paid-provider fallback is configured.
 
-Only an exact server service-role credential can run refresh. Normal signed-in user tokens are rejected. Check Cron results; source refresh failures return HTTP 503 and active requests retry on demand. A scheduled job has not been installed by this code change.
+## Refresh
 
-## Deploy and validate
+Active use rechecks sources every six hours. `{"action":"refresh_sources"}` is a service-role-only POST to the deployed function for prewarming or a Supabase Cron HTTP job. Configure the bearer credential through Supabase Vault, never in mobile config or git. No scheduled hosted job has been installed by this repository change. New URLs/editions require review.
 
-1. Apply the cache SQL in project `rlxscbutvxvsijgtcrbq`.
-2. Deploy: `npx supabase functions deploy rules-assistant --project-ref rlxscbutvxvsijgtcrbq`.
-3. Reload the development app. Already installed previews need rebuilding for new client messages, but use the new server as soon as it is deployed.
-4. Test general, scenario, and follow-up questions separately for baseball, fastpitch and slowpitch; verify cited rule numbers against the PDFs. Check Edge Function logs for provider errors if URL Context is unavailable. Never log questions, service keys or provider keys.
-5. Repeat an identical question in a new conversation; verify cacheHit and no new Gemini call. Source/context changes must miss the cache.
+## Deploy
 
-Automated tests mock Gemini, Supabase and retrieval metadata. They verify routing, isolation, validation and caching, not actual provider accuracy. No live Google credential is available in this workspace.
+1. Pull the branch and run the document-cache SQL in the Dugout Pilot project.
+2. `npx supabase functions deploy rules-assistant --project-ref rlxscbutvxvsijgtcrbq`
+3. Reload the development client. Installed standalone previews need a new build for the client error/route behavior; the server changes apply immediately on deployment.
+
+## Validation
+
+- `NODE_USE_ENV_PROXY=1 node scripts/check-rulebook-downloads.mjs` downloads all five official PDFs through the exact server downloader, reports sizes and SHA-256, and makes no Gemini request. On hosts not using a proxy the env setting is unnecessary.
+- `node scripts/test-rules-ai.mjs` verifies direct PDF attachment, upload reuse/renewal, changed sources, missing-cache operation, role checks, sport/edition isolation, one model-generation call, rule/page citation requirements, and rejected forged sources. The Gemini/Supabase APIs are mocked in this suite.
+- `node scripts/test-local-ai-and-batting.mjs` includes online failure/cancellation, official-link validation, and offline routing regressions.
+- All five official PDFs were downloaded live in this workspace and checked with pdftotext. Gemini uploads/generation cannot be exercised here without the project's server API key; deployment is not live-verified by these tests.
+
+After deployment, validate varied questions and follow-ups against actual cited rules in each sport. Include balls/strikes, foul bunts with two strikes, uncaught third strikes, obstruction/interference, overthrow awards, appeal/timing plays, pitcher rest, fastpitch DP/FLEX, and slowpitch counts. Repeat a question in a new conversation to check answer reuse. Do not label the system universally correct based on mocks or one successful answer.

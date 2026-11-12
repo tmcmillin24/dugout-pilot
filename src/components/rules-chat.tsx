@@ -23,11 +23,12 @@ type Assistant=NonNullable<ReturnType<typeof useRulesAssistant>>;
 function RulesConversation({board,assistant}:{board:ReturnType<typeof useCoaching>['board'];assistant:Assistant}) {
   const {active}=useTeams();const network=useNetworkState();
   const connected=network.isConnected!==false&&network.isInternetReachable!==false;
-  const connectionLabel=network.isConnected===undefined?'Checking…':connected?'Online · Gemini 3.5 Flash Lite':'Offline';
   const context=getRulesContext(board??{});const insets=useSafeAreaInsets();
   const [keyboardVisible,setKeyboardVisible]=useState(false);
   const nearBottom=useRef(true);
   const [details,setDetails]=useState(false);const [error,setError]=useState('');const [busy,setBusy]=useState(false);const [messages,setMessages]=useState<Entry[]>([]);
+  const lastEntry=messages.at(-1);
+  const connectionLabel=network.isConnected===undefined?'Checking…':!connected?'Offline':busy?'Online · Checking official rules…':lastEntry?.error?'Online · Answer unavailable':lastEntry?.response?.route==='offline'?'Offline references':'Online · Gemini 3.5 Flash Lite';
   const [availability,setAvailability]=useState<LocalAIStatus>({status:'checking',message:'Checking on-device AI…'});
   const scroll=useRef<ComponentRef<typeof ScrollView>>(null);const controller=useRef<AbortController|null>(null);const alive=useRef(true);const locked=useRef(false);
   useEffect(()=>{

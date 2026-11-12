@@ -9,7 +9,7 @@ export async function answerDugout(options:{question:string;context:RulesContext
  let notice='';
  if(options.connected&&options.teamId){
    try{return {...await options.online({teamId:options.teamId,question,history,signal}),route:'online'};}
-   catch(error){if(signal.aborted)throw new Error('Answer stopped.');if(error instanceof Error&&'noFallback' in error&&error.noFallback)throw error;notice=error instanceof Error?error.message:'The online assistant is unavailable. Using offline references.';}
+   catch(error){if(signal.aborted)throw new Error('Answer stopped.');throw error instanceof Error?error:new Error('The online assistant is unavailable. No ruling was generated. Try again.');}
  }else if(options.connected)notice='Choose a team for online answers. Using offline references.';
  if(signal.aborted)throw new Error('Answer stopped.');
  let response:RulesAnswer;

@@ -8,10 +8,10 @@ export async function askRulesOnline({teamId,question,history,signal}:OnlineQues
  if(error){
   const response=error.context as Response|undefined;const body=await response?.json?.().catch(()=>null);
   if(response?.status===401||response?.status===403)throw Object.assign(new Error(typeof body?.error==='string'?body.error:response.status===401?'Please sign in again to use Ask Dugout.':'Your team access could not be verified. Refresh your team or contact its owner.'),{noFallback:true});
-  throw new Error(body?.code==='lookup_unavailable'&&typeof body.error==='string'?body.error:body?.code==='not_configured'?'The online assistant isn’t connected yet. Using offline references.':response?.status===429?(typeof body?.error==='string'?body.error:'The online assistant has reached a request limit. Try again later. Using offline references.'):'The online assistant couldn’t connect. Using offline references.');
+  throw new Error(typeof body?.error==='string'?body.error:body?.code==='not_configured'?'The online assistant isn’t connected yet. No ruling was generated.':response?.status===429?'Gemini reached a request or token limit. Try again later.':'Ask Dugout could not reach the online service. No ruling was generated. Try again.');
  }
- if(!data||typeof data.answer!=='string'||data.answer.length>16000||!['reference','unverified','clarification'].includes(data.kind)||!Array.isArray(data.citations))throw new Error('The online answer could not be verified. Using offline references.');
+ if(!data||typeof data.answer!=='string'||data.answer.length>16000||!['reference','unverified','clarification'].includes(data.kind)||!Array.isArray(data.citations))throw new Error('The online answer could not be verified. No ruling was generated. Try again.');
  const citations=data.citations.filter((c:Record<string,unknown>)=>typeof c.url==='string'&&allowed(c.url)&&typeof c.title==='string'&&Number.isInteger(c.start)&&Number.isInteger(c.end)&&Number(c.start)>=0&&Number(c.end)>Number(c.start)&&Number(c.end)<=data.answer.length);
- if(data.kind==='reference'&&!citations.length)throw new Error('The online answer had no verified source links. Using offline references.');
+ if(data.kind==='reference'&&!citations.length)throw new Error('The online answer had no verified source links. No ruling was generated. Try again.');
  return {answer:data.answer,citations,kind:data.kind==='unverified'?'unavailable':data.kind,reference:data.mlbFallback?'MLB fallback · check USSSA and event exceptions':'Official rules references',url:citations[0]?.url??null,sources:citations.map((c:{title:string;url:string})=>({title:c.title,url:c.url}))};
 }
