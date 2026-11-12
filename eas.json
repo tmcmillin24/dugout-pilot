@@ -1,0 +1,12 @@
+{
+  "cli": { "version": ">= 19.1.0" },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "developmentClient": false,
+      "environment": "preview",
+      "env": { "APP_VARIANT": "preview" },
+      "ios": { "simulator": false }
+    }
+  }
+}
