@@ -1,66 +1,77 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {webcrypto} from 'node:crypto';
 import vm from 'node:vm';
 import ts from 'typescript';
 const library=JSON.parse(readFileSync(new URL('../supabase/functions/rules-assistant/references.json',import.meta.url),'utf8'));
-const exports={};vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../supabase/functions/rules-assistant/index.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText,{exports,Request,Response,URL,AbortSignal,Date,JSON,require:()=>library});
-const {createRulesHandler,referencesFor,extractAnswer}=exports;
+const exports={};
+vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../supabase/functions/rules-assistant/index.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText,{exports,Request,Response,URL,AbortSignal,Date,JSON,TextEncoder,TextDecoder,crypto:webcrypto,require:()=>library});
+const {createRulesHandler,referencesFor,rulebooksFor,extractAnswer}=exports;
 const team='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',user='11111111-1111-4111-8111-111111111111';
 const context={sport:'baseball',age:'11U',season:'2026',organization:'usssa'};
-const provider=(answer={kind:'reference',answer:'A fair ball bouncing over the fence is an automatic double.',sourceIds:['mlb-2026-boundary-double']},finishReason='STOP')=>({candidates:[{finishReason,content:{parts:[{text:JSON.stringify(answer)}]}}]});
-function harness(options={}){
- const calls=[];const env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_ANON_KEY:'public',SUPABASE_SERVICE_ROLE_KEY:'admin-secret',GEMINI_API_KEY:'gemini-secret',OPENAI_API_KEY:'must-not-use'};
- const fetch=async(url,init={})=>{calls.push({url,init});const ok=value=>new Response(JSON.stringify(value),{status:200});
- if(url.endsWith('/auth/v1/user'))return options.authFailure?new Response('{}',{status:401}):ok({id:user});
- if(url.includes('/team_memberships?'))return ok(options.member===false?[]:[{role:'coach'}]);
- if(url.includes('/teams?'))return ok([{activation_status:options.expired?'trial':'active',trial_ends_at:'2000-01-01',test_access:false}]);
- if(url.includes('/team_boards?'))return ok([{board:{rulesContext:{...context,sport:options.sport??'baseball',age:options.age??'11U',season:options.season??'2026'},eventRules:'Coach note',players:[{name:'SECRET ROSTER'}]}}]);
- if(url.includes('/consume_rules_ai_budget'))return options.limited?new Response(JSON.stringify({code:'P0001',message:'Ask AI usage limit reached'}),{status:400}):ok(null);
- if(url==='https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent') {if(options.quota)return new Response('{}',{status:429});if(options.failure)throw Error('private provider failure');return ok(options.result??provider());}
- throw Error('Unexpected request '+url);
+const now=new Date('2026-11-12T12:00:00Z');
+const req=(question='How many balls and strikes do you get?',history=[])=>new Request('https://local.test',{method:'POST',headers:{Authorization:'Bearer user-token'},body:JSON.stringify({teamId:team,question,history})});
+function harness(options={}) {
+ const calls=[],cache=new Map(),versions=new Map();
+ const env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_ANON_KEY:'public',SUPABASE_SERVICE_ROLE_KEY:'admin-secret',GEMINI_API_KEY:'gemini-secret'};
+ let digest='source-version-1';
+ const ok=value=>new Response(JSON.stringify(value));
+ const fetch=async(url,init={})=>{
+  calls.push({url,init});
+  if(url.endsWith('/auth/v1/user'))return options.authFailure?new Response('{}',{status:401}):ok({id:user});
+  if(url.includes('/team_memberships?'))return ok(options.member===false?[]:[{role:'coach'}]);
+  if(url.includes('/teams?'))return ok([{activation_status:options.expired?'trial':'active',trial_ends_at:'2000-01-01',test_access:false}]);
+  if(url.includes('/team_boards?'))return ok([{board:{rulesContext:{...context,sport:options.sport??'baseball',age:options.age??'11U',season:options.season??'2026'},eventRules:'Coach note',players:[{name:'SECRET ROSTER'}]}}]);
+  if(url.includes('/rules_source_versions?'))return options.noCache?new Response('{}',{status:404}):ok([{digest,checked_at:now.toISOString()}]);
+  if(url.endsWith('/rules_source_versions')){versions.set(JSON.parse(init.body).url,JSON.parse(init.body));return ok(null);}
+  if(url.includes('/rules_answer_cache?')) {
+   if(init.method==='DELETE')return ok(null);
+   const key=new URL(url).searchParams.get('cache_key').slice(3);
+   return ok(cache.has(key)?[{answer:cache.get(key)}]:[]);
+  }
+  if(url.endsWith('/rules_answer_cache')){const value=JSON.parse(init.body);cache.set(value.cache_key,value.answer);return ok(null);}
+  if(url.includes('/consume_rules_ai_budget'))return options.limited?new Response(JSON.stringify({code:'P0001',message:'Ask AI usage limit reached'}),{status:400}):ok(null);
+  if(url.includes('generativelanguage')) {
+   if(options.quota)return new Response('{}',{status:429});
+   if(options.failure)return new Response('{}',{status:503});
+   const body=JSON.parse(init.body),input=JSON.parse(body.contents[0].parts[0].text),books=input.rulebooks;
+   const id=options.forged?'mlb-forged-source':books[0].id;
+   return ok({candidates:[{finishReason:'STOP',content:{parts:[{text:JSON.stringify({kind:options.clarify?'clarification':'reference',answer:options.clarify?'Which format does your event use?':'Verified ruling from the full official rulebook.',sourceIds:options.clarify?[]:[id]})}]},urlContextMetadata:{urlMetadata:books.filter(b=>!options.usssaFailure||b.id.startsWith('mlb-')).map(b=>({retrievedUrl:b.sources[0].url,urlRetrievalStatus:options.unretrieved?'URL_RETRIEVAL_STATUS_ERROR':'URL_RETRIEVAL_STATUS_SUCCESS'}))}}]});
+  }
+  throw Error('Unexpected request '+url);
  };
- return {calls,handler:createRulesHandler({fetch,env:name=>options.noKey&&name==='GEMINI_API_KEY'?undefined:env[name]})};
+ return {calls,cache,versions,changeSource:()=>{digest='source-version-2';},handler:createRulesHandler({fetch,env:name=>options.noKey&&name==='GEMINI_API_KEY'?undefined:env[name],now:()=>now})};
 }
-const req=(body={teamId:team,question:'What happens if a fair ball hops over the fence after hitting the ground?',history:[{role:'user',content:'Earlier question'},{role:'assistant',content:'Earlier answer'}]},auth='Bearer user-token')=>new Request('https://local.test',{method:'POST',headers:{Authorization:auth},body:JSON.stringify(body)});
-let h=harness();let response=await h.handler(req());let data=await response.json();assert.equal(response.status,200);assert.equal(data.kind,'reference');assert.equal(data.mlbFallback,true);assert.ok(data.citations[0].url.includes('mlbstatic.com'));assert.equal(data.answer.slice(data.citations[0].start,data.citations[0].end),'[1]');
-const calls=h.calls.filter(call=>call.url.includes('generativelanguage'));assert.equal(calls.length,1);const body=JSON.parse(calls[0].init.body);assert.equal(body.tools,undefined);assert.equal(calls[0].init.headers['x-goog-api-key'],'gemini-secret');assert.ok(!calls[0].init.body.includes('SECRET ROSTER'));assert.ok(!calls[0].init.body.includes('admin-secret'));assert.ok(!calls[0].init.body.includes('must-not-use'));assert.ok(calls[0].init.body.includes('Earlier answer'));assert.ok(calls[0].init.body.includes('Coach note'));assert.equal(body.generationConfig.responseMimeType,'application/json');assert.ok(h.calls.findIndex(c=>c.url.includes('consume_rules'))<h.calls.findIndex(c=>c.url.includes('generativelanguage')));
-for(const [options,status] of [[{authFailure:true},401],[{member:false},403],[{expired:true},403],[{noKey:true},503],[{limited:true},429]]){h=harness(options);assert.equal((await h.handler(req())).status,status);assert.equal(h.calls.filter(c=>c.url.includes('generativelanguage')).length,0);}
-h=harness({quota:true});assert.equal((await h.handler(req())).status,429);assert.equal(h.calls.filter(c=>c.url.includes('generativelanguage')).length,1);
-h=harness({failure:true});response=await h.handler(req());assert.equal(response.status,502);assert.ok(!(await response.text()).includes('private provider failure'));
-h=harness({sport:'slowpitch'});data=await(await h.handler(req())).json();assert.equal(data.kind,'unverified');assert.equal(h.calls.filter(c=>c.url.includes('generativelanguage')).length,0);
-assert.equal(referencesFor({...context,age:'12U',season:'2027'}).some(r=>r.id.startsWith('usssa-2026-11u-')),false);
-assert.ok(referencesFor({...context,age:'',season:''}).length>0);
-const refs=referencesFor(context);
-for(const answer of [{kind:'reference',answer:'Fake',sourceIds:['unknown']},{kind:'reference',answer:'Fake',sourceIds:[]},{kind:'reference',answer:'Go https://evil.test',sourceIds:['mlb-2026-boundary-double']}])assert.throws(()=>extractAnswer(provider(answer),refs));
-assert.throws(()=>extractAnswer(provider(undefined,'MAX_TOKENS'),refs));assert.equal(extractAnswer(provider({kind:'clarification',answer:'Did it bounce?',sourceIds:[]}),refs).kind,'clarification');
-h=harness();assert.equal((await h.handler(req({teamId:'invalid',question:'Hi'}))).status,400);assert.equal((await h.handler(req(undefined,''))).status,401);
-console.log('PASS: Gemini 3.5 Flash Lite only; exactly one attempt/no search or paid fallback; auth/membership/access/budgets, quota, history and server context, roster/key exclusion, owned citations, edition/sport isolation, structured output/finish validation and errors. Provider mocked; live accuracy untested.');
+for(const sport of ['baseball','fastpitch','slowpitch']) {
+ const h=harness({sport});const response=await h.handler(req());const data=await response.json();
+ assert.equal(response.status,200);assert.equal(data.kind,'reference');assert.ok(data.citations.length);
+ const providers=h.calls.filter(c=>c.url.includes('generativelanguage'));assert.equal(providers.length,1);
+ const body=JSON.parse(providers[0].init.body),input=JSON.parse(body.contents[0].parts[0].text);
+ assert.deepEqual(Object.keys(body.tools[0]),['url_context']);assert.equal(body.generationConfig.responseMimeType,'application/json');
+ assert.ok(input.rulebooks.some(b=>b.id.includes(sport)));
+ assert.equal(input.rulebooks.some(b=>b.id.startsWith('mlb-')),sport==='baseball');
+ assert.ok(!providers[0].init.body.includes('SECRET ROSTER'));assert.ok(!providers[0].init.body.includes('admin-secret'));
+ assert.equal(providers[0].init.headers['x-goog-api-key'],'gemini-secret');
+ assert.ok(h.calls.findIndex(c=>c.url.includes('consume_rules'))<h.calls.findIndex(c=>c.url.includes('generativelanguage')));
+ const label=data.citations[0];assert.equal(data.answer.slice(label.start,label.end),'[1]');
+}
+for(const [options,status,code] of [[{member:false},403,'membership_required'],[{expired:true},403,'trial_expired'],[{limited:true},429,'app_usage_limit'],[{quota:true},429,'quota_exhausted'],[{unretrieved:true},503,'lookup_unavailable'],[{usssaFailure:true},503,'lookup_unavailable'],[{failure:true},503,'lookup_unavailable']]) {
+ const h=harness(options),response=await h.handler(req());assert.equal(response.status,status);assert.equal((await response.json()).code,code);assert.equal(h.cache.size,0);
+}
+for(const [options,status] of [[{authFailure:true},401],[{noKey:true},503],[{forged:true},502]]){const h=harness(options);assert.equal((await h.handler(req())).status,status);assert.equal(h.cache.size,0);}
+const cached=harness();await cached.handler(req());let data=await(await cached.handler(req())).json();assert.equal(data.cacheHit,true);assert.equal(cached.calls.filter(c=>c.url.includes('generativelanguage')).length,1);
+await cached.handler(req('Can the runner advance?'));assert.equal(cached.calls.filter(c=>c.url.includes('generativelanguage')).length,2);
+await cached.handler(req('How many balls and strikes do you get?',[{role:'user',content:'A different play'}]));assert.equal(cached.calls.filter(c=>c.url.includes('generativelanguage')).length,3);
+cached.changeSource();data=await(await cached.handler(req())).json();assert.equal(data.cacheHit,undefined);assert.equal(cached.calls.filter(c=>c.url.includes('generativelanguage')).length,4);
+const noCache=harness({noCache:true});await noCache.handler(req());await noCache.handler(req());assert.equal(noCache.calls.filter(c=>c.url.includes('generativelanguage')).length,2);
+const clarification=harness({clarify:true});assert.equal((await(await clarification.handler(req())).json()).kind,'clarification');assert.equal(clarification.cache.size,0);
+assert.equal(rulebooksFor({...context,sport:'fastpitch',season:'2027'}).length,0);
+for(const season of ['2026','2027'])for(let age=4;age<=18;age++)for(const topic of ['bats','pitching'])assert.ok(referencesFor({...context,season,age:`${age}U`}).some(ref=>ref.id===`usssa-baseball-${season}-${age}U-${topic}`));
+assert.throws(()=>extractAnswer({candidates:[{finishReason:'MAX_TOKENS'}]},[]));
+console.log('PASS full-rulebook URL retrieval, sport/edition isolation, one Gemini request, auth/access/budgets, citations, failure messages, source-version cache invalidation, conversation isolation, missing-cache fallback and no caching guesses. Gemini mocked; live retrieval and answer accuracy still require deployment testing.');
 
-for(const [question,id] of [['What is obstruction considered?','mlb-2026-obstruction'],['What is interference?','mlb-2026-interference']]){
- const reference=refs.find(ref=>ref.id===id);assert.ok(reference?.text.length>200);
- h=harness({result:provider({kind:'reference',answer:'General MLB baseball fallback: '+reference.text,sourceIds:[id]})});
- data=await(await h.handler(req({teamId:team,question}))).json();assert.equal(data.kind,'reference');assert.equal(data.mlbFallback,true);assert.ok(data.citations.length);
- const request=JSON.parse(h.calls.find(call=>call.url.includes('generativelanguage')).init.body);
- const supplied=JSON.parse(request.contents[0].parts[0].text).references;assert.ok(supplied.find(ref=>ref.id===id));
- assert.match(request.systemInstruction.parts[0].text,/general definition question/);
-}
-assert.equal(referencesFor({...context,sport:'fastpitch'}).some(ref=>ref.id.includes('obstruction')),false);
-console.log('PASS: obstruction/interference references reach Gemini with definition guidance and valid citations; MLB fallback excluded from softball.');
-
-for(const season of ['2026','2027'])for(let age=4;age<=18;age++){const scoped=referencesFor({...context,season,age:`${age}U`});for(const topic of ['bats','pitching'])assert.ok(scoped.some(ref=>ref.id===`usssa-baseball-${season}-${age}U-${topic}`));assert.ok(!scoped.some(ref=>ref.id.startsWith('usssa-baseball-')&&!ref.id.includes(`-${season}-${age}U-`)));}
-assert.ok(referencesFor({...context,sport:'fastpitch',age:'16U'}).some(ref=>ref.id==='usssa-fastpitch-2026-16U-bats'));
-assert.ok(!referencesFor({...context,sport:'fastpitch'}).some(ref=>ref.id.startsWith('mlb-')));
-console.log('PASS: age-specific bat/pitching coverage for every baseball division 4U–18U in 2026/2027; fastpitch references remain separate.');
-for(const id of ['mlb-2026-wild-throw','mlb-2026-juggled-catch','mlb-2026-intentional-drop','mlb-2026-third-out-runs']){
- assert.ok(referencesFor(context).some(ref=>ref.id===id));
- assert.ok(!referencesFor({...context,sport:'fastpitch'}).some(ref=>ref.id===id));
- const parsed=extractAnswer(provider({kind:'reference',answer:'General MLB baseball fallback applies to this play.',sourceIds:[id]}),referencesFor(context));
- assert.equal(parsed.kind,'reference');assert.equal(parsed.mlbFallback,true);assert.ok(parsed.citations[0].url.includes('2026-official-baseball-rules.pdf'));
-}
-console.log('PASS reviewed overthrow, juggled-catch, intentional-drop and third-out reference coverage and citations; baseball-only isolation.');
-
-for (const [options, code] of [[{member:false},'membership_required'],[{expired:true},'trial_expired'],[{limited:true},'app_usage_limit'],[{quota:true},'quota_exhausted']]) {
- const caseHarness=harness(options); const response=await caseHarness.handler(req());
- assert.equal((await response.json()).code,code);
-}
-console.log('PASS distinct membership, expired trial, app usage and Gemini quota error codes');
+const refreshHarness=harness();
+const denied=await refreshHarness.handler(new Request('https://local.test',{method:'POST',headers:{Authorization:'Bearer user-token'},body:JSON.stringify({action:'refresh_sources'})}));
+assert.equal(denied.status,403);
+assert.equal(refreshHarness.calls.length,0);
+console.log('PASS ordinary account cannot trigger service-only source refresh');
