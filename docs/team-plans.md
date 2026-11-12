@@ -1,6 +1,6 @@
 # Team plans
 
-Starter $7.99 / Pro $14.99 / Elite $24.99 per team per month are proposed preview pricing. All coaches share the team's entitlement. There is no checkout, recurring charge, cancellation workflow, App Store subscription product or six-month pass implemented by this change. Printable lineup is not advertised because a dedicated printable-lineup feature is not yet implemented. Ask Dugout and FAQs keep their existing active-team access; the supplied tier proposal did not assign them to a different plan.
+Starter $7.99 / Pro $14.99 / Elite $24.99 per team per month are proposed preview pricing. All coaches share the team's entitlement. There is no checkout, recurring charge, cancellation workflow, App Store subscription product or six-month pass implemented by this change. Printable/shareable lineup is included in Starter and higher after the game-day polish update. Ask Dugout and FAQs keep their existing active-team access; the supplied tier proposal did not assign them to a different plan.
 
 Starter: roster, manual batting and defensive field, three saved defenses, last batter and dugout display. Pro: ten saved defenses, field innings, pitching logs, practice planner and season history. Elite: CSV imports, player reports and stats recommendations, suggested batting order and pitching plan.
 

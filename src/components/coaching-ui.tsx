@@ -1,3 +1,5 @@
+import { EmptyState } from './empty-state';
+import { SyncStatus } from './sync-status';
 import { useState, type ReactNode, type ComponentProps, type ComponentRef, type RefObject } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { OverlayModal } from './overlay-modal';
@@ -10,11 +12,11 @@ import { useCoaching } from '@/providers/coaching-provider';
 
 export function CoachingScreen({ title, children, back = false, scrollRef, scrollEnabled, onScroll, titleAction }: { title: string; children: ReactNode; back?: boolean } & Pick<ComponentProps<typeof Screen>, 'scrollRef'|'scrollEnabled'|'onScroll'|'titleAction'>) {
   const { active, loading: teamsLoading } = useTeams();
-  const { board, loading, busy, error, notice, reload, writable } = useCoaching();
+  const { board, loading, busy, error, reload, writable,offline } = useCoaching();
   return <Screen title={title} titleAction={titleAction} back={back} scrollRef={scrollRef} scrollEnabled={scrollEnabled} onScroll={onScroll} subtitle={active?.name} onRefresh={reload}>
-    <StatusMessage text={error} error /><StatusMessage text={busy ? 'Saving…' : notice} />
-    {teamsLoading || loading ? <Loading /> : !active ? <><Text style={ui.body}>Choose or create a team to get started.</Text><Button onPress={() => router.navigate('/teams')}>OPEN TEAMS</Button></> : !board ? <Button secondary onPress={() => { void reload(); }}>RETRY</Button> : <>
-      {!writable && !busy && <Text style={ui.body}>View your saved plans. Active team access is required to make changes.</Text>}
+    <SyncStatus/><StatusMessage text={error} error />
+    {teamsLoading || loading ? <Loading /> : !active ? <><Text style={ui.body}>Choose or create a team to get started.</Text><Button onPress={() => router.navigate('/teams')}>OPEN TEAMS</Button></> : !board ? <EmptyState icon="link" title={offline?'Connect to load your team':'Your team couldn’t load'} description={offline?'An internet connection is needed to load your saved team on this device.':'Your saved team data is safe. Try loading it again.'} action="RETRY" disabled={offline} onPress={()=>{void reload();}}/> : <>
+      {!writable && !busy && !offline && <Text style={ui.body}>View your saved plans. Active team access is required to make changes.</Text>}
       {error && <Button secondary onPress={() => { void reload(); }}>RELOAD TEAM DATA</Button>}{children}
     </>}
   </Screen>;
@@ -37,7 +39,7 @@ export function Choice({ label, value, options, onChange, disabled, fill = false
 export const c = StyleSheet.create({
   stack: { gap: 8 }, group: { gap: 16 }, row: { flexDirection: 'row', alignItems: 'center', gap: 12 }, grow: { flex: 1, flexBasis: 0, minWidth: 0 },
   chips: { gap: 7 }, chip: { paddingHorizontal: 16, paddingVertical: 13, minHeight: 44, borderWidth: 1, borderColor: palette.line, backgroundColor: palette.panel, borderRadius: 3 }, selected: { backgroundColor: palette.navy, borderColor: palette.navy }, chipText: { color: palette.ink, fontSize: 12, fontWeight: '800' }, selectedText: { color: palette.white },
-  choice: { minHeight: 76, justifyContent: 'center', padding: 14, backgroundColor: palette.panel, borderWidth: 1, borderColor: palette.line, gap: 6, borderRadius: 4 }, choiceValue: { color: palette.ink, fontSize: 15, lineHeight: 20, fontWeight: '600' },
+  choice: { minHeight: 76, justifyContent: 'center', padding: 14, backgroundColor: palette.panel, borderWidth: 1, borderColor: palette.line, gap: 6, borderRadius: 8,boxShadow:'0px 1px 3px rgba(8,46,75,0.04)' }, choiceValue: { color: palette.ink, fontSize: 15, lineHeight: 20, fontWeight: '600' },
   scrim: { flex: 1, backgroundColor: '#001426B8', justifyContent: 'center', padding: 20 }, sheet: { backgroundColor: palette.canvas, maxHeight: '85%', width: '100%', maxWidth: 760, alignSelf: 'center', borderRadius: 6, overflow: 'hidden' }, sheetHead: { backgroundColor: palette.navy, borderBottomWidth: 3, borderBottomColor: palette.accent, padding: 17, flexDirection: 'row', alignItems: 'center', gap: 8 }, sheetTitle: { color: palette.white, fontSize: 28, flex: 1 }, close: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 8 }, closeText: { color: palette.white, fontWeight: '700' }, sheetBody: { padding: 18, gap: 16 }, option: { padding: 17, minHeight: 52, borderBottomWidth: 1, borderBottomColor: palette.line },
   number: { width: 48, flexShrink: 0, fontVariant: ['tabular-nums'], color: palette.accent, fontSize: 23, fontWeight: '800' }, item: { padding: 15, borderBottomColor: palette.line, borderBottomWidth: 1, gap: 7 }, small: { fontSize: 12, lineHeight: 18, color: palette.muted },
   headline: { fontSize: 27, color: palette.ink }, danger: { color: palette.error, fontWeight: '700' }, compact: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },

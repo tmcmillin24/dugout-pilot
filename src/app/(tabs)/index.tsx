@@ -1,3 +1,6 @@
+import { TeamSetup } from '@/components/team-setup';
+import { GameReadiness } from '@/components/game-readiness';
+import { SyncStatus } from '@/components/sync-status';
 import { ResponsiveColumns } from '@/components/responsive-columns';
 import { TeamLogo } from '@/components/team-logo';
 import { Image } from 'expo-image';
@@ -23,6 +26,8 @@ export default function HomeScreen() {
   const [heroWidth, setHeroWidth] = useState(0);
   return <Screen title="Clubhouse" hideTitle onRefresh={async () => { await refresh(); await coaching.reload(); }}>
     <StatusMessage text={error || coaching.error} error />
+    {active&&<SyncStatus/>}
+    {active&&<TeamSetup/>}
     {active && upcoming && eventDate && <Pressable accessibilityRole="button" accessibilityLabel={`Open ${upcoming.kind==='game'?'lineups':'practice'}: ${upcoming.title}`} onPress={()=>router.navigate(upcoming.kind==='game'?'/lineups':'/practice')} style={({pressed})=>[s.nextEvent,pressed&&ui.dim]}><View style={s.nextTop}><Text style={s.nextLabel}>UP NEXT · {upcoming.kind.toUpperCase()}</Text><Text style={s.nextGameName}>{upcomingGame?.label??'TEAM SESSION'}</Text></View><View style={{flexDirection:'row',alignItems:'center',gap:12}}><DisplayText style={s.nextOpponent}>{upcomingGame?`VS ${upcomingGame.opponent.toUpperCase()}`:`${upcomingPractice?.settings.focus.toUpperCase()??'TEAM'} PRACTICE`}</DisplayText><Icon name="arrow" color={palette.ink} size={18}/></View><View style={s.nextWhen}><Text style={s.nextDateText}>{eventDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</Text>{!!upcoming.time&&<><View style={s.nextDot}/><Text style={s.nextTime}>{/^([01]\d|2[0-3]):[0-5]\d$/.test(upcoming.time)?timeLabel(upcoming.time):upcoming.time}</Text></>}</View></Pressable>}
 
     {loading ? <Loading /> : active ? <View>
@@ -34,12 +39,13 @@ export default function HomeScreen() {
       </View>
     </View> : !error ? <View style={s.empty}><Icon name="ball" size={40} color={palette.accent} /><DisplayText italic style={s.emptyTitle}>MAKE IT YOUR DUGOUT.</DisplayText><Text style={s.emptyCopy}>Create your team or join your coaching staff.</Text><Button onPress={() => router.push('/team-create')}>CREATE A TEAM</Button><Button secondary onPress={() => router.push('/team-join')}>JOIN A TEAM</Button></View> : <Button secondary onPress={() => { void refresh(); }}>Try again</Button>}
     {active && <>
-      <ResponsiveColumns><Section title="Coach's corner"><Panel>
+      <ResponsiveColumns><Section title="Coach's corner"><Panel accent="navy">
         <MenuRow icon="teams" title="Coaching staff" description={active.role === 'owner' ? 'Manage team access' : 'Your coaching access'} onPress={() => { if (active.role === 'owner') router.push({ pathname: '/team-coaches', params: { id: active.id } }); else router.navigate('/teams'); }} />
         <MenuRow icon="link" title="Practice" description="Build your next session" onPress={() => router.navigate('/practice')} />
         <MenuRow icon="ball" title="Lineups" description="Set your game-day order" onPress={() => router.navigate('/lineups')} last />
       </Panel></Section>
-      <Section title="Team tools"><Panel><MenuRow icon="teams" title="Roster" description="Players & jersey numbers" onPress={() => router.push('/roster')} /><MenuRow icon="shield" title="Rules desk" description="League rules & quick answers" onPress={() => router.push('/rules')} /><MenuRow icon="link" title="Imports" description="Bring in exported game stats" onPress={() => router.navigate('/integrations')} last /></Panel></Section></ResponsiveColumns>
+      <Section title="Team tools"><Panel accent="orange"><MenuRow icon="teams" title="Roster" description="Players & jersey numbers" onPress={() => router.push('/roster')} /><MenuRow icon="shield" title="Rules desk" description="League rules & quick answers" onPress={() => router.push('/rules')} /><MenuRow icon="link" title="Imports" description="Bring in exported game stats" onPress={() => router.navigate('/integrations')} last /></Panel></Section></ResponsiveColumns>
+      <GameReadiness/>
       <SeasonSnapshot board={board} loading={coaching.loading} />
     </>}
   </Screen>;

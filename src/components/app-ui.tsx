@@ -64,16 +64,16 @@ export function Screen({ title, subtitle, children, back = false, onRefresh, tra
 export function Section({ title, children, style }: { title: string; children: ReactNode; style?: StyleProp<ViewStyle> }) {
   return <View style={[ui.section,style]}><View style={ui.sectionHeader}><View style={ui.sectionMarker} /><DisplayText accessibilityRole="header" style={ui.sectionTitle}>{title.toUpperCase()}</DisplayText></View>{children}</View>;
 }
-export function Panel({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) { return <View style={[ui.panel,style]}>{children}</View>; }
+export function Panel({ children, style,accent }: { children: ReactNode; style?: StyleProp<ViewStyle>;accent?:'navy'|'orange' }) { return <View style={[ui.panel,accent&&{borderTopWidth:3,borderTopColor:accent==='navy'?palette.navy:palette.accent},style]}>{children}</View>; }
 export function Button({ children, onPress, secondary = false, disabled = false, style }: { children: ReactNode; onPress: () => void; secondary?: boolean; disabled?: boolean; style?: StyleProp<ViewStyle> }) {
-  return <Pressable accessibilityRole="button" onPress={onPress} disabled={disabled} style={({ pressed }) => [ui.button, secondary && ui.secondary, style, (pressed || disabled) && ui.dim]}><Text style={[ui.buttonText, secondary && ui.secondaryText]}>{children}</Text></Pressable>;
+  return <Pressable accessibilityRole="button" accessibilityState={{disabled}} onPress={onPress} disabled={disabled} style={({ pressed }) => [ui.button, secondary && ui.secondary, style, (pressed || disabled) && ui.dim]}><Text style={[ui.buttonText, secondary && ui.secondaryText]}>{children}</Text></Pressable>;
 }
 export function MenuRow({ icon, title, description, onPress, last = false, end }: { icon: IconName; title: string; description?: string; onPress?: () => void; last?: boolean; end?: ReactNode }) {
-  const content = <><View style={ui.iconTile}><Icon name={icon} color={palette.ink} /></View><View style={ui.rowCopy}><Text style={ui.rowTitle}>{title}</Text>{description && <Text style={ui.rowDescription}>{description}</Text>}</View>{end ?? (onPress ? <Icon name="arrow" color={palette.cardMuted} size={16} /> : null)}</>;
+  const content = <><View style={ui.iconTile}><Icon name={icon} color={palette.ink} /></View><View style={ui.rowCopy}><Text style={ui.rowTitle}>{title}</Text>{description && <Text style={ui.rowDescription}>{description}</Text>}</View>{end ?? (onPress ? <View style={{width:28,height:28,borderRadius:14,backgroundColor:'#F1F5F7',alignItems:'center',justifyContent:'center'}}><Icon name="arrow" color={palette.cardMuted} size={13} /></View> : null)}</>;
   return onPress ? <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [ui.menuRow, !last && ui.divider, pressed && ui.dim]}>{content}</Pressable> : <View style={[ui.menuRow, !last && ui.divider]}>{content}</View>;
 }
 export function AccessBadge({ team }: { team: Team }) {
-  const label = team.test_access ? 'TEST ACCESS' : { trial: 'ELITE TRIAL', active: 'ACTIVE', pending: 'PENDING', expired: 'TRIAL ENDED', suspended: 'SUSPENDED' }[team.access_status];
+  const label = team.test_access ? 'TEST ACCESS' : { trial: 'PRO TRIAL', active: 'ACTIVE', pending: 'PENDING', expired: 'TRIAL ENDED', suspended: 'SUSPENDED' }[team.access_status];
   return <View style={[ui.badge, !['trial', 'active'].includes(team.access_status) && ui.badgeMuted]}><Text style={ui.badgeText}>{label}</Text></View>;
 }
 export function StatusMessage({ text, error = false }: { text: string; error?: boolean }) { return text ? <Text accessibilityLiveRegion="polite" style={[ui.message, error && ui.error]}>{text}</Text> : null; }
@@ -85,9 +85,9 @@ export const ui = StyleSheet.create({
   wordmark: { color: palette.ink, fontWeight: '900', fontSize: 13, letterSpacing: 1.3 }, wordmarkAccent: { color: palette.accent },
   eyebrow: { color: palette.muted, fontSize: 11, letterSpacing: 2.4, fontWeight: '800' }, intro: { gap: 6 }, title: { color: palette.ink, fontSize: 34, fontWeight: '800', letterSpacing: 0.2 }, subtitle: { color: palette.muted, fontSize: 15, lineHeight: 23, maxWidth: 480 },
   section: { gap: 12, width: '100%', minWidth: 0 }, sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 }, sectionMarker: { width: 3, height: 17, backgroundColor: palette.accent }, sectionTitle: { flexShrink: 1, color: palette.ink, fontSize: 23, fontWeight: '800', letterSpacing: 0.2 },
-  panel: { borderColor: palette.line, borderWidth: 1, borderRadius: 5, backgroundColor: palette.panel, overflow: 'hidden' },
-  menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, minHeight: 67 }, divider: { borderBottomWidth: 1, borderBottomColor: palette.cardLine }, iconTile: { width: 26, height: 34, borderRadius: 0, backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
-  rowCopy: { flex: 1, minWidth: 0, gap: 5 }, rowTitle: { color: palette.cardInk, fontSize: 16, fontWeight: '600' }, rowDescription: { color: palette.cardMuted, fontSize: 13, lineHeight: 19 },
+  panel: { borderColor: '#D1DEE6', borderWidth: 1, borderRadius: 10, backgroundColor: palette.panel, overflow: 'hidden',boxShadow:'0px 3px 10px rgba(8,46,75,0.07)' },
+  menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, minHeight: 67 }, divider: { borderBottomWidth: 1, borderBottomColor: palette.cardLine }, iconTile: { width: 40, height: 40, borderRadius: 12, backgroundColor: '#EDF3F6', alignItems: 'center', justifyContent: 'center' },
+  rowCopy: { flex: 1, minWidth: 0, gap: 5 }, rowTitle: { color: palette.cardInk, fontSize: 16, fontWeight: '700' }, rowDescription: { color: palette.cardMuted, fontSize: 13, lineHeight: 19 },
   button: { backgroundColor: palette.accent, minHeight: 52, padding: 15, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }, buttonText: { fontSize: 15, fontWeight: '800', color: palette.ink, textAlign: 'center' }, secondary: { backgroundColor: palette.raised, borderWidth: 1, borderColor: palette.line }, secondaryText: { color: palette.ink }, dim: { opacity: 0.65 },
   badge: { alignSelf: 'flex-start', backgroundColor: palette.badgeSurface, paddingVertical: 6, paddingHorizontal: 9, borderRadius: 2 }, badgeMuted: { backgroundColor: '#EAF0F5' }, badgeText: { color: '#9D3A10', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
   message: { color: palette.ink, fontSize: 14, lineHeight: 21 }, error: { color: palette.error }, loading: { padding: 32 },
