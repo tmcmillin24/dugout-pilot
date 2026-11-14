@@ -3,10 +3,10 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 const positions=['LF','CF','RF','SS','2B','3B','P','1B','C'];
-let state=[],cursor=0,gesture,dimensions={width:1194,height:834};
+let state=[],cursor=0,dimensions={width:1194,height:834};
 const node=(type,props)=>({type,props:props??{}});
-const react={useState(initial){const i=cursor++;if(!(i in state))state[i]=initial;return[state[i],value=>{state[i]=typeof value==='function'?value(state[i]):value;}];},useMemo:fn=>fn()};
-const native={View:'View',Text:'Text',Pressable:'Pressable',ScrollView:'ScrollView',StyleSheet:{create:v=>v,absoluteFill:{}},useWindowDimensions:()=>dimensions,PanResponder:{create:handlers=>{gesture=handlers;return{panHandlers:{}};}}};
+const react={useState(initial){const i=cursor++;if(!(i in state))state[i]=initial;return[state[i],value=>{state[i]=typeof value==='function'?value(state[i]):value;}];},useRef:()=>({current:{scrollTo(){}}}),useEffect:fn=>fn()};
+const native={View:'View',Text:'Text',Pressable:'Pressable',ScrollView:'ScrollView',StyleSheet:{create:v=>v,absoluteFill:{}},useWindowDimensions:()=>dimensions};
 const logic={};
 vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/coaching/batting-display.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:logic});
 const exports={};
@@ -21,15 +21,25 @@ const props={board,game,writable:true,onClose(){},update:async()=>{writes++;retu
 function render(){cursor=0;return flatten(exports.Display(props));}
 function text(tree){return tree.filter(n=>typeof n!=='object').join(' ').replace(/\s+/g,' ');}
 let tree=render();assert.match(text(tree),/AT BAT/);assert.match(text(tree),/ON DECK/);
-assert.equal(gesture.onMoveShouldSetPanResponderCapture(null,{dx:5,dy:80}),false);
-assert.equal(gesture.onMoveShouldSetPanResponderCapture(null,{dx:-80,dy:5}),true);
-gesture.onPanResponderRelease(null,{dx:-80,dy:5});tree=render();
-assert.match(text(tree),/BENCH · 16/);assert.match(text(tree),/Unassigned/);assert.doesNotMatch(text(tree),/BATTER FINISHED/);assert.equal(writes,0);
+let pager=tree.find(n=>n?.type==='ScrollView'&&n.props.horizontal);
+assert.equal(pager.props.pagingEnabled,true);assert.equal(pager.props.directionalLockEnabled,true);
+assert.equal(pager.props.scrollEnabled,true);
+pager.props.onMomentumScrollEnd({nativeEvent:{contentOffset:{x:1194}}});tree=render();
+assert.equal(state[0],'defense');assert.match(text(tree),/BENCH · 16/);assert.match(text(tree),/Unassigned/);assert.equal(writes,0);
 for(const position of positions)assert.ok(text(tree).includes(position));
-gesture.onPanResponderRelease(null,{dx:80,dy:5});tree=render();assert.match(text(tree),/BATTER FINISHED/);
+pager.props.onMomentumScrollEnd({nativeEvent:{contentOffset:{x:0}}});tree=render();assert.equal(state[0],'offense');assert.match(text(tree),/BATTER FINISHED/);
 const defenseTab=tree.find(n=>n?.props?.accessibilityRole==='tab'&&text(flatten(n)).includes('DEFENSE'));defenseTab.props.onPress();assert.match(text(render()),/BENCH · 16/);
-for(const size of [{width:393,height:852},{width:834,height:1194},{width:1366,height:1024}]){dimensions=size;assert.match(text(render()),/BENCH · 16/);}
+for(const size of [{width:393,height:852},{width:852,height:393},{width:834,height:1194},{width:1194,height:834},{width:1366,height:1024}]){
+ dimensions=size;tree=render();assert.match(text(tree),/BENCH · 16/);
+ pager=tree.find(n=>n?.type==='ScrollView'&&n.props.horizontal);
+ const pages=pager.props.children;assert.equal(pages[0].props.style.width,pages[1].props.style.width);
+ const image=tree.find(n=>n?.type==='Image');const field=tree.find(n=>n?.type==='View'&&Array.isArray(n.props.style)&&n.props.children?.[0]===image);
+ assert.equal(field.props.style[1].width,pages[1].props.style.width,'Field uses the whole page width');
+ assert.ok(field.props.style[1].height>0);
+ assert.equal(image.props.contentFit,'contain','Field art keeps its proportions');
+}
+
 state=[];props.game={...game,lineup:[]};assert.match(text(render()),/BENCH · 16/);
 let disabled;cursor=0;state=[];exports.BattingDisplay({...props,renderTrigger:(_open,value)=>{disabled=value;return null;}});assert.equal(disabled,false);
 assert.equal(writes,0);
-console.log('PASS: swipe and tab navigation, vertical-scroll discrimination, read-only defensive field, 18-player bench, phone/iPad orientations and defense without a batting order.');
+console.log('PASS: native paging and tab navigation, full-width field sizing, read-only defensive field, 18-player bench, phone/iPad orientations and defense without a batting order.');
