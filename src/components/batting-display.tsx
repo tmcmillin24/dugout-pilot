@@ -68,7 +68,6 @@ function DefensiveDisplay({board,game,width,availableHeight}:{board:Board;game:G
   const artAspect=420/460;
   const artWidth=Math.min(fieldWidth,fieldHeight*artAspect);
   const artHeight=artWidth/artAspect;
-  const bench=board.players.filter(p=>!Object.values(game.positions).includes(p.id));
   return <ScrollView directionalLockEnabled nestedScrollEnabled style={{flex:1}} indicatorStyle="white" contentContainerStyle={{flexGrow:1,paddingBottom:8}}><View style={{flexDirection:'column',alignItems:'center',gap:18}}>
     <View style={[s.defensiveField,{width:fieldWidth,height:fieldHeight}]}>
       <Image source={require('@/assets/images/defensive-field.svg')} contentFit="contain" transition={0} accessible={false} style={StyleSheet.absoluteFill}/>
@@ -78,17 +77,14 @@ function DefensiveDisplay({board,game,width,availableHeight}:{board:Board;game:G
         <Text style={s.fieldNumber}>{player?.number?`#${player.number}`:'—'}</Text>
       </View>;})}
     </View>
-    <View style={{width:'100%',minWidth:0,gap:10}}>
-      <Text style={s.orderLabel}>BENCH · {bench.length}</Text>
-      {bench.length?bench.map(p=><View key={p.id} style={s.defensiveBenchRow}><Text style={s.fieldBenchNumber}>{p.number?`#${p.number}`:'—'}</Text><Text style={[s.name,{flex:1,fontSize:18}]}>{formatPlayerName(p.name)}</Text></View>):<Text style={s.swipeHint}>Everyone is on the field.</Text>}
-      <Text style={s.swipeHint}>Current assignments · Update positions in Lineups</Text>
-    </View>
+
   </View></ScrollView>;
 }
 
 const s=StyleSheet.create({
   pageTabs:{flexDirection:'row',gap:8},pageTab:{flex:1,minHeight:44,alignItems:'center',justifyContent:'center',borderRadius:8,borderWidth:1,borderColor:'#326A84'},pageSelected:{backgroundColor:'#FF6514',borderColor:'#FF6514'},pageLabel:{fontSize:12,fontWeight:'900',letterSpacing:1.5,color:'#A7BDCE'},pageSelectedLabel:{color:'#062C43'},swipeHint:{color:'#9FB7C9',fontSize:11,lineHeight:16},empty:{flex:1,alignItems:'center',justifyContent:'center',gap:10},emptyTitle:{color:'white',fontSize:30},
-  defensiveField:{backgroundColor:'#082E4B',borderRadius:12,overflow:'hidden',borderBottomWidth:4,borderBottomColor:'#FF6514'},fieldPosition:{position:'absolute',width:'26%',marginTop:-30,alignItems:'center',justifyContent:'center',minHeight:62,gap:3,paddingHorizontal:3,backgroundColor:'#082E4BF2',borderWidth:1,borderColor:'#648A9A',borderRadius:8},fieldPositionLabel:{color:'#FF986B',fontSize:12,fontWeight:'900'},fieldPlayer:{color:'white',fontWeight:'800',textAlign:'center',width:'100%'},fieldNumber:{color:'#93D8F3',fontSize:12,fontWeight:'800',fontVariant:['tabular-nums']},defensiveBenchRow:{flexDirection:'row',alignItems:'center',gap:12,padding:12,backgroundColor:'#F4F7FA',borderRadius:8},fieldBenchNumber:{color:'#C04700',fontSize:19,fontWeight:'800',minWidth:42,fontVariant:['tabular-nums']},
+  defensiveField:{backgroundColor:'#082E4B',borderRadius:12,overflow:'hidden',borderBottomWidth:4,borderBottomColor:'#FF6514'},fieldPosition:{position:'absolute',width:'26%',marginTop:-30,alignItems:'center',justifyContent:'center',minHeight:62,gap:3,paddingHorizontal:3,backgroundColor:'#082E4BF2',borderWidth:1,borderColor:'#648A9A',borderRadius:8},fieldPositionLabel:{color:'#FF986B',fontSize:12,fontWeight:'900'},fieldPlayer:{color:'white',fontWeight:'800',textAlign:'center',width:'100%'},fieldNumber:{color:'#93D8F3',fontSize:12,fontWeight:'800',fontVariant:['tabular-nums']},
+
   screen:{flex:1,backgroundColor:'#061E30'},frame:{flex:1,width:'100%',maxWidth:1400,alignSelf:'center',gap:14},
   header:{flexDirection:'row',alignItems:'center',gap:12,paddingBottom:10,borderBottomWidth:1,borderBottomColor:'#284356'},brand:{fontSize:13,color:'white',fontWeight:'900',letterSpacing:2},matchup:{fontSize:12,color:'#A7BDCE',marginTop:5},close:{width:44,height:44,justifyContent:'center',alignItems:'center'},closeText:{color:'#DCE8F0',fontSize:32,fontWeight:'400',lineHeight:36},
   spotlights:{gap:12},atBat:{minWidth:0,backgroundColor:'#FF6514',borderRadius:12,overflow:'hidden'},onDeckCard:{minWidth:0,backgroundColor:'#133A51',borderWidth:1,borderColor:'#326A84',borderRadius:12},cardHead:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8},label:{color:'#062C43',fontSize:12,fontWeight:'900',letterSpacing:2},slot:{color:'#173B50',fontSize:10,fontWeight:'800',letterSpacing:1},heroRow:{flexDirection:'row',alignItems:'center',gap:16,marginTop:8},jersey:{color:'#062C43',maxWidth:'30%'},current:{color:'#062C43',flex:1,minWidth:0},deckJersey:{color:'#93D8F3',maxWidth:'30%'},deckName:{color:'white',flex:1,minWidth:0},

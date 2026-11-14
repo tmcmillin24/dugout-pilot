@@ -25,12 +25,12 @@ let pager=tree.find(n=>n?.type==='ScrollView'&&n.props.horizontal);
 assert.equal(pager.props.pagingEnabled,true);assert.equal(pager.props.directionalLockEnabled,true);
 assert.equal(pager.props.scrollEnabled,true);
 pager.props.onMomentumScrollEnd({nativeEvent:{contentOffset:{x:1194}}});tree=render();
-assert.equal(state[0],'defense');assert.match(text(tree),/BENCH · 16/);assert.match(text(tree),/Unassigned/);assert.equal(writes,0);
+assert.equal(state[0],'defense');assert.doesNotMatch(text(tree),/BENCH/);assert.match(text(tree),/Unassigned/);assert.equal(writes,0);
 for(const position of positions)assert.ok(text(tree).includes(position));
 pager.props.onMomentumScrollEnd({nativeEvent:{contentOffset:{x:0}}});tree=render();assert.equal(state[0],'offense');assert.match(text(tree),/BATTER FINISHED/);
-const defenseTab=tree.find(n=>n?.props?.accessibilityRole==='tab'&&text(flatten(n)).includes('DEFENSE'));defenseTab.props.onPress();assert.match(text(render()),/BENCH · 16/);
+const defenseTab=tree.find(n=>n?.props?.accessibilityRole==='tab'&&text(flatten(n)).includes('DEFENSE'));defenseTab.props.onPress();assert.doesNotMatch(text(render()),/BENCH/);
 for(const size of [{width:393,height:852},{width:852,height:393},{width:834,height:1194},{width:1194,height:834},{width:1366,height:1024}]){
- dimensions=size;tree=render();assert.match(text(tree),/BENCH · 16/);
+ dimensions=size;tree=render();assert.doesNotMatch(text(tree),/BENCH/);
  pager=tree.find(n=>n?.type==='ScrollView'&&n.props.horizontal);
  const pages=pager.props.children;assert.equal(pages[0].props.style.width,pages[1].props.style.width);
  const image=tree.find(n=>n?.type==='Image');const field=tree.find(n=>n?.type==='View'&&Array.isArray(n.props.style)&&n.props.children?.[0]===image);
@@ -49,7 +49,9 @@ for(const size of [{width:393,height:852},{width:852,height:393},{width:834,heig
 
 }
 
-state=[];props.game={...game,lineup:[]};assert.match(text(render()),/BENCH · 16/);
+state=[];props.game={...game,lineup:[]};assert.doesNotMatch(text(render()),/BENCH/);
 let disabled;cursor=0;state=[];exports.BattingDisplay({...props,renderTrigger:(_open,value)=>{disabled=value;return null;}});assert.equal(disabled,false);
+assert.equal(board.players.length,18,'Hiding the bench must not remove roster players');
+assert.doesNotMatch(text(render()),/Player 17/);
 assert.equal(writes,0);
-console.log('PASS: native paging and tab navigation, full-width field sizing, read-only defensive field, 18-player bench, phone/iPad orientations and defense without a batting order.');
+console.log('PASS: native paging and tab navigation, full-width field sizing, read-only defensive field, bench hidden in display, phone/iPad orientations and defense without a batting order.');
