@@ -63,17 +63,17 @@ function Display({board,game,writable,update,onClose}:Props&{onClose:()=>void}) 
 function DefensiveDisplay({board,game,width,height}:{board:Board;game:Game;width:number;height:number}) {
   const landscape=width>height;
   const fieldWidth=width;
-  const fieldHeight=landscape?Math.max(230,height-220):fieldWidth*460/420;
-  const artAspect=landscape?2:420/460;
+  const fieldHeight=landscape?Math.max(420,height-220):fieldWidth*460/420;
+  const artAspect=420/460;
   const artWidth=Math.min(fieldWidth,fieldHeight*artAspect);
   const artHeight=artWidth/artAspect;
   const bench=board.players.filter(p=>!Object.values(game.positions).includes(p.id));
   return <ScrollView directionalLockEnabled nestedScrollEnabled style={{flex:1}} indicatorStyle="white" contentContainerStyle={{flexGrow:1,paddingBottom:8}}><View style={{flexDirection:'column',alignItems:'center',gap:18}}>
     <View style={[s.defensiveField,{width:fieldWidth,height:fieldHeight}]}>
-      <Image source={landscape?require('@/assets/images/dugout-field-landscape.svg'):require('@/assets/images/defensive-field.svg')} contentFit="contain" transition={0} accessible={false} style={StyleSheet.absoluteFill}/>
-      {POSITIONS.map(position=>{const [left,top]=FIELD_POINTS[position];const player=board.players.find(p=>p.id===game.positions[position]);return <View key={position} style={[s.fieldPosition,{left:(fieldWidth-artWidth)/2+artWidth*left/100-fieldWidth*.13,top:(fieldHeight-artHeight)/2+artHeight*top/100}]}>
+      <Image source={require('@/assets/images/defensive-field.svg')} contentFit="contain" transition={0} accessible={false} style={StyleSheet.absoluteFill}/>
+      {POSITIONS.map(position=>{const [left,top]=FIELD_POINTS[position];const player=board.players.find(p=>p.id===game.positions[position]);return <View key={position} style={[s.fieldPosition,{width:artWidth*.26,left:(fieldWidth-artWidth)/2+artWidth*(left-13)/100,top:(fieldHeight-artHeight)/2+artHeight*top/100}]}>
         <Text style={s.fieldPositionLabel}>{position}</Text>
-        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.65} style={[s.fieldPlayer,{fontSize:fieldWidth>=500?17:13}]}>{player?formatPlayerName(player.name):'Unassigned'}</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.65} style={[s.fieldPlayer,{fontSize:artWidth>=500?17:13}]}>{player?formatPlayerName(player.name):'Unassigned'}</Text>
         <Text style={s.fieldNumber}>{player?.number?`#${player.number}`:'—'}</Text>
       </View>;})}
     </View>

@@ -37,6 +37,12 @@ for(const size of [{width:393,height:852},{width:852,height:393},{width:834,heig
  assert.equal(field.props.style[1].width,pages[1].props.style.width,'Field uses the whole page width');
  assert.ok(field.props.style[1].height>0);
  assert.equal(image.props.contentFit,'contain','Field art keeps its proportions');
+ const {width:fw,height:fh}=field.props.style[1];
+ const artWidth=Math.min(fw,fh*420/460);
+ const cards=tree.filter(n=>n?.type==='View'&&Array.isArray(n.props.style)&&typeof n.props.style[1]?.left==='number');
+ assert.equal(cards.length,9);
+ for(const card of cards)assert.ok(Math.abs(card.props.style[1].width-artWidth*.26)<.001,'Player cards scale with the proportional artwork, not the landscape screen');
+
 }
 
 state=[];props.game={...game,lineup:[]};assert.match(text(render()),/BENCH · 16/);
