@@ -3,10 +3,10 @@ import { formatPlayerName } from '@/lib/coaching/player-display';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { POSITIONS, playerName, type Board, type Position } from '@/lib/coaching/board';
 import { palette } from './app-ui';
-const points: Record<Position, [number, number]> = { LF: [20,32], CF: [50,23], RF: [80,32], SS: [35,50], '2B': [65,50], '3B': [18,68], P: [50,68], '1B': [82,68], C: [50,90] };
+export const FIELD_POINTS: Record<Position, [number, number]> = { LF: [20,32], CF: [50,23], RF: [80,32], SS: [35,50], '2B': [65,50], '3B': [18,68], P: [50,68], '1B': [82,68], C: [50,90] };
 export function DefensiveDiamond({ board, positions, disabled, onPosition }: { board: Board; positions: Record<string,string>; disabled?: boolean; onPosition: (pos: Position) => void }) {
   return <View style={s.field}><Image source={require('@/assets/images/defensive-field.svg')} contentFit="contain" transition={0} pointerEvents="none" accessible={false} style={s.art} />{POSITIONS.map(pos => {
-    const [left,top] = points[pos]; const player = board.players.find(p => p.id === positions[pos]);
+    const [left,top] = FIELD_POINTS[pos]; const player = board.players.find(p => p.id === positions[pos]);
     return <View key={pos} pointerEvents="box-none" style={[s.anchor,{left:`${left-12.5}%`,top:`${top}%`}]}><Pressable accessibilityRole="button" accessibilityLabel={`Assign ${pos}: ${playerName(board,positions[pos])}`} disabled={disabled} onPress={() => onPosition(pos)} style={[s.position, player && s.assigned, disabled && { opacity: 0.65 }]}><Text style={s.positionLabel}>{pos}</Text><Text numberOfLines={1} style={s.playerLabel}>{player ? `${player.number ? '#'+player.number+' ' : ''}${formatPlayerName(player.name)}` : 'Assign +'}</Text></Pressable></View>;
   })}</View>;
 }
