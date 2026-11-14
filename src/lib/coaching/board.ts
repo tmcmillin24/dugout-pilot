@@ -23,6 +23,17 @@ export function applyDefensiveLineup(game:Game,lineup:DefensiveLineup,players:Pl
 export function defensiveMode(game:Game,lineups:DefensiveLineup[]):string { const saved=lineups.find(l=>l.id===game.defensiveLineupId);return saved&&POSITIONS.every(pos=>(saved.positions[pos]||'')===(game.positions[pos]||''))?saved.id:'manual'; }
 
 export function fieldInnings(game:Game,playerId:string):number { return Object.values(game.defenseInnings||{}).filter(positions=>Object.values(positions).includes(playerId)).length; }
+// Count only confirmed defensive appearances, not scheduled games or assigned lineups.
+export function fieldPlayingTime(board:Board,playerId:string):{games:number;innings:number} {
+ return board.games.reduce((total,game)=>{
+  const innings=fieldInnings(game,playerId);
+  return {games:total.games+(innings>0?1:0),innings:total.innings+innings};
+ },{games:0,innings:0});
+}
+export function fieldPlayingTimeLabel(board:Board,playerId:string):string {
+ const {games,innings}=fieldPlayingTime(board,playerId);
+ return `${games} ${games===1?'game':'games'} played · ${innings} ${innings===1?'inning':'innings'} played`;
+}
 export function dayFieldInnings(board:Board,day:number,playerId:string):number { return board.games.filter(g=>g.day===day).reduce((sum,g)=>sum+fieldInnings(g,playerId),0); }
 
 export function recordFieldInning(game:Game,inning:number):Game {
