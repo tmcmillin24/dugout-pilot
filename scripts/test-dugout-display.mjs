@@ -20,7 +20,7 @@ let writes=0;
 const props={board,game,writable:true,onClose(){},update:async()=>{writes++;return true;}};
 function render(){cursor=0;return flatten(exports.Display(props));}
 function text(tree){return tree.filter(n=>typeof n!=='object').join(' ').replace(/\s+/g,' ');}
-let tree=render();assert.match(text(tree),/AT BAT/);assert.match(text(tree),/ON DECK/);
+let tree=render();assert.doesNotMatch(text(tree),/Swipe (left|right)/);assert.match(text(tree),/AT BAT/);assert.match(text(tree),/ON DECK/);
 let pager=tree.find(n=>n?.type==='ScrollView'&&n.props.horizontal);
 assert.equal(pager.props.pagingEnabled,true);assert.equal(pager.props.directionalLockEnabled,true);
 assert.equal(pager.props.scrollEnabled,true);
@@ -36,6 +36,10 @@ for(const size of [{width:393,height:852},{width:852,height:393},{width:834,heig
  const image=tree.find(n=>n?.type==='Image');const field=tree.find(n=>n?.type==='View'&&Array.isArray(n.props.style)&&n.props.children?.[0]===image);
  assert.equal(field.props.style[1].width,pages[1].props.style.width,'Field uses the whole page width');
  assert.ok(field.props.style[1].height>0);
+ pager.props.onLayout({nativeEvent:{layout:{height:600}}});
+ const measuredTree=render();const measuredImage=measuredTree.find(n=>n?.type==='Image');
+ const measuredField=measuredTree.find(n=>n?.type==='View'&&Array.isArray(n.props.style)&&n.props.children?.[0]===measuredImage);
+ assert.equal(measuredField.props.style[1].height,Math.max(360,Math.min(600,pages[1].props.style.width*460/420)),'Uses measured viewport height rather than estimated screen margins');
  assert.equal(image.props.contentFit,'contain','Field art keeps its proportions');
  const {width:fw,height:fh}=field.props.style[1];
  const artWidth=Math.min(fw,fh*420/460);

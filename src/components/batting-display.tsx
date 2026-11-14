@@ -22,6 +22,7 @@ function Display({board,game,writable,update,onClose}:Props&{onClose:()=>void}) 
   const {width,height}=useWindowDimensions(); const insets=useSafeAreaInsets();
   const [page,setPage]=useState<'offense'|'defense'>(game.lineup.length?'offense':'defense');
   const [pending,setPending]=useState(false); const [error,setError]=useState(''); const [editing,setEditing]=useState(false);
+  const [displayHeight,setDisplayHeight]=useState(0);
   const pager=useRef<ComponentRef<typeof ScrollView>>(null);
   const pageWidth=Math.min(1400,width-Math.max(insets.left,width>=600?28:16)-Math.max(insets.right,width>=600?28:16));
   // Native paging shares directional touch locking with the vertical roster scroll views.
@@ -38,8 +39,7 @@ function Display({board,game,writable,update,onClose}:Props&{onClose:()=>void}) 
   return <View accessibilityViewIsModal style={[s.screen,{paddingTop:Math.max(insets.top,12),paddingBottom:Math.max(insets.bottom,12),paddingLeft:Math.max(insets.left,tablet?28:16),paddingRight:Math.max(insets.right,tablet?28:16)}]}><View style={[s.frame,height<650&&{gap:6}]}>
     <View style={s.header}><View style={{flex:1,minWidth:0}}><Text style={s.brand}>DUGOUT PILOT</Text><Text numberOfLines={1} style={s.matchup}>{game.label} · vs {game.opponent}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Close dugout display" onPress={onClose} style={s.close}><Text style={s.closeText}>×</Text></Pressable></View>
     <View style={s.pageTabs} accessibilityRole="tablist">{(['offense','defense'] as const).map(value=><Pressable key={value} accessibilityRole="tab" accessibilityState={{selected:page===value}} onPress={()=>setPage(value)} style={[s.pageTab,page===value&&s.pageSelected]}><Text style={[s.pageLabel,page===value&&s.pageSelectedLabel]}>{value==='offense'?'OFFENSE':'DEFENSE'}</Text></Pressable>)}</View>
-    <Text style={s.swipeHint}>{page==='offense'?'Swipe left for defensive positions →':'← Swipe right for batting order'}</Text>
-    <ScrollView ref={pager} horizontal pagingEnabled directionalLockEnabled nestedScrollEnabled bounces={false} showsHorizontalScrollIndicator={false} scrollEnabled={!editing} style={{flex:1,minHeight:0}} contentContainerStyle={{alignItems:'stretch'}} onMomentumScrollEnd={event=>setPage(event.nativeEvent.contentOffset.x>=pageWidth/2?'defense':'offense')}>
+    <ScrollView ref={pager} onLayout={event=>{const measured=event.nativeEvent.layout.height;setDisplayHeight(previous=>Math.abs(previous-measured)>1?measured:previous);}} horizontal pagingEnabled directionalLockEnabled nestedScrollEnabled bounces={false} showsHorizontalScrollIndicator={false} scrollEnabled={!editing} style={{flex:1,minHeight:0}} contentContainerStyle={{alignItems:'stretch'}} onMomentumScrollEnd={event=>setPage(event.nativeEvent.contentOffset.x>=pageWidth/2?'defense':'offense')}>
     <View style={{width:pageWidth,gap:compact?8:14}} accessibilityElementsHidden={page!=='offense'} importantForAccessibility={page==='offense'?'auto':'no-hide-descendants'}>
     {!game.lineup.length?<View style={s.empty}><DisplayText style={s.emptyTitle}>NO BATTING ORDER YET</DisplayText><Text style={s.swipeHint}>Add batters in Lineups to display the offensive order.</Text></View>:<>
     <View style={[s.spotlights,{flexDirection:tablet?'row':'column'}]}>
@@ -53,17 +53,18 @@ function Display({board,game,writable,update,onClose}:Props&{onClose:()=>void}) 
     </>}
     </View>
     <View style={{width:pageWidth}} accessibilityElementsHidden={page!=='defense'} importantForAccessibility={page==='defense'?'auto':'no-hide-descendants'}>
-      <DefensiveDisplay board={board} game={game} width={pageWidth} height={height} />
+      <DefensiveDisplay board={board} game={game} width={pageWidth} availableHeight={displayHeight||Math.max(360,height-insets.top-insets.bottom-126)} />
     </View>
     </ScrollView>
     <Sheet title="Last batter" open={editing} onClose={()=>setEditing(false)}>{[{id:'',name:'Start of lineup'},...game.lineup.map(id=>({id,name:formatPlayerName(player(id)?.name)}))].map(item=><Pressable key={item.id} accessibilityRole="button" disabled={!writable||pending} onPress={()=>{void record(item.id);}} style={c.option}><Text style={c.choiceValue}>{item.name}{(game.lastBatterId??'')===item.id?'  ✓':''}</Text></Pressable>)}{!!error&&<Text accessibilityRole="alert" style={c.danger}>{error}</Text>}</Sheet>
   </View></View>;
 }
 
-function DefensiveDisplay({board,game,width,height}:{board:Board;game:Game;width:number;height:number}) {
-  const landscape=width>height;
+function DefensiveDisplay({board,game,width,availableHeight}:{board:Board;game:Game;width:number;availableHeight:number}) {
   const fieldWidth=width;
-  const fieldHeight=landscape?Math.max(420,height-220):fieldWidth*460/420;
+  // Fit the largest undistorted field in the actual pager viewport.
+  // Short phone windows retain enough height for readable, non-overlapping positions.
+  const fieldHeight=Math.max(360,Math.min(availableHeight,fieldWidth*460/420));
   const artAspect=420/460;
   const artWidth=Math.min(fieldWidth,fieldHeight*artAspect);
   const artHeight=artWidth/artAspect;
