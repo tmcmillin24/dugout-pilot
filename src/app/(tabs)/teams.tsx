@@ -15,6 +15,7 @@ export default function TeamsScreen() {
       <Pressable accessibilityRole="button" onPress={() => router.push('/team-create')} style={s.add}><Icon name="plus" size={18} color={palette.ink} /><Text style={s.addText}>CREATE TEAM</Text></Pressable>
       <Pressable accessibilityRole="button" onPress={() => router.push('/team-join')} style={s.join}><Icon name="mail" size={18} color={palette.ink} /><Text style={s.addText}>JOIN TEAM</Text></Pressable>
     </View>
+    <Button secondary onPress={()=>router.navigate('/organizations')}>ORGANIZATIONS · DIRECTOR DASHBOARD</Button>
     {loading ? <Loading /> : teams.length ? <View style={s.list}>{teams.map(team => <View key={team.id} style={[s.team, team.id === active?.id && s.selected]}>
       <Pressable accessibilityRole="button" accessibilityLabel={`Select ${team.name}`} accessibilityState={{ selected: team.id === active?.id }} onPress={() => { void select(team.id); }} style={({ pressed }) => [s.teamRow, pressed && ui.dim]}>
         <RowLogo team={team}/>

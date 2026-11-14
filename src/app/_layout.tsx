@@ -43,6 +43,8 @@ function AuthGate() {
     <Stack.Screen name="team-join" options={{ presentation: 'modal' }} />
     <Stack.Screen name="team-manage" />
     <Stack.Screen name="admin" />
+    <Stack.Screen name="organizations" />
+    <Stack.Screen name="director" />
     <Stack.Screen name="roster" />
     <Stack.Screen name="account" />
     <Stack.Screen name="team-stats" />

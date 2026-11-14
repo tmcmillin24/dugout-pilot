@@ -1,3 +1,4 @@
+import { OrganizationCodeField } from '@/components/team-organization';
 import { router } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
 import { useRef, useState } from 'react';
@@ -8,18 +9,19 @@ import { useTeams } from '@/providers/team-provider';
 
 export default function CreateTeamScreen() {
   const { refresh } = useTeams();
-  const [name, setName] = useState(''); const [busy, setBusy] = useState(false); const [error, setError] = useState('');
+  const [name, setName] = useState(''); const [organizationCode,setOrganizationCode]=useState(''); const [busy, setBusy] = useState(false); const [error, setError] = useState('');
   const inFlight = useRef(false); const request = useRef<{ name: string; id: string } | null>(null);
   async function submit() {
     if (inFlight.current) return;
     const clean = name.trim(); if (clean.length < 2 || clean.length > 80) { setError('Use a team name with 2 to 80 characters.'); return; }
     inFlight.current = true; setBusy(true); setError('');
-    try { if (!request.current || request.current.name !== clean) request.current = { name: clean, id: randomUUID() }; const id = await createTeam(clean, request.current.id); await refresh(id); router.replace('/teams'); }
+    try { if (!request.current || request.current.name !== clean+'|'+organizationCode.trim()) request.current = { name: clean+'|'+organizationCode.trim(), id: randomUUID() }; const id = await createTeam(clean, request.current.id, organizationCode); await refresh(id); router.replace('/teams'); }
     catch (reason) { setError(teamError(reason)); }
     finally { inFlight.current = false; setBusy(false); }
   }
   return <Screen title="Create a team" back>
     <View style={{ gap: 12 }}><Text style={ui.label}>Team name</Text><TextInput accessibilityLabel="Team name" style={ui.input} value={name} onChangeText={setName} editable={!busy} maxLength={80} placeholder="Your team name" placeholderTextColor={palette.muted} autoFocus returnKeyType="done" onSubmitEditing={submit} /></View>
+    <OrganizationCodeField value={organizationCode} onChange={setOrganizationCode} disabled={busy}/>
     <Panel><View style={ui.inset}><Icon name="shield" color={palette.accent} /><Text style={ui.heading}>14-day Pro trial</Text><Text style={ui.body}>Starts automatically. No approval needed.</Text></View></Panel>
     <StatusMessage text={error} error /><Button disabled={busy} onPress={() => { void submit(); }}>{busy ? 'Creating team…' : 'Create team'}</Button>
   </Screen>;

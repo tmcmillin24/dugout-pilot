@@ -1,3 +1,4 @@
+import { TeamOrganization } from './team-organization';
 import TeamLogoEditor from './team-logo-editor';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Button, Loading, Screen, StatusMessage } from './app-ui';
@@ -10,6 +11,7 @@ export default function TeamOwnerScreen({ view }: { view: 'settings' | 'coaches'
     <StatusMessage text={error} error />{loading ? <Loading /> : team?.role === 'owner' ? <>
       {view === 'settings' && <TeamLogoEditor team={team} onChanged={() => refresh(team.id)} />}
       {view === 'coaches' && <Button onPress={() => router.push({ pathname: '/team-invite', params: { id } })}>Invite a coach</Button>}
+      {view === 'settings' && <TeamOrganization key={team.id} teamId={team.id}/>}
       <OwnerPanel key={`${team.id}:${view}`} team={team} view={view} onChanged={() => refresh(team.id)} />
     </> : <StatusMessage text="Only the current team owner can manage this team. Refresh to check your access." />}
   </Screen>;

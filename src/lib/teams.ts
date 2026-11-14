@@ -35,8 +35,10 @@ export async function listTeams(): Promise<Team[]> {
   }))).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export async function createTeam(name: string, requestId: string): Promise<string> {
-  const { data, error } = await supabase.rpc('create_team', { team_name: name.trim(), request_id: requestId });
+export async function createTeam(name: string, requestId: string, organizationCode = ''): Promise<string> {
+  const { data, error } = organizationCode.trim()
+    ? await supabase.rpc('create_team_with_organization', { team_name: name.trim(), request_id: requestId, p_code: organizationCode.trim() })
+    : await supabase.rpc('create_team', { team_name: name.trim(), request_id: requestId });
   if (error) throw error;
   return data as string;
 }
