@@ -1,0 +1,7 @@
+{
+  "name": "dugout-on-device-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dugout Pilot's local Apple Foundation Models bridge",
+  "license": "UNLICENSED"
+}

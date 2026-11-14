@@ -1,0 +1,4 @@
+import {Text,View} from 'react-native';
+import {useCoaching} from '@/providers/coaching-provider';
+import {palette} from './app-ui';
+export function SyncStatus(){const {offline,syncing,busy,error,lastSynced,board,loading}=useCoaching();if(!board&&!loading&&!offline)return null;const label=offline?'Offline · team changes cannot be saved':busy?'Saving team changes…':error?'Sync needs attention':syncing||loading?'Syncing team…':lastSynced?'Team data up to date':'Waiting to sync';const color=offline||error?palette.error:busy||syncing?palette.accent:'#28785A';return <View accessibilityLiveRegion="polite" style={{flexDirection:'row',gap:7,alignItems:'center',minHeight:18}}><View style={{width:6,height:6,borderRadius:3,backgroundColor:color}}/><Text style={{color:palette.muted,fontSize:11,lineHeight:16,flexShrink:1}}>{label}</Text></View>;}

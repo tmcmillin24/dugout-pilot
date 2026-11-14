@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import ts from 'typescript';
+const cache=new Map();function load(file){file=path.resolve(file);if(cache.has(file))return cache.get(file);const exports={};cache.set(file,exports);vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports,Date,require:name=>load(path.resolve(path.dirname(file),name+'.ts'))});return exports;}
+const {playerDevelopment,developmentReport}=load('src/lib/coaching/player-development.ts');
+const p={id:'p',name:'Test Player',number:'52',positions:['P']};
+const contact=playerDevelopment(p,{batting:{PA:40,AB:32,H:8,TB:10,SO:18,BB:6}});
+assert.equal(contact.priorities[0].key,'contact');assert.match(contact.priorities[0].evidence,/18 strikeouts in 40 PA/);
+const command=playerDevelopment(p,{batting:{PA:40,AB:35,H:20,TB:27,SO:3,BB:5},pitching:{BF:35,BB:12,SO:6,IP:6.2}});
+assert.equal(command.priorities[0].key,'command');assert(!command.priorities.some(f=>f.key==='contact'));assert.match(command.priorities[0].evidence,/12 walks in 35/);
+const fielding=playerDevelopment({...p,positions:['SS']},{batting:{PA:40,AB:35,H:20,TB:27,SO:3,BB:5},fielding:{TC:20,E:6}});
+assert.equal(fielding.priorities[0].key,'fielding');assert.match(fielding.priorities[0].evidence,/6 errors in 20/);
+const empty=playerDevelopment(p,undefined);assert.equal(empty.priorities.length,0);assert.equal(empty.metrics.length,0);assert(empty.missing.length);
+const incomplete=playerDevelopment(p,{batting:{AB:30,SO:10},pitching:{IP:0,BB:0},fielding:{TC:0,E:0}});assert.equal(incomplete.priorities.length,0,'missing PA must not be invented from AB; zero denominators are not rates');
+const early=playerDevelopment(p,{batting:{PA:10,SO:5}});assert.equal(early.priorities[0].early,true);
+const complete=playerDevelopment(p,{batting:{PA:50,AB:40,H:20,TB:28,SO:3,BB:10},fielding:{TC:30,E:0}});assert.equal(complete.priorities.length,0);assert(complete.strengths.length>=2);
+const running=playerDevelopment(p,{batting:{SB:2,CS:3}});assert.equal(running.priorities[0].key,'running');
+assert.notEqual(developmentReport(p,{batting:{PA:40,SO:18}}),developmentReport(p,{fielding:{TC:20,E:6}}));
+const split=playerDevelopment(p,{batting:{PA:30,SO:2,BB:0},pitching:{BF:20,BB:8,IP:4}});assert.equal(split.priorities[0].key,'command','pitching BB must not use batting BB');
+console.log('PASS distinct contact, command, fielding and running plans; evidence, strengths, missing counts, zero denominators, small samples and batting/pitching stat isolation.');
+// Render the real InsightsContent function with lightweight native view mocks.
+const jsx=(type,props)=>({type,props});const uiModule={};const componentSource=readFileSync('src/components/elite-insights.tsx','utf8').replace('function InsightsContent(', 'export function InsightsContent(');
+vm.runInNewContext(ts.transpileModule(componentSource,{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports:uiModule,require:name=>name==='react'?{useState:v=>[v,()=>{}]}:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='react-native'?{Text:'Text',View:'View',Pressable:'Pressable',Share:{}}:name.includes('/team-provider')?{useTeams:()=>({active:{name:'Team'}})}:name.startsWith('@/lib/')?load('src/lib/'+name.slice('@/lib/'.length)+'.ts'):name==='./coaching-ui'?{Choice:'Choice',c:{}}:name==='./app-ui'?{Button:'Button',Panel:'Panel',Section:'Section',StatusMessage:'StatusMessage',ui:{},palette:{}}:name==='./sports-type'?{DisplayText:'DisplayText'}:{}});
+const board={name:'Team',statsSeason:'2026',players:[{...p,id:'a',name:'Contact Player'},{...p,id:'b',name:'Command Player'}],games:[],defensiveLineups:[],seasonImports:[{season:'2026',stats:{a:{batting:{PA:40,SO:18}},b:{pitching:{BF:35,BB:12,IP:6.2}}},label:'Season.csv'}]};
+const a=JSON.stringify(uiModule.InsightsContent({board,year:'2026',selectedPlayer:'a',onSelect:()=>{}})),b=JSON.stringify(uiModule.InsightsContent({board,year:'2026',selectedPlayer:'b',onSelect:()=>{}}));
+assert(a.includes('18 strikeouts in 40 PA'));assert(!a.includes('12 walks in 35 batters'));
+assert(b.includes('12 walks in 35 batters'));assert(!b.includes('18 strikeouts in 40 PA'));
+console.log('PASS selected player controls the complete Insights report; other-player recommendation evidence is excluded.');

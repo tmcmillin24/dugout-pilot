@@ -1,0 +1,15 @@
+# Game-day polish and recovery
+
+The Home setup checklist tracks roster, a dated opponent and a batting order. Completion is persisted in the shared board on the next successful save and never resets on later edits. A readiness panel targets the next scheduled non-final game, opens the correct batting/defense/pitching mode, reports missing assignments and counts attending batters without assuming a roster size. Pro/Elite coaches explicitly confirm pitching availability; a canonical snapshot invalidates the confirmation when pitcher lists, workload, dates, rules context or planned staff change. This is not an automatic eligibility ruling.
+
+A shared sync indicator distinguishes syncing, saving, last successful database contact, failed sync and confirmed offline state. Team writes are disabled while offline. There is no new durable offline board cache or offline write queue; local practice drafts retain their existing behavior. Existing revision conflicts and realtime/polling paths remain intact.
+
+Cards use a consistent radius, subtle shadow, tinted icon tiles and stronger text. The two Home menus have restrained navy/orange accent edges. Reusable empty states cover roster, saved practices, failed team loading and game history. Upgrade-required controls continue to use the plan components rather than ordinary disabled styling.
+
+Print/share is in the selected game card header; Dugout Display stays beside the page title. Starter and higher can print batting order, positions and bench, or share a PDF. HTML escapes team/opponent/player data and contains no remote image dependencies. Browser printing uses a separate print window; native iOS uses AirPrint/PDF sharing. Temporary PDF files are removed after sharing. Expo SDK 58-compatible expo-print and expo-sharing are new native dependencies, so an updated device build is required. No incoming-share extension/plugin is enabled.
+
+Migration 202611120005_import_recovery.sql adds private, server-captured stats backups and membership-protected metadata. The latest 30 change records are kept, with recoverable backups for the latest five. Older existing imports have no retroactive backup. Restoration is Elite-only and uses the team's current revision/lock. It restores prior season/game stats and game coverage markers while preserving current roster, lineups, pitching logs, schedules and practices. Deleted games are not recreated; removed-player stats are filtered out. A restore itself creates a backup so the most recent change can be reversed again. The migration also protects the Pro pitching-review marker from Starter writes.
+
+Apply this migration only to Dugout Pilot project rlxscbutvxvsijgtcrbq after prior plan migrations. No rules-assistant redeploy or Novori changes are involved.
+
+Checks: TypeScript and scoped ESLint; game-day pure logic, escaped printing, multi-device/offline/conflict tests and PGlite import recovery tests. An 18-player PDF was rendered and visually inspected using a local HTML renderer, with a 40-player pagination check. This is not a substitute for native AirPrint/share-sheet testing. No local iOS/Xcode runtime is available.

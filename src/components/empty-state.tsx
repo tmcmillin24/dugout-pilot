@@ -1,0 +1,3 @@
+import {Text,View} from 'react-native';
+import {Button,Icon,Panel,palette,ui,type IconName} from './app-ui';
+export function EmptyState({title,description,action,onPress,icon='ball',disabled=false}:{title:string;description:string;action?:string;onPress?:()=>void;icon?:IconName;disabled?:boolean}){return <Panel><View style={{padding:24,gap:12,alignItems:'flex-start'}}><View style={{width:46,height:46,borderRadius:14,backgroundColor:palette.badgeSurface,alignItems:'center',justifyContent:'center'}}><Icon name={icon} color={palette.accent}/></View><Text style={ui.heading}>{title}</Text><Text style={ui.body}>{description}</Text>{action&&onPress&&<Button disabled={disabled} secondary onPress={onPress}>{action}</Button>}</View></Panel>;}
